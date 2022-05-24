@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/oauth2"
 )
@@ -17,12 +18,13 @@ const (
 type Client struct {
 	config   *oauth2.Config
 	session  *Session
-	response chan *TokenResponse
+	response chan *Token
 }
 
-type TokenResponse struct {
+type Token struct {
 	AccessToken  string
 	RefreshToken string
+	Expiry       time.Time
 }
 
 func New() *Client {
@@ -36,12 +38,11 @@ func New() *Client {
 				AuthURL:  "https://twitter.com/i/oauth2/authorize",
 			},
 		},
-		session:  newSession(),
-		response: make(chan *TokenResponse),
+		response: make(chan *Token),
 	}
 }
 
-func (c *Client) Auth() (*TokenResponse, error) {
+func (c *Client) Auth() (*Token, error) {
 	// 認可URLを作成
 	url := c.buildAuthorizationURL()
 
@@ -74,6 +75,8 @@ func (c *Client) Auth() (*TokenResponse, error) {
 }
 
 func (c *Client) buildAuthorizationURL() string {
+	c.session = newSession()
+
 	url := c.config.AuthCodeURL(
 		c.session.state,
 		oauth2.SetAuthURLParam("code_challenge", c.session.codeChallenge),
@@ -109,13 +112,54 @@ func (c *Client) handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenResponse := &TokenResponse{
+	tokenResponse := &Token{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
+		Expiry:       token.Expiry,
 	}
 
 	c.response <- tokenResponse
 
 	w.Write([]byte("Authentication complete! You may close this page."))
 	w.WriteHeader(http.StatusOK)
+}
+
+type TokenRefreshFunc func(*oauth2.Token) error
+
+type TokenSource struct {
+	src oauth2.TokenSource
+	f   TokenRefreshFunc
+}
+
+func (s *TokenSource) Token() (*oauth2.Token, error) {
+	t, err := s.src.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.f(t); err != nil {
+		return t, err
+	}
+
+	return t, nil
+}
+
+func (c *Client) NewClient(token *Token, refreshFunc TokenRefreshFunc) *http.Client {
+	t := &oauth2.Token{
+		AccessToken:  token.AccessToken,
+		TokenType:    "bearer",
+		RefreshToken: token.RefreshToken,
+		Expiry:       token.Expiry,
+	}
+
+	src := c.config.TokenSource(context.Background(), t)
+
+	tokenSource := &TokenSource{
+		src: src,
+		f:   refreshFunc,
+	}
+
+	reuseSrc := oauth2.ReuseTokenSource(t, tokenSource)
+
+	return oauth2.NewClient(context.Background(), reuseSrc)
 }
