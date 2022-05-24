@@ -1,9 +1,19 @@
 package main
 
-import "github.com/arrow2nd/nekome/oauth"
+import (
+	"fmt"
+	"log"
+
+	"github.com/arrow2nd/nekome/oauth"
+)
 
 func main() {
 	client := oauth.New()
 
-	client.Auth()
+	token, err := client.Auth()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(token)
 }
