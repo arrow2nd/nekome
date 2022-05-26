@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/arrow2nd/nekome/oauth"
 	"github.com/goccy/go-yaml"
 )
 
@@ -33,7 +34,9 @@ func New() *Config {
 	}
 
 	return &Config{
-		Cred:     &Cred{},
+		Cred: &Cred{
+			tokens: map[string]*oauth.Token{},
+		},
 		Settings: &Settings{},
 		dirPath:  path,
 	}
@@ -54,7 +57,7 @@ func (c *Config) LoadAll() (bool, error) {
 		return false, err
 	}
 
-	if err := c.load(credFileName, c.Cred); err != nil {
+	if err := c.load(credFileName, &c.Cred.tokens); err != nil {
 		return false, err
 	}
 
@@ -63,6 +66,19 @@ func (c *Config) LoadAll() (bool, error) {
 	}
 
 	return true, nil
+}
+
+// SaveAll 一括保存
+func (c *Config) SaveAll() error {
+	if err := c.SaveCred(); err != nil {
+		return err
+	}
+
+	if err := c.SaveSettings(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *Config) hasAllFileExists() (bool, error) {
@@ -82,7 +98,7 @@ func (c *Config) hasAllFileExists() (bool, error) {
 
 	// ファイルの存在チェック
 	for _, path := range files {
-		if _, err := os.Stat(path); err != nil {
+		if _, err := os.Stat(filepath.Join(c.dirPath, path)); err != nil {
 			return false, nil
 		}
 	}

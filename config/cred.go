@@ -8,7 +8,7 @@ import (
 
 // Cred 認証情報
 type Cred struct {
-	tokens map[string]*oauth.Token
+	tokens map[string]*oauth.Token `yaml:"inline"`
 }
 
 // Get ユーザ名から認証情報を取得
@@ -27,5 +27,5 @@ func (c *Cred) Write(userName string, token *oauth.Token) {
 
 // SaveCred 認証情報を保存
 func (c *Config) SaveCred() error {
-	return c.save(credFileName, c.Cred)
+	return c.save(credFileName, c.Cred.tokens)
 }

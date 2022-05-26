@@ -4,3 +4,7 @@ package config
 type Settings struct {
 	MainUser string
 }
+
+func (c *Config) SaveSettings() error {
+	return c.save(setingsFileName, c.Settings)
+}
