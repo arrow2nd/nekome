@@ -2,37 +2,28 @@ package api
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
+	"github.com/arrow2nd/nekome/oauth"
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-func (a *API) AuthUserLookup() error {
-	client, err := a.newClient()
+// AuthUserLookup 現在のユーザの情報を取得
+func (a *API) AuthUserLookup() (*twitter.UserObj, error) {
+	return a.AuthUserLookupFromToken(a.token)
+}
+
+// AuthUserLookupFromToken トークンに紐づいたユーザの情報を取得
+func (a *API) AuthUserLookupFromToken(token *oauth.Token) (*twitter.UserObj, error) {
+	client, err := a.newClient(token)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	opts := twitter.UserLookupOpts{
-		Expansions: []twitter.Expansion{twitter.ExpansionPinnedTweetID},
-	}
-
-	fmt.Println("Callout to auth user lookup callout")
-
+	opts := twitter.UserLookupOpts{}
 	userResponse, err := client.AuthUserLookup(context.Background(), opts)
 	if err != nil {
-		return fmt.Errorf("auth user lookup error: %v", err)
+		return nil, err
 	}
 
-	dictionaries := userResponse.Raw.UserDictionaries()
-
-	enc, err := json.MarshalIndent(dictionaries, "", "    ")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(enc))
-
-	return nil
+	return userResponse.Raw.Users[0], nil
 }

@@ -8,7 +8,7 @@ import (
 
 // Cred 認証情報
 type Cred struct {
-	tokens map[string]*oauth.Token `yaml:"inline"`
+	tokens map[string]*oauth.Token
 }
 
 // Get ユーザ名から認証情報を取得

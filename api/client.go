@@ -34,17 +34,27 @@ func (a *API) SetTokenRefreshCallback(callback oauth.TokenRefreshCallback) {
 }
 
 // Auth アプリケーション認証を行う
-func (a *API) Auth() (*oauth.Token, error) {
-	return a.oauth.Auth()
+func (a *API) Auth() (string, *oauth.Token, error) {
+	token, err := a.oauth.Auth()
+	if err != nil {
+		return "", nil, err
+	}
+
+	user, err := a.AuthUserLookupFromToken(token)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return user.UserName, token, nil
 }
 
-func (a *API) newClient() (*twitter.Client, error) {
+func (a *API) newClient(token *oauth.Token) (*twitter.Client, error) {
 	// expiry, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-05-25 11:53:32.258818 +0900 JST m=+7210.477936373")
 
-	httpClient := a.oauth.NewClient(a.token, a.tokenRefreshCallback)
+	httpClient := a.oauth.NewClient(token, a.tokenRefreshCallback)
 
 	client := &twitter.Client{
-		Authorizer: a.token,
+		Authorizer: token,
 		Client:     httpClient,
 		Host:       "https://api.twitter.com",
 	}

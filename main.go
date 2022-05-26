@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/arrow2nd/nekome/api"
@@ -38,17 +39,22 @@ func main() {
 	client.SetUser(userName, token)
 	client.SetTokenRefreshCallback(handleTokenRefresh)
 
-	client.AuthUserLookup()
-}
-
-func initConfig() {
-	token, err := client.Auth()
+	user, err := client.AuthUserLookup()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	conf.Cred.Write("test", token)
-	conf.Settings.MainUser = "test"
+	fmt.Printf("Name: %s / UserName: %s\n", user.Name, user.UserName)
+}
+
+func initConfig() {
+	userName, token, err := client.Auth()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conf.Cred.Write(userName, token)
+	conf.Settings.MainUser = userName
 
 	if err := conf.SaveAll(); err != nil {
 		log.Fatal(err)
