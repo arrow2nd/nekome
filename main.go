@@ -39,6 +39,7 @@ func main() {
 	client.SetUser(userName, token)
 	client.SetTokenRefreshCallback(handleTokenRefresh)
 
+	// NOTE: テスト用
 	user, err := client.AuthUserLookup()
 	if err != nil {
 		log.Fatal(err)
