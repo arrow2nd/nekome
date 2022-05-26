@@ -15,7 +15,7 @@ const (
 	listenAddr = "127.0.0.1:3000"
 )
 
-type Client struct {
+type OAuth struct {
 	config   *oauth2.Config
 	session  *Session
 	response chan *Token
@@ -27,8 +27,12 @@ type Token struct {
 	Expiry       time.Time
 }
 
-func New() *Client {
-	return &Client{
+func (t *Token) Add(req *http.Request) {
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", t.AccessToken))
+}
+
+func New() *OAuth {
+	return &OAuth{
 		config: &oauth2.Config{
 			ClientID:    clientId,
 			RedirectURL: "http://localhost:3000/callback",
@@ -38,19 +42,20 @@ func New() *Client {
 				AuthURL:  "https://twitter.com/i/oauth2/authorize",
 			},
 		},
+		session:  nil,
 		response: make(chan *Token),
 	}
 }
 
-func (c *Client) Auth() (*Token, error) {
+func (o *OAuth) Auth() (*Token, error) {
 	// 認可URLを作成
-	url := c.buildAuthorizationURL()
+	url := o.buildAuthorizationURL()
 
 	fmt.Printf("Please access the following URL to approve the application\n%s\n", url)
 
 	// サーバを立ててリダイレクトを待機
 	mux := http.NewServeMux()
-	mux.HandleFunc("/callback", c.handleCallback)
+	mux.HandleFunc("/callback", o.handleCallback)
 
 	serve := &http.Server{
 		Addr:    listenAddr,
@@ -64,7 +69,7 @@ func (c *Client) Auth() (*Token, error) {
 	}()
 
 	// 認可フローの終了を待つ
-	tokenResponse := <-c.response
+	tokenResponse := <-o.response
 
 	// サーバを閉じる
 	if err := serve.Shutdown(context.Background()); err != nil {
@@ -74,21 +79,21 @@ func (c *Client) Auth() (*Token, error) {
 	return tokenResponse, nil
 }
 
-func (c *Client) buildAuthorizationURL() string {
-	c.session = newSession()
+func (o *OAuth) buildAuthorizationURL() string {
+	o.session = newSession()
 
-	url := c.config.AuthCodeURL(
-		c.session.state,
-		oauth2.SetAuthURLParam("code_challenge", c.session.codeChallenge),
+	url := o.config.AuthCodeURL(
+		o.session.state,
+		oauth2.SetAuthURLParam("code_challenge", o.session.codeChallenge),
 		oauth2.SetAuthURLParam("code_challenge_method", "s256"),
 	)
 
 	return url
 }
 
-func (c *Client) handleCallback(w http.ResponseWriter, r *http.Request) {
+func (o *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
-	if state != c.session.state {
+	if state != o.session.state {
 		log.Println("invalid state")
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -101,10 +106,10 @@ func (c *Client) handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := c.config.Exchange(
+	token, err := o.config.Exchange(
 		context.Background(),
 		code,
-		oauth2.SetAuthURLParam("code_verifier", c.session.codeVerifier),
+		oauth2.SetAuthURLParam("code_verifier", o.session.codeVerifier),
 	)
 	if err != nil {
 		log.Printf("Failed to obtain token %v", err)
@@ -118,33 +123,13 @@ func (c *Client) handleCallback(w http.ResponseWriter, r *http.Request) {
 		Expiry:       token.Expiry,
 	}
 
-	c.response <- tokenResponse
+	o.response <- tokenResponse
 
 	w.Write([]byte("Authentication complete! You may close this page."))
 	w.WriteHeader(http.StatusOK)
 }
 
-type TokenRefreshFunc func(*oauth2.Token) error
-
-type TokenSource struct {
-	src oauth2.TokenSource
-	f   TokenRefreshFunc
-}
-
-func (s *TokenSource) Token() (*oauth2.Token, error) {
-	t, err := s.src.Token()
-	if err != nil {
-		return nil, err
-	}
-
-	if err := s.f(t); err != nil {
-		return t, err
-	}
-
-	return t, nil
-}
-
-func (c *Client) NewClient(token *Token, refreshFunc TokenRefreshFunc) *http.Client {
+func (o *OAuth) NewClient(token *Token, onRefreshToken TokenRefreshFunc) *http.Client {
 	t := &oauth2.Token{
 		AccessToken:  token.AccessToken,
 		TokenType:    "bearer",
@@ -152,11 +137,11 @@ func (c *Client) NewClient(token *Token, refreshFunc TokenRefreshFunc) *http.Cli
 		Expiry:       token.Expiry,
 	}
 
-	src := c.config.TokenSource(context.Background(), t)
+	src := o.config.TokenSource(context.Background(), t)
 
 	tokenSource := &TokenSource{
 		src: src,
-		f:   refreshFunc,
+		f:   onRefreshToken,
 	}
 
 	reuseSrc := oauth2.ReuseTokenSource(t, tokenSource)
