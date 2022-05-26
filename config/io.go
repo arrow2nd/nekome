@@ -40,7 +40,7 @@ func New() *Config {
 }
 
 func getConfigDir() (string, error) {
-	path, err := os.UserConfigDir()
+	path, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("failed to get config directory")
 	}
