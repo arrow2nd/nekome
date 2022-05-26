@@ -126,10 +126,9 @@ func (o *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 	o.response <- tokenResponse
 
 	w.Write([]byte("Authentication complete! You may close this page."))
-	w.WriteHeader(http.StatusOK)
 }
 
-func (o *OAuth) NewClient(token *Token, onRefreshToken TokenRefreshFunc) *http.Client {
+func (o *OAuth) NewClient(token *Token, onRefreshToken TokenRefreshCallback) *http.Client {
 	t := &oauth2.Token{
 		AccessToken:  token.AccessToken,
 		TokenType:    "bearer",
@@ -140,8 +139,8 @@ func (o *OAuth) NewClient(token *Token, onRefreshToken TokenRefreshFunc) *http.C
 	src := o.config.TokenSource(context.Background(), t)
 
 	tokenSource := &TokenSource{
-		src: src,
-		f:   onRefreshToken,
+		src:      src,
+		callback: onRefreshToken,
 	}
 
 	reuseSrc := oauth2.ReuseTokenSource(t, tokenSource)

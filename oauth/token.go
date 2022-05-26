@@ -2,11 +2,11 @@ package oauth
 
 import "golang.org/x/oauth2"
 
-type TokenRefreshFunc func(*oauth2.Token) error
+type TokenRefreshCallback func(*oauth2.Token) error
 
 type TokenSource struct {
 	src      oauth2.TokenSource
-	callback TokenRefreshFunc
+	callback TokenRefreshCallback
 }
 
 func (ts *TokenSource) Token() (*oauth2.Token, error) {
