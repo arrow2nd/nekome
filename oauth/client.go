@@ -10,10 +10,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	clientId   = "cmVzRHRHa2haNUlhemJfSFdaM1I6MTpjaQ"
-	listenAddr = "127.0.0.1:3000"
-)
+const listenAddr = "127.0.0.1:3000"
 
 type OAuth struct {
 	config   *oauth2.Config
@@ -31,17 +28,9 @@ func (t *Token) Add(req *http.Request) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", t.AccessToken))
 }
 
-func New() *OAuth {
+func New(c *oauth2.Config) *OAuth {
 	return &OAuth{
-		config: &oauth2.Config{
-			ClientID:    clientId,
-			RedirectURL: "http://localhost:3000/callback",
-			Scopes:      []string{"tweet.read", "users.read", "offline.access"},
-			Endpoint: oauth2.Endpoint{
-				TokenURL: "https://api.twitter.com/2/oauth2/token",
-				AuthURL:  "https://twitter.com/i/oauth2/authorize",
-			},
-		},
+		config:   c,
 		session:  nil,
 		response: make(chan *Token),
 	}
