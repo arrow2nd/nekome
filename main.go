@@ -26,17 +26,23 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// 初期設定
 	if !ok {
 		initConfig()
 	}
 
+	// 使用するトークンを取得
 	userName := conf.Settings.MainUser
 	token, err := conf.Cred.Get(userName)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client.SetUser(userName, token)
+	// ユーザをセット
+	if err := client.SetUser(token); err != nil {
+		log.Fatal(err)
+	}
+
 	client.SetTokenRefreshCallback(handleTokenRefresh)
 
 	// NOTE: テスト用
@@ -45,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Name: %s / UserName: %s\n", user.Name, user.UserName)
+	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", user.Name, user.UserName, user.ID)
 }
 
 func initConfig() {
@@ -63,17 +69,24 @@ func initConfig() {
 }
 
 func handleTokenRefresh(rawToken *oauth2.Token) error {
-	userName := client.UserName
+	prevUserName := client.CurrentUser.UserName
 	token := &oauth.Token{
 		AccessToken:  rawToken.AccessToken,
 		RefreshToken: rawToken.RefreshToken,
 		Expiry:       rawToken.Expiry,
 	}
 
-	client.SetUser(userName, token)
+	// トークンを更新
+	if err := client.SetUser(token); err != nil {
+		return err
+	}
 
-	conf.Cred.Write(userName, token)
-	conf.SaveCred()
+	conf.Cred.Write(client.CurrentUser.UserName, token)
 
-	return nil
+	// UserNameが変更されていたら、前のユーザデータを削除
+	if client.CurrentUser.UserName != prevUserName {
+		conf.Cred.Delete(prevUserName)
+	}
+
+	return conf.SaveCred()
 }

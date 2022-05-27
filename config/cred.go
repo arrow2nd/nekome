@@ -25,6 +25,11 @@ func (c *Cred) Write(userName string, token *oauth.Token) {
 	c.tokens[userName] = token
 }
 
+// Delete 認証情報を削除
+func (c *Cred) Delete(userName string) {
+	delete(c.tokens, userName)
+}
+
 // SaveCred 認証情報を保存
 func (c *Config) SaveCred() error {
 	return c.save(credFileName, c.Cred.tokens)
