@@ -33,22 +33,6 @@ func (a *API) SetTokenRefreshCallback(callback oauth.TokenRefreshCallback) {
 	a.tokenRefreshCallback = callback
 }
 
-// Auth アプリケーション認証を行う
-func (a *API) Auth() (string, *oauth.Token, error) {
-	token, err := a.oauth.Auth()
-	if err != nil {
-		return "", nil, err
-	}
-
-	// 認証したユーザの情報を取得
-	user, err := a.AuthUserLookupFromToken(token)
-	if err != nil {
-		return "", nil, err
-	}
-
-	return user.UserName, token, nil
-}
-
 func (a *API) newClient(token *oauth.Token) (*twitter.Client, error) {
 	httpClient := a.oauth.NewClient(token, a.tokenRefreshCallback)
 
