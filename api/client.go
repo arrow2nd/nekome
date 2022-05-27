@@ -22,7 +22,7 @@ func New() *API {
 	}
 }
 
-// SetUser ユーザを設定
+// SetUser ユーザをセット
 func (a *API) SetUser(token *oauth.Token) error {
 	a.token = token
 
@@ -36,7 +36,7 @@ func (a *API) SetUser(token *oauth.Token) error {
 	return nil
 }
 
-// SetTokenRefreshCallback トークンリフレッシュ時のコールバックを設定
+// SetTokenRefreshCallback トークンリフレッシュ時のコールバックをセット
 func (a *API) SetTokenRefreshCallback(callback oauth.TokenRefreshCallback) {
 	a.tokenRefreshCallback = callback
 }

@@ -46,12 +46,7 @@ func main() {
 	client.SetTokenRefreshCallback(handleTokenRefresh)
 
 	// NOTE: テスト用
-	user, err := client.AuthUserLookup()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", user.Name, user.UserName, user.ID)
+	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.Name, client.CurrentUser.UserName, client.CurrentUser.ID)
 }
 
 func initConfig() {
