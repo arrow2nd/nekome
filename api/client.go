@@ -24,13 +24,12 @@ func New() *API {
 
 // SetUser ユーザをセット
 func (a *API) SetUser(token *oauth.Token) error {
-	a.token = token
-
-	user, err := a.AuthUserLookup()
+	user, err := a.authUserLookup(token)
 	if err != nil {
 		return err
 	}
 
+	a.token = token
 	a.CurrentUser = user
 
 	return nil
