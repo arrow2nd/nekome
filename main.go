@@ -38,15 +38,23 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// ユーザをセット
+	// クライアントにユーザをセット
+	client.SetTokenRefreshCallback(handleTokenRefresh)
 	if err := client.SetUser(token); err != nil {
 		log.Fatal(err)
 	}
 
-	client.SetTokenRefreshCallback(handleTokenRefresh)
-
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.Name, client.CurrentUser.UserName, client.CurrentUser.ID)
+
+	tweets, err := client.FetchUserTimeline(client.CurrentUser.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i, tweet := range tweets {
+		fmt.Printf("[%d] %s : %s\n", i, tweet.AuthorID, tweet.Text)
+	}
 }
 
 func initConfig() {
