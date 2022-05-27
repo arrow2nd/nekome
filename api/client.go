@@ -7,7 +7,7 @@ import (
 
 // API TwitterAPI
 type API struct {
-	CurrentUserName      string
+	CurrentUser          *twitter.UserObj
 	oauth                *oauth.OAuth
 	token                *oauth.Token
 	tokenRefreshCallback oauth.TokenRefreshCallback
@@ -16,16 +16,24 @@ type API struct {
 // New 生成
 func New() *API {
 	return &API{
-		CurrentUserName: "",
-		oauth:           oauth.New(),
-		token:           nil,
+		CurrentUser: nil,
+		oauth:       oauth.New(),
+		token:       nil,
 	}
 }
 
 // SetUser ユーザを設定
-func (a *API) SetUser(userName string, token *oauth.Token) {
-	a.CurrentUserName = userName
+func (a *API) SetUser(token *oauth.Token) error {
 	a.token = token
+
+	user, err := a.AuthUserLookup()
+	if err != nil {
+		return err
+	}
+
+	a.CurrentUser = user
+
+	return nil
 }
 
 // SetTokenRefreshCallback トークンリフレッシュ時のコールバックを設定

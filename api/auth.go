@@ -15,7 +15,7 @@ func (a *API) Auth() (string, *oauth.Token, error) {
 	}
 
 	// 認証したユーザの情報を取得
-	user, err := a.AuthUserLookupFromToken(token)
+	user, err := a.AuthUserLookupByToken(token)
 	if err != nil {
 		return "", nil, err
 	}
@@ -25,11 +25,11 @@ func (a *API) Auth() (string, *oauth.Token, error) {
 
 // AuthUserLookup 現在のユーザの情報を取得
 func (a *API) AuthUserLookup() (*twitter.UserObj, error) {
-	return a.AuthUserLookupFromToken(a.token)
+	return a.AuthUserLookupByToken(a.token)
 }
 
-// AuthUserLookupFromToken トークンに紐づいたユーザの情報を取得
-func (a *API) AuthUserLookupFromToken(token *oauth.Token) (*twitter.UserObj, error) {
+// AuthUserLookupByToken トークンに紐づいたユーザの情報を取得
+func (a *API) AuthUserLookupByToken(token *oauth.Token) (*twitter.UserObj, error) {
 	client, err := a.newClient(token)
 	if err != nil {
 		return nil, err
