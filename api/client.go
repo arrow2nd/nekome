@@ -7,7 +7,7 @@ import (
 
 // API TwitterAPI
 type API struct {
-	UserName             string
+	CurrentUserName      string
 	oauth                *oauth.OAuth
 	token                *oauth.Token
 	tokenRefreshCallback oauth.TokenRefreshCallback
@@ -16,15 +16,15 @@ type API struct {
 // New 生成
 func New() *API {
 	return &API{
-		UserName: "",
-		oauth:    oauth.New(),
-		token:    nil,
+		CurrentUserName: "",
+		oauth:           oauth.New(),
+		token:           nil,
 	}
 }
 
 // SetUser ユーザを設定
 func (a *API) SetUser(userName string, token *oauth.Token) {
-	a.UserName = userName
+	a.CurrentUserName = userName
 	a.token = token
 }
 
@@ -40,6 +40,7 @@ func (a *API) Auth() (string, *oauth.Token, error) {
 		return "", nil, err
 	}
 
+	// 認証したユーザの情報を取得
 	user, err := a.AuthUserLookupFromToken(token)
 	if err != nil {
 		return "", nil, err
@@ -49,8 +50,6 @@ func (a *API) Auth() (string, *oauth.Token, error) {
 }
 
 func (a *API) newClient(token *oauth.Token) (*twitter.Client, error) {
-	// expiry, _ := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-05-25 11:53:32.258818 +0900 JST m=+7210.477936373")
-
 	httpClient := a.oauth.NewClient(token, a.tokenRefreshCallback)
 
 	client := &twitter.Client{
