@@ -72,7 +72,12 @@ func initConfig() {
 }
 
 func handleTokenRefresh(rawToken *oauth2.Token) error {
-	prevUserName := client.CurrentUser.UserName
+	prevUserName := ""
+
+	if client.CurrentUser != nil {
+		prevUserName = client.CurrentUser.UserName
+	}
+
 	token := &oauth.Token{
 		AccessToken:  rawToken.AccessToken,
 		RefreshToken: rawToken.RefreshToken,
@@ -87,7 +92,7 @@ func handleTokenRefresh(rawToken *oauth2.Token) error {
 	conf.Cred.Write(client.CurrentUser.UserName, token)
 
 	// UserNameが変更されていたら、前のユーザデータを削除
-	if client.CurrentUser.UserName != prevUserName {
+	if prevUserName != "" && client.CurrentUser.UserName != prevUserName {
 		conf.Cred.Delete(prevUserName)
 	}
 
