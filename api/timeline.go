@@ -6,8 +6,8 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchUserTimeline ユーザタイムラインを取得
-func (a *API) FetchUserTimeline(userID string) ([]*twitter.TweetObj, error) {
+// UserTimeline ユーザタイムラインを取得
+func (a *API) UserTimeline(userID string) ([]*twitter.TweetObj, error) {
 	client, err := a.newClient(a.token)
 	if err != nil {
 		return nil, err

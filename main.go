@@ -47,7 +47,7 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.Name, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	tweets, err := client.FetchUserTimeline(client.CurrentUser.ID)
+	tweets, err := client.UserTimeline(client.CurrentUser.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
