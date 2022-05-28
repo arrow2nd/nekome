@@ -36,7 +36,7 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	tweets, err := client.UserMentionTimeline(client.CurrentUser.ID, 25)
+	tweets, err := client.TweetRecentSearch("白菊ほたる", 25)
 	if err != nil {
 		log.Fatal(err)
 	}
