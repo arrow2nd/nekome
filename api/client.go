@@ -25,7 +25,20 @@ func New() *API {
 	config := &oauth2.Config{
 		ClientID:    "cmVzRHRHa2haNUlhemJfSFdaM1I6MTpjaQ",
 		RedirectURL: "http://localhost:3000/callback",
-		Scopes:      []string{"tweet.read", "users.read", "offline.access"},
+		Scopes: []string{
+			"tweet.read",
+			"tweet.write",
+			"users.read",
+			"like.read",
+			"like.write",
+			"bookmark.read",
+			"bookmark.write",
+			"follows.write",
+			"block.write",
+			"mute.write",
+			"list.read",
+			"offline.access",
+		},
 		Endpoint: oauth2.Endpoint{
 			TokenURL: "https://api.twitter.com/2/oauth2/token",
 			AuthURL:  "https://twitter.com/i/oauth2/authorize",
