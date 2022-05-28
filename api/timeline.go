@@ -6,19 +6,6 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-var (
-	tweetFiled = []twitter.TweetField{
-		twitter.TweetFieldCreatedAt,
-		twitter.TweetFieldAuthorID,
-		twitter.TweetFieldPublicMetrics,
-		twitter.TweetFieldEntities,
-	}
-	userFiled = []twitter.UserField{
-		twitter.UserFieldUserName,
-		twitter.UserFieldName,
-	}
-)
-
 // UserTimeline ユーザタイムラインを取得
 func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
 	client, err := a.newClient(a.CurrentUser.Token)
@@ -27,8 +14,8 @@ func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, err
 	}
 
 	opts := twitter.UserTweetTimelineOpts{
-		TweetFields: tweetFiled,
-		UserFields:  userFiled,
+		TweetFields: tweetFields,
+		UserFields:  userFields,
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionAuthorID,
 		},
@@ -51,8 +38,8 @@ func (a *API) UserMentionTimeline(userID string, results int) ([]*twitter.TweetO
 	}
 
 	opts := twitter.UserMentionTimelineOpts{
-		TweetFields: tweetFiled,
-		UserFields:  userFiled,
+		TweetFields: tweetFields,
+		UserFields:  userFields,
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionAuthorID,
 		},
