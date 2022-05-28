@@ -23,8 +23,17 @@ func (c *Cred) Get(userName string) (*api.User, error) {
 }
 
 // Write 書込む
-func (c *Cred) Write(user *api.User) {
-	c.users = append(c.users, *user)
+func (c *Cred) Write(newUser *api.User) {
+	// 同じIDをもつユーザが居れば上書きする
+	for i, user := range c.users {
+		if user.ID == newUser.ID {
+			c.users[i] = *newUser
+			return
+		}
+	}
+
+	// 新規追加
+	c.users = append(c.users, *newUser)
 }
 
 // Delete 削除
