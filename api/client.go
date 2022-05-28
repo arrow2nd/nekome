@@ -38,8 +38,8 @@ func New() *API {
 	}
 }
 
-// Init 初期化
-func (a *API) Init(user *User) {
+// SetUser ユーザをセット
+func (a *API) SetUser(user *User) {
 	a.CurrentUser = user
 }
 

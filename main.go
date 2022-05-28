@@ -68,9 +68,9 @@ func login() error {
 		return err
 	}
 
-	// クライアントにユーザをセット
+	// クライアントを初期化
+	client.SetUser(user)
 	client.SetTokenRefreshCallback(handleTokenRefresh)
-	client.Init(user)
 
 	return nil
 }
