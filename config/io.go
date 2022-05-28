@@ -30,7 +30,7 @@ func (c *Config) LoadAll() (bool, error) {
 		return false, err
 	}
 
-	if err := c.load(credFileName, &c.Cred.tokens); err != nil {
+	if err := c.load(credFileName, &c.Cred.users); err != nil {
 		return false, err
 	}
 

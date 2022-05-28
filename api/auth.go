@@ -8,19 +8,25 @@ import (
 )
 
 // Auth アプリケーション認証を行う
-func (a *API) Auth() (string, *oauth.Token, error) {
+func (a *API) Auth() (*User, error) {
 	token, err := a.oauth.Auth()
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 
 	// 認証したユーザの情報を取得
-	user, err := a.authUserLookup(token)
+	authUser, err := a.authUserLookup(token)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 
-	return user.UserName, token, nil
+	user := &User{
+		UserName: authUser.UserName,
+		ID:       authUser.ID,
+		Token:    token,
+	}
+
+	return user, nil
 }
 
 // authUserLookup トークンに紐づいたユーザの情報を取得

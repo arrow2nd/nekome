@@ -3,34 +3,44 @@ package config
 import (
 	"fmt"
 
-	"github.com/arrow2nd/nekome/oauth"
+	"github.com/arrow2nd/nekome/api"
 )
 
 // Cred 認証情報
 type Cred struct {
-	tokens map[string]*oauth.Token
+	users []api.User
 }
 
-// Get ユーザ名から認証情報を取得
-func (c *Cred) Get(userName string) (*oauth.Token, error) {
-	if token, ok := c.tokens[userName]; ok {
-		return token, nil
+// Get ユーザ名からユーザ情報を取得
+func (c *Cred) Get(userName string) (*api.User, error) {
+	for _, user := range c.users {
+		if user.UserName == userName {
+			return &user, nil
+		}
 	}
 
 	return nil, fmt.Errorf("user \"%s\" does not exist", userName)
 }
 
-// Write 認証情報を書込む
-func (c *Cred) Write(userName string, token *oauth.Token) {
-	c.tokens[userName] = token
+// Write 書込む
+func (c *Cred) Write(user *api.User) {
+	c.users = append(c.users, *user)
 }
 
-// Delete 認証情報を削除
+// Delete 削除
 func (c *Cred) Delete(userName string) {
-	delete(c.tokens, userName)
+	var tmp []api.User
+
+	for _, user := range c.users {
+		if user.UserName != userName {
+			tmp = append(tmp, user)
+		}
+	}
+
+	c.users = tmp
 }
 
 // SaveCred 認証情報を保存
 func (c *Config) SaveCred() error {
-	return c.save(credFileName, c.Cred.tokens)
+	return c.save(credFileName, c.Cred.users)
 }

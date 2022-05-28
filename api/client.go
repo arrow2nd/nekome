@@ -6,11 +6,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// User ユーザ情報
+type User struct {
+	UserName string
+	ID       string
+	Token    *oauth.Token
+}
+
 // API TwitterAPI
 type API struct {
-	CurrentUser          *twitter.UserObj
+	CurrentUser          *User
 	oauth                *oauth.OAuth
-	token                *oauth.Token
 	tokenRefreshCallback oauth.TokenRefreshCallback
 }
 
@@ -29,21 +35,17 @@ func New() *API {
 	return &API{
 		CurrentUser: nil,
 		oauth:       oauth.New(config),
-		token:       nil,
 	}
 }
 
-// SetUser ユーザをセット
-func (a *API) SetUser(token *oauth.Token) error {
-	user, err := a.authUserLookup(token)
-	if err != nil {
-		return err
-	}
-
-	a.token = token
+// Init 初期化
+func (a *API) Init(user *User) {
 	a.CurrentUser = user
+}
 
-	return nil
+// SetToken トークンをセット
+func (a *API) SetToken(token *oauth.Token) {
+	a.CurrentUser.Token = token
 }
 
 // SetTokenRefreshCallback トークンリフレッシュ時のコールバックをセット

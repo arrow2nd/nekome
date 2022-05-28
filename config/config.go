@@ -2,8 +2,6 @@ package config
 
 import (
 	"log"
-
-	"github.com/arrow2nd/nekome/oauth"
 )
 
 // Config 設定
@@ -23,9 +21,7 @@ func New() *Config {
 	}
 
 	return &Config{
-		Cred: &Cred{
-			tokens: map[string]*oauth.Token{},
-		},
+		Cred:     &Cred{},
 		Settings: &Settings{},
 		dirPath:  path,
 	}

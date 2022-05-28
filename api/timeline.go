@@ -8,7 +8,7 @@ import (
 
 // UserTimeline ユーザタイムラインを取得
 func (a *API) UserTimeline(userID string) ([]*twitter.TweetObj, error) {
-	client, err := a.newClient(a.token)
+	client, err := a.newClient(a.CurrentUser.Token)
 	if err != nil {
 		return nil, err
 	}
