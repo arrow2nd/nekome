@@ -2,16 +2,14 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
 // UserTimeline ユーザタイムラインを取得
 func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
-	client, err := a.newClient(a.CurrentUser.Token)
-	if err != nil {
-		return nil, err
-	}
+	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
@@ -24,7 +22,7 @@ func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, err
 
 	timeline, err := client.UserTweetTimeline(context.Background(), userID, opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("user timeline error: %v", err)
 	}
 
 	return timeline.Raw.Tweets, nil
@@ -32,10 +30,7 @@ func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, err
 
 // UserMentionTimeline ユーザのメンションタイムラインを取得
 func (a *API) UserMentionTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
-	client, err := a.newClient(a.CurrentUser.Token)
-	if err != nil {
-		return nil, err
-	}
+	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserMentionTimelineOpts{
 		TweetFields: tweetFields,
@@ -48,7 +43,7 @@ func (a *API) UserMentionTimeline(userID string, results int) ([]*twitter.TweetO
 
 	timeline, err := client.UserMentionTimeline(context.Background(), userID, opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("mention timeline error: %v", err)
 	}
 
 	return timeline.Raw.Tweets, nil

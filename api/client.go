@@ -66,7 +66,7 @@ func (a *API) SetTokenRefreshCallback(callback oauth.TokenRefreshCallback) {
 	a.tokenRefreshCallback = callback
 }
 
-func (a *API) newClient(token *oauth.Token) (*twitter.Client, error) {
+func (a *API) newClient(token *oauth.Token) *twitter.Client {
 	httpClient := a.oauth.NewClient(token, a.tokenRefreshCallback)
 
 	client := &twitter.Client{
@@ -75,5 +75,5 @@ func (a *API) newClient(token *oauth.Token) (*twitter.Client, error) {
 		Host:       "https://api.twitter.com",
 	}
 
-	return client, nil
+	return client
 }

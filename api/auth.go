@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/arrow2nd/nekome/oauth"
 	"github.com/g8rswimmer/go-twitter/v2"
@@ -31,15 +32,12 @@ func (a *API) Auth() (*User, error) {
 
 // authUserLookup トークンに紐づいたユーザの情報を取得
 func (a *API) authUserLookup(token *oauth.Token) (*twitter.UserObj, error) {
-	client, err := a.newClient(token)
-	if err != nil {
-		return nil, err
-	}
+	client := a.newClient(token)
 
 	opts := twitter.UserLookupOpts{}
 	userResponse, err := client.AuthUserLookup(context.Background(), opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("auth user lookup error: %v", err)
 	}
 
 	return userResponse.Raw.Users[0], nil
