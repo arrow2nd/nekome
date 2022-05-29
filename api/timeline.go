@@ -20,12 +20,12 @@ func (a *API) FetchUserTimeline(userID string, results int) ([]*twitter.TweetObj
 		MaxResults: results,
 	}
 
-	timeline, err := client.UserTweetTimeline(context.Background(), userID, opts)
+	result, err := client.UserTweetTimeline(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("user timeline error: %v", err)
 	}
 
-	return timeline.Raw.Tweets, nil
+	return result.Raw.Tweets, nil
 }
 
 // FetchUserMentionTimeline ユーザのメンションタイムラインを取得
@@ -41,10 +41,10 @@ func (a *API) FetchUserMentionTimeline(userID string, results int) ([]*twitter.T
 		MaxResults: results,
 	}
 
-	timeline, err := client.UserMentionTimeline(context.Background(), userID, opts)
+	result, err := client.UserMentionTimeline(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("mention timeline error: %v", err)
 	}
 
-	return timeline.Raw.Tweets, nil
+	return result.Raw.Tweets, nil
 }

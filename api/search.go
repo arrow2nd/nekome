@@ -20,10 +20,10 @@ func (a *API) SearchRecentTweets(query string, results int) ([]*twitter.TweetObj
 		MaxResults: results,
 	}
 
-	searchResults, err := client.TweetRecentSearch(context.Background(), query, opts)
+	result, err := client.TweetRecentSearch(context.Background(), query, opts)
 	if err != nil {
 		return nil, fmt.Errorf("tweet search error: %v", err)
 	}
 
-	return searchResults.Raw.Tweets, nil
+	return result.Raw.Tweets, nil
 }
