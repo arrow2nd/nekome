@@ -38,3 +38,14 @@ func (a *API) Like(tweetID string) error {
 
 	return nil
 }
+
+// UnLike いいねを解除する
+func (a *API) UnLike(tweetID string) error {
+	client := a.newClient(a.CurrentUser.Token)
+
+	if _, err := client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
+		return fmt.Errorf("unlike tweet error: %v", err)
+	}
+
+	return nil
+}
