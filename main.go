@@ -36,14 +36,14 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	err = client.UnRetweet("1530468396424318976")
+	tweets, err := client.FetchBookmarkTweets()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// for i, tweet := range tweets {
-	// 	fmt.Printf("[%d] %s : %s\n", i, tweet.AuthorID, tweet.Text)
-	// }
+	for i, tweet := range tweets {
+		fmt.Printf("[%d] %s : %s\n", i, tweet.AuthorID, tweet.Text)
+	}
 }
 
 func createNewConfig() {
