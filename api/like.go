@@ -32,7 +32,7 @@ func (a *API) UserLikesLookup(userID string, maxResults int) ([]*twitter.TweetOb
 func (a *API) Like(tweetID string) error {
 	client := a.newClient(a.CurrentUser.Token)
 
-	if _, err := client.UserLikes(context.Background(), a.CurrentUser.UserName, tweetID); err != nil {
+	if _, err := client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
 		return fmt.Errorf("like tweet error: %v", err)
 	}
 
