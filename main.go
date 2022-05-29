@@ -36,7 +36,7 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	err = client.UnLike("1530468396424318976")
+	err = client.Retweet("1530468396424318976")
 	if err != nil {
 		log.Fatal(err)
 	}
