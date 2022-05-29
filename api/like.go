@@ -39,7 +39,7 @@ func (a *API) Like(tweetID string) error {
 	return nil
 }
 
-// UnLike いいねを解除する
+// UnLike いいねを解除
 func (a *API) UnLike(tweetID string) error {
 	client := a.newClient(a.CurrentUser.Token)
 
