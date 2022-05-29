@@ -7,8 +7,8 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// TweetRecentSearch ツイートを検索
-func (a *API) TweetRecentSearch(query string, results int) ([]*twitter.TweetObj, error) {
+// SearchRecentTweets ツイートを検索
+func (a *API) SearchRecentTweets(query string, results int) ([]*twitter.TweetObj, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.TweetRecentSearchOpts{

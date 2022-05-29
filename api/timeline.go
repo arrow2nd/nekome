@@ -7,8 +7,8 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// UserTimeline ユーザタイムラインを取得
-func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
+// FetchUserTimeline ユーザタイムラインを取得
+func (a *API) FetchUserTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserTweetTimelineOpts{
@@ -28,8 +28,8 @@ func (a *API) UserTimeline(userID string, results int) ([]*twitter.TweetObj, err
 	return timeline.Raw.Tweets, nil
 }
 
-// UserMentionTimeline ユーザのメンションタイムラインを取得
-func (a *API) UserMentionTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
+// FetchUserMentionTimeline ユーザのメンションタイムラインを取得
+func (a *API) FetchUserMentionTimeline(userID string, results int) ([]*twitter.TweetObj, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserMentionTimelineOpts{

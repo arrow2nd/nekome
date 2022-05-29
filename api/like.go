@@ -7,8 +7,8 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// UserLikesLookup ユーザのいいねしたツイートを取得
-func (a *API) UserLikesLookup(userID string, maxResults int) ([]*twitter.TweetObj, error) {
+// FetchLikedTweets ユーザのいいねしたツイートを取得
+func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserLikesLookupOpts{
