@@ -20,3 +20,24 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 
 	return result.Raw.Lists, nil
 }
+
+// FetchListTweets リストのツイートを取得
+func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetObj, error) {
+	client := a.newClient(a.CurrentUser.Token)
+
+	opts := twitter.ListTweetLookupOpts{
+		TweetFields: tweetFields,
+		UserFields:  userFields,
+		Expansions: []twitter.Expansion{
+			twitter.ExpansionAuthorID,
+		},
+		MaxResults: results,
+	}
+
+	result, err := client.ListTweetLookup(context.Background(), listID, opts)
+	if err != nil {
+		return nil, fmt.Errorf("list tweet lookup error: %v", err)
+	}
+
+	return result.Raw.Tweets, nil
+}
