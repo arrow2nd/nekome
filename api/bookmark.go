@@ -28,7 +28,6 @@ func (a *API) FetchBookmarkTweets() ([]*twitter.TweetObj, error) {
 }
 
 // AddBookmark ツイートをブックマークに追加
-// FIXME: Invalid Request:One or more parameters to your request was invalid
 func (a *API) AddBookmark(tweetID string) error {
 	client := a.newClient(a.CurrentUser.Token)
 
