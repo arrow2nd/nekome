@@ -13,6 +13,8 @@ var (
 	userFields = []twitter.UserField{
 		twitter.UserFieldUserName,
 		twitter.UserFieldName,
+		twitter.UserFieldVerified,
+		twitter.UserFieldProtected,
 	}
 
 	pollFields = []twitter.PollField{
