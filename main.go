@@ -7,6 +7,7 @@ import (
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/arrow2nd/nekome/oauth"
+	"github.com/arrow2nd/nekome/ui"
 	"golang.org/x/oauth2"
 )
 
@@ -36,14 +37,12 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	err = client.AddBookmark("1530383362988318721")
-	if err != nil {
+	tui := ui.New()
+	tui.Init(client, conf)
+
+	if err := tui.App.Run(); err != nil {
 		log.Fatal(err)
 	}
-
-	// for i, tweet := range tweets {
-	// 	fmt.Printf("[%d] %s : %s\n", i, tweet.AuthorID, tweet.Text)
-	// }
 }
 
 func createNewConfig() {
