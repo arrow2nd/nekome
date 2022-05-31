@@ -13,10 +13,9 @@ func (a *API) FetchBookmarkTweets() ([]*twitter.TweetObj, error) {
 
 	opts := twitter.TweetBookmarksLookupOpts{
 		TweetFields: tweetFields,
+		PollFields:  pollFields,
 		UserFields:  userFields,
-		Expansions: []twitter.Expansion{
-			twitter.ExpansionAuthorID,
-		},
+		Expansions:  tweetExpansions,
 	}
 
 	result, err := client.TweetBookmarksLookup(context.Background(), a.CurrentUser.ID, opts)

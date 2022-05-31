@@ -13,5 +13,16 @@ var (
 	userFields = []twitter.UserField{
 		twitter.UserFieldUserName,
 		twitter.UserFieldName,
+		twitter.UserFieldProfileImageURL,
+	}
+
+	pollFields = []twitter.PollField{
+		twitter.PollFieldVotingStatus,
+		twitter.PollFieldEndDateTime,
+	}
+
+	tweetExpansions = []twitter.Expansion{
+		twitter.ExpansionAuthorID,
+		twitter.ExpansionAttachmentsPollIDs,
 	}
 )

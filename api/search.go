@@ -13,11 +13,10 @@ func (a *API) SearchRecentTweets(query string, results int) ([]*twitter.TweetObj
 
 	opts := twitter.TweetRecentSearchOpts{
 		TweetFields: tweetFields,
+		PollFields:  pollFields,
 		UserFields:  userFields,
-		Expansions: []twitter.Expansion{
-			twitter.ExpansionAuthorID,
-		},
-		MaxResults: results,
+		Expansions:  tweetExpansions,
+		MaxResults:  results,
 	}
 
 	result, err := client.TweetRecentSearch(context.Background(), query, opts)

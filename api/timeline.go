@@ -13,11 +13,10 @@ func (a *API) FetchUserTimeline(userID string, results int) ([]*twitter.TweetObj
 
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
+		PollFields:  pollFields,
 		UserFields:  userFields,
-		Expansions: []twitter.Expansion{
-			twitter.ExpansionAuthorID,
-		},
-		MaxResults: results,
+		Expansions:  tweetExpansions,
+		MaxResults:  results,
 	}
 
 	result, err := client.UserTweetTimeline(context.Background(), userID, opts)
@@ -34,11 +33,10 @@ func (a *API) FetchUserMentionTimeline(userID string, results int) ([]*twitter.T
 
 	opts := twitter.UserMentionTimelineOpts{
 		TweetFields: tweetFields,
+		PollFields:  pollFields,
 		UserFields:  userFields,
-		Expansions: []twitter.Expansion{
-			twitter.ExpansionAuthorID,
-		},
-		MaxResults: results,
+		Expansions:  tweetExpansions,
+		MaxResults:  results,
 	}
 
 	result, err := client.UserMentionTimeline(context.Background(), userID, opts)
