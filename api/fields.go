@@ -13,7 +13,6 @@ var (
 	userFields = []twitter.UserField{
 		twitter.UserFieldUserName,
 		twitter.UserFieldName,
-		twitter.UserFieldProfileImageURL,
 	}
 
 	pollFields = []twitter.PollField{
