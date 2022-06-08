@@ -9,15 +9,17 @@ import (
 
 // UI ユーザインターフェース
 type UI struct {
-	App   *tview.Application
-	pages *tview.Pages
+	App    *tview.Application
+	pages  *tview.Pages
+	tabBar *tabBar
 }
 
 // New 生成
 func New() *UI {
 	return &UI{
-		App:   tview.NewApplication(),
-		pages: tview.NewPages(),
+		App:    tview.NewApplication(),
+		pages:  tview.NewPages(),
+		tabBar: newTabBar(),
 	}
 }
 
@@ -37,8 +39,12 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 
 	u.pages.AddPage("page_1", home.frame, true, true)
 
+	u.tabBar.SetTab([]string{"Home", "Mention", "List", "Search", "User"})
+
 	// 画面レイアウト
 	layout := tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(u.tabBar.textView, 2, 1, false).
 		AddItem(u.pages, 0, 1, true)
 
 	u.App.SetRoot(layout, true)
