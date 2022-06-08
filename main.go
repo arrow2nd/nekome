@@ -22,12 +22,13 @@ func init() {
 }
 
 func main() {
+	// 設定ファイル読み込み
 	ok, err := conf.LoadAll()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// 初期設定
+	// 設定ファイルが無い場合,新規作成
 	if !ok {
 		createNewConfig()
 	}
@@ -37,6 +38,7 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
+	// UI初期化
 	tui := ui.New()
 	tui.Init(client, conf)
 
@@ -81,7 +83,7 @@ func handleTokenRefresh(rawToken *oauth2.Token) error {
 		Expiry:       rawToken.Expiry,
 	}
 
-	// トークンを更新
+	// クライアントと設定ファイルのトークンを更新
 	client.SetToken(token)
 	conf.Cred.Write(client.CurrentUser)
 
