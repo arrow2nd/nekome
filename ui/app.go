@@ -9,15 +9,17 @@ import (
 
 // UI ユーザインターフェース
 type UI struct {
-	App  *tview.Application
-	view *view
+	App        *tview.Application
+	view       *view
+	inputField *tview.InputField
 }
 
 // New 生成
 func New() *UI {
 	return &UI{
-		App:  tview.NewApplication(),
-		view: newView(),
+		App:        tview.NewApplication(),
+		view:       newView(),
+		inputField: tview.NewInputField(),
 	}
 }
 
@@ -31,17 +33,37 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
+	// ページ
 	// NOTE: テスト用
 	home := newHomeTimeline()
 	home.init()
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", home.frame, false)
 
+	u.setPagesKeyEvent()
+
+	// 入力フィールド
+	// TODO: あとで inputField ごと別ファイルに切り出す
+	u.inputField.SetFieldBackgroundColor(tcell.ColorDefault)
+
+	u.inputField.SetFocusFunc(func() {
+		u.inputField.SetText(":")
+	})
+
+	u.inputField.SetChangedFunc(func(text string) {
+		if text == "" {
+			u.App.SetFocus(u.view.pages)
+		}
+	})
+
+	u.setInputFieldKeyEvent()
+
 	// 画面レイアウト
 	layout := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(u.view.tabTextView, 2, 1, false).
-		AddItem(u.view.pages, 0, 1, true)
+		AddItem(u.view.pages, 0, 1, true).
+		AddItem(u.inputField, 1, 1, false)
 
 	u.App.SetRoot(layout, true)
 
@@ -52,13 +74,11 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 			return false
 		})
 
-	u.setCommonKeyEvent()
 }
 
-func (u *UI) setCommonKeyEvent() {
-	u.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+func (u *UI) setPagesKeyEvent() {
+	u.view.pages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
-		// タブ切り替え(左右キー)
 		case tcell.KeyLeft:
 			u.view.selectPrevTab()
 			return nil
@@ -67,14 +87,29 @@ func (u *UI) setCommonKeyEvent() {
 			return nil
 		case tcell.KeyRune:
 			switch event.Rune() {
-			// タブ切り替え(hl)
 			case 'h':
 				u.view.selectPrevTab()
 				return nil
 			case 'l':
 				u.view.selectNextTab()
 				return nil
+			case ':':
+				u.App.SetFocus(u.inputField)
+				return nil
 			}
+		}
+
+		return event
+	})
+}
+
+func (u *UI) setInputFieldKeyEvent() {
+	u.inputField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyEsc:
+			u.inputField.SetText("")
+			u.App.SetFocus(u.view.pages)
+			return nil
 		}
 
 		return event
