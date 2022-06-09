@@ -8,7 +8,7 @@ type homeTimeline struct {
 }
 
 func newHomeTimeline() *homeTimeline {
-	home := homeTimeline{
+	home := &homeTimeline{
 		frame:  nil,
 		tweets: newTweets(),
 	}
@@ -16,7 +16,7 @@ func newHomeTimeline() *homeTimeline {
 	home.frame = tview.NewFrame(home.tweets.textView).
 		SetBorders(0, 0, 0, 0, 1, 1)
 
-	return &home
+	return home
 }
 
 func (h *homeTimeline) init() {

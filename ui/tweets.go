@@ -14,21 +14,21 @@ type tweets struct {
 }
 
 func newTweets() *tweets {
-	textView := tview.NewTextView()
+	t := &tweets{
+		textView: tview.NewTextView(),
+		content:  []*twitter.TweetObj{},
+		index:    0,
+	}
 
-	textView.SetDynamicColors(true).
+	t.textView.SetDynamicColors(true).
 		SetScrollable(true).
 		SetRegions(true).
 		SetWrap(false).
 		SetHighlightedFunc(func(added, removed, remaining []string) {
-			textView.ScrollToHighlight()
+			t.textView.ScrollToHighlight()
 		})
 
-	return &tweets{
-		textView: textView,
-		content:  []*twitter.TweetObj{},
-		index:    0,
-	}
+	return t
 }
 
 func (t *tweets) draw() {
