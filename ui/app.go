@@ -9,17 +9,15 @@ import (
 
 // UI ユーザインターフェース
 type UI struct {
-	App    *tview.Application
-	pages  *tview.Pages
-	tabBar *tabBar
+	App  *tview.Application
+	view *view
 }
 
 // New 生成
 func New() *UI {
 	return &UI{
-		App:    tview.NewApplication(),
-		pages:  tview.NewPages(),
-		tabBar: newTabBar(),
+		App:  tview.NewApplication(),
+		view: newView(),
 	}
 }
 
@@ -36,16 +34,14 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// NOTE: テスト用
 	home := newHomeTimeline()
 	home.init()
-
-	u.pages.AddPage("page_1", home.frame, true, true)
-
-	u.tabBar.SetTab([]string{"Home", "Mention", "List", "Search", "User"})
+	u.view.addPage("Home", home.frame, true)
+	u.view.addPage("Mention", home.frame, false)
 
 	// 画面レイアウト
 	layout := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(u.tabBar.textView, 2, 1, false).
-		AddItem(u.pages, 0, 1, true)
+		AddItem(u.view.tabTextView, 2, 1, false).
+		AddItem(u.view.pages, 0, 1, true)
 
 	u.App.SetRoot(layout, true)
 
@@ -55,4 +51,32 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 			screen.Clear()
 			return false
 		})
+
+	u.setCommonKeyEvent()
+}
+
+func (u *UI) setCommonKeyEvent() {
+	u.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		// タブ切り替え(左右キー)
+		case tcell.KeyLeft:
+			u.view.selectPrevTab()
+			return nil
+		case tcell.KeyRight:
+			u.view.selectNextTab()
+			return nil
+		case tcell.KeyRune:
+			switch event.Rune() {
+			// タブ切り替え(hl)
+			case 'h':
+				u.view.selectPrevTab()
+				return nil
+			case 'l':
+				u.view.selectNextTab()
+				return nil
+			}
+		}
+
+		return event
+	})
 }

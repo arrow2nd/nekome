@@ -5,13 +5,17 @@ import (
 	"github.com/arrow2nd/nekome/config"
 )
 
-// Shared 共有設定
+// Shared 共有
 type Shared struct {
-	api  *api.API
-	conf *config.Config
+	api    *api.API
+	conf   *config.Config
+	status *status
 }
 
 var shared = Shared{
 	api:  nil,
 	conf: nil,
+	status: &status{
+		text: "",
+	},
 }
