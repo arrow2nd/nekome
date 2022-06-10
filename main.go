@@ -42,7 +42,7 @@ func main() {
 	tui := ui.New()
 	tui.Init(client, conf)
 
-	if err := tui.App.Run(); err != nil {
+	if err := tui.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

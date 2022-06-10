@@ -3,7 +3,8 @@ package ui
 import "github.com/gdamore/tcell/v2"
 
 func (u *UI) initCommandLine() {
-	u.commandLine.SetFieldBackgroundColor(tcell.ColorDefault)
+	u.commandLine.SetFieldBackgroundColor(tcell.ColorDefault).
+		SetPlaceholderStyle(tcell.StyleDefault)
 
 	u.commandLine.SetFocusFunc(func() {
 		u.commandLine.SetText(":")
@@ -11,7 +12,7 @@ func (u *UI) initCommandLine() {
 
 	u.commandLine.SetChangedFunc(func(text string) {
 		if text == "" {
-			u.App.SetFocus(u.view.pages)
+			u.app.SetFocus(u.view.pages)
 		}
 	})
 
@@ -23,7 +24,7 @@ func (u *UI) setCommandLineKeyEvent() {
 		switch event.Key() {
 		case tcell.KeyEsc:
 			u.commandLine.SetText("")
-			u.App.SetFocus(u.view.pages)
+			u.app.SetFocus(u.view.pages)
 			return nil
 		}
 

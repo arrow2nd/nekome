@@ -9,16 +9,18 @@ import (
 
 // UI ユーザインターフェース
 type UI struct {
-	App         *tview.Application
+	app         *tview.Application
 	view        *view
+	statusBar   *statusBar
 	commandLine *tview.InputField
 }
 
 // New 生成
 func New() *UI {
 	return &UI{
-		App:         tview.NewApplication(),
+		app:         tview.NewApplication(),
 		view:        newView(),
+		statusBar:   newStatusBar(),
 		commandLine: tview.NewInputField(),
 	}
 }
@@ -40,7 +42,10 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", home.frame, false)
 
-	u.setPagesKeyEvent()
+	u.setPagesKeyEvents()
+
+	// ステータスバー
+	u.statusBar.draw()
 
 	// 入力フィールド
 	u.initCommandLine()
@@ -50,20 +55,35 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 		SetDirection(tview.FlexRow).
 		AddItem(u.view.tabTextView, 2, 1, false).
 		AddItem(u.view.pages, 0, 1, true).
-		AddItem(shared.status.textView, 1, 1, false).
+		AddItem(u.statusBar.textView, 1, 1, false).
 		AddItem(u.commandLine, 1, 1, false)
 
-	u.App.SetRoot(layout, true)
+	u.app.SetRoot(layout, true)
 
 	// マウス操作有効化
-	u.App.EnableMouse(true).
+	u.app.EnableMouse(true).
 		SetBeforeDrawFunc(func(screen tcell.Screen) bool {
 			screen.Clear()
 			return false
 		})
 }
 
-func (u *UI) setPagesKeyEvent() {
+// Run 実行
+func (u *UI) Run() error {
+	go u.eventReciever()
+	return u.app.Run()
+}
+
+func (u *UI) eventReciever() {
+	for {
+		select {
+		case status := <-shared.stateCh:
+			u.commandLine.SetPlaceholder(status)
+		}
+	}
+}
+
+func (u *UI) setPagesKeyEvents() {
 	u.view.pages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Key() {
 		case tcell.KeyLeft:
@@ -81,7 +101,7 @@ func (u *UI) setPagesKeyEvent() {
 				u.view.selectNextTab()
 				return nil
 			case ':':
-				u.App.SetFocus(u.commandLine)
+				u.app.SetFocus(u.commandLine)
 				return nil
 			}
 		}

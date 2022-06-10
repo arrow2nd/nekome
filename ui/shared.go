@@ -7,13 +7,13 @@ import (
 
 // Shared 共有
 type Shared struct {
-	api    *api.API
-	conf   *config.Config
-	status *status
+	api     *api.API
+	conf    *config.Config
+	stateCh chan string
 }
 
 var shared = Shared{
-	api:    nil,
-	conf:   nil,
-	status: newStatus(),
+	api:     nil,
+	conf:    nil,
+	stateCh: make(chan string),
 }
