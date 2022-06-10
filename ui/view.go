@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -31,6 +32,14 @@ func newView() *view {
 		})
 
 	return v
+}
+
+func (v *view) drawTab() {
+	v.tabTextView.Clear()
+
+	for i, name := range v.tabs {
+		fmt.Fprintf(v.tabTextView, `["%s"] %s `, v.createPageId(i), name)
+	}
 }
 
 func (v *view) createPageId(id int) string {
@@ -87,10 +96,29 @@ func (v *view) selectNextTab() {
 	v.tabTextView.Highlight(v.createPageId(index))
 }
 
-func (v *view) drawTab() {
-	v.tabTextView.Clear()
+func (v *view) setKeyEvents(u *UI) {
+	v.pages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		switch event.Key() {
+		case tcell.KeyLeft:
+			v.selectPrevTab()
+			return nil
+		case tcell.KeyRight:
+			v.selectNextTab()
+			return nil
+		case tcell.KeyRune:
+			switch event.Rune() {
+			case 'h':
+				v.selectPrevTab()
+				return nil
+			case 'l':
+				v.selectNextTab()
+				return nil
+			case ':':
+				u.app.SetFocus(u.commandLine)
+				return nil
+			}
+		}
 
-	for i, name := range v.tabs {
-		fmt.Fprintf(v.tabTextView, `["%s"] %s `, v.createPageId(i), name)
-	}
+		return event
+	})
 }

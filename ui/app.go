@@ -42,7 +42,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", home.frame, false)
 
-	u.setPagesKeyEvents()
+	u.view.setKeyEvents(u)
 
 	// ステータスバー
 	u.statusBar.draw()
@@ -81,31 +81,4 @@ func (u *UI) eventReciever() {
 			u.commandLine.SetPlaceholder(status)
 		}
 	}
-}
-
-func (u *UI) setPagesKeyEvents() {
-	u.view.pages.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Key() {
-		case tcell.KeyLeft:
-			u.view.selectPrevTab()
-			return nil
-		case tcell.KeyRight:
-			u.view.selectNextTab()
-			return nil
-		case tcell.KeyRune:
-			switch event.Rune() {
-			case 'h':
-				u.view.selectPrevTab()
-				return nil
-			case 'l':
-				u.view.selectNextTab()
-				return nil
-			case ':':
-				u.app.SetFocus(u.commandLine)
-				return nil
-			}
-		}
-
-		return event
-	})
 }
