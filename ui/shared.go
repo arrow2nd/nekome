@@ -5,6 +5,12 @@ import (
 	"github.com/arrow2nd/nekome/config"
 )
 
+var shared = Shared{
+	api:     nil,
+	conf:    nil,
+	stateCh: make(chan string),
+}
+
 // Shared 共有
 type Shared struct {
 	api     *api.API
@@ -12,8 +18,8 @@ type Shared struct {
 	stateCh chan string
 }
 
-var shared = Shared{
-	api:     nil,
-	conf:    nil,
-	stateCh: make(chan string),
+func (s *Shared) setStatus(state string) {
+	go func() {
+		shared.stateCh <- state
+	}()
 }

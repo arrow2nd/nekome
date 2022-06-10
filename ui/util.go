@@ -23,9 +23,3 @@ func getHighlightId(ids []string) int {
 
 	return id
 }
-
-func setStatus(state string) {
-	go func() {
-		shared.stateCh <- state
-	}()
-}

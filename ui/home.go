@@ -32,10 +32,7 @@ func (h *homeTimeline) setHomeTimelineKeyEvents() {
 	h.frame.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
 		case 'R':
-			setStatus("Reload!")
-			return nil
-		case 'Q':
-			setStatus("Quit!")
+			shared.setStatus("Reload!")
 			return nil
 		}
 
