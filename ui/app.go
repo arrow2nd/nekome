@@ -42,7 +42,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", home.frame, false)
 
-	u.view.setKeyEvents(u)
+	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 
 	// ステータスバー
 	u.statusBar.draw()
@@ -51,6 +51,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.initCommandLine()
 
 	// 画面レイアウト
+
 	layout := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(u.view.tabTextView, 2, 1, false).
@@ -81,4 +82,29 @@ func (u *UI) eventReciever() {
 			u.commandLine.SetPlaceholder(status)
 		}
 	}
+}
+
+func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+	switch event.Key() {
+	case tcell.KeyLeft:
+		u.view.selectPrevTab()
+		return nil
+	case tcell.KeyRight:
+		u.view.selectNextTab()
+		return nil
+	case tcell.KeyRune:
+		switch event.Rune() {
+		case 'h':
+			u.view.selectPrevTab()
+			return nil
+		case 'l':
+			u.view.selectNextTab()
+			return nil
+		case ':':
+			u.app.SetFocus(u.commandLine)
+			return nil
+		}
+	}
+
+	return event
 }
