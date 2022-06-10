@@ -1,11 +1,32 @@
 package ui
 
-import "sync"
+import (
+	"fmt"
+	"sync"
 
-// status ステータスメッセージ
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
+)
+
 type status struct {
-	text string
-	mu   sync.Mutex
+	textView *tview.TextView
+	text     string
+	mu       sync.Mutex
+}
+
+func newStatus() *status {
+	s := &status{
+		textView: tview.NewTextView(),
+		text:     "",
+	}
+
+	s.textView.SetDynamicColors(true).
+		SetRegions(true).
+		SetWrap(false).
+		SetTextAlign(tview.AlignLeft).
+		SetBackgroundColor(tcell.ColorDarkCyan)
+
+	return s
 }
 
 func (s *status) set(t string) {
@@ -13,12 +34,15 @@ func (s *status) set(t string) {
 	defer s.mu.Unlock()
 
 	s.text = t
-}
 
-func (s *status) get() string {
-	return s.text
+	s.draw()
 }
 
 func (s *status) clear() {
 	s.set("")
+}
+
+func (s *status) draw() {
+	s.textView.Clear()
+	fmt.Fprintf(s.textView, "@%s %s", shared.api.CurrentUser.UserName, s.text)
 }

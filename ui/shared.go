@@ -13,9 +13,7 @@ type Shared struct {
 }
 
 var shared = Shared{
-	api:  nil,
-	conf: nil,
-	status: &status{
-		text: "",
-	},
+	api:    nil,
+	conf:   nil,
+	status: newStatus(),
 }

@@ -50,6 +50,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 		SetDirection(tview.FlexRow).
 		AddItem(u.view.tabTextView, 2, 1, false).
 		AddItem(u.view.pages, 0, 1, true).
+		AddItem(shared.status.textView, 1, 1, false).
 		AddItem(u.commandLine, 1, 1, false)
 
 	u.App.SetRoot(layout, true)
