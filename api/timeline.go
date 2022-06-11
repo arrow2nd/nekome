@@ -8,7 +8,7 @@ import (
 )
 
 // FetchHomeTileline ホームタイムラインを取得
-func (a *API) FetchHomeTileline(userID string, results int) ([]*twitter.TweetObj, error) {
+func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetObj, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
@@ -17,6 +17,7 @@ func (a *API) FetchHomeTileline(userID string, results int) ([]*twitter.TweetObj
 		UserFields:  userFields,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
+		SinceID:     sinceID,
 	}
 
 	result, err := client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)

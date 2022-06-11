@@ -37,7 +37,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 
 	// ページ
 	home := newHomeTimeline()
-	home.init()
+	home.load()
 
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", home.frame, false)
@@ -51,7 +51,6 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.initCommandLine()
 
 	// 画面レイアウト
-
 	layout := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(u.view.tabTextView, 2, 1, false).
@@ -60,13 +59,6 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 		AddItem(u.commandLine, 1, 1, false)
 
 	u.app.SetRoot(layout, true)
-
-	// マウス操作有効化
-	u.app.EnableMouse(true).
-		SetBeforeDrawFunc(func(screen tcell.Screen) bool {
-			screen.Clear()
-			return false
-		})
 }
 
 // Run 実行

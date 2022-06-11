@@ -24,7 +24,17 @@ func newHomeTimeline() *homeTimeline {
 	return home
 }
 
-func (h *homeTimeline) init() {
+func (h *homeTimeline) load() {
+	shared.setStatus("Loading...")
+
+	sinceID := h.tweets.getSinceID()
+	tweets, err := shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
+	if err != nil {
+		shared.setStatus(err.Error())
+		return
+	}
+
+	h.tweets.register(tweets)
 	h.tweets.draw()
 }
 
@@ -32,7 +42,7 @@ func (h *homeTimeline) setHomeTimelineKeyEvents() {
 	h.frame.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
 		case 'R':
-			shared.setStatus("Reload!")
+			h.load()
 			return nil
 		}
 
