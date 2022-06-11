@@ -8,6 +8,8 @@ var (
 		twitter.TweetFieldAuthorID,
 		twitter.TweetFieldPublicMetrics,
 		twitter.TweetFieldEntities,
+		twitter.TweetFieldSource,
+		twitter.TweetFieldReferencedTweets,
 	}
 
 	userFields = []twitter.UserField{
@@ -25,5 +27,7 @@ var (
 	tweetExpansions = []twitter.Expansion{
 		twitter.ExpansionAuthorID,
 		twitter.ExpansionAttachmentsPollIDs,
+		twitter.ExpansionReferencedTweetsID,
+		twitter.ExpansionReferencedTweetsIDAuthorID,
 	}
 )

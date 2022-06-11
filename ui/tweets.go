@@ -10,7 +10,7 @@ import (
 
 type tweets struct {
 	textView *tview.TextView
-	contents []*twitter.TweetObj
+	contents []*twitter.TweetDictionary
 	index    int
 	mu       sync.Mutex
 }
@@ -18,7 +18,7 @@ type tweets struct {
 func newTweets() *tweets {
 	t := &tweets{
 		textView: tview.NewTextView(),
-		contents: []*twitter.TweetObj{},
+		contents: []*twitter.TweetDictionary{},
 		index:    0,
 	}
 
@@ -38,10 +38,10 @@ func (t *tweets) getSinceID() string {
 		return ""
 	}
 
-	return t.contents[0].ID
+	return t.contents[0].Tweet.ID
 }
 
-func (t *tweets) register(tweets []*twitter.TweetObj) {
+func (t *tweets) register(tweets []*twitter.TweetDictionary) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -55,7 +55,19 @@ func (t *tweets) register(tweets []*twitter.TweetObj) {
 func (t *tweets) draw() {
 	t.textView.Clear()
 
-	for _, tweet := range t.contents {
-		fmt.Fprintf(t.textView, "%s\n\n", tweet.Text)
+	for _, content := range t.contents {
+		if len(content.ReferencedTweets) != 0 {
+			fmt.Fprintf(t.textView, "type = %s\n", content.ReferencedTweets[0].Reference.Type)
+		}
+
+		fmt.Fprintf(t.textView, "[white::b]%s [gray::i]@%s\n", content.Author.Name, content.Author.UserName)
+		fmt.Fprintf(t.textView, "[-:-:-]%s\n", content.Tweet.Text)
+
+		likes := content.Tweet.PublicMetrics.Likes
+		rts := content.Tweet.PublicMetrics.Retweets
+		via := content.Tweet.Source
+		fmt.Fprintf(t.textView, "[pink]%dLikes [green]%dRTs [-]- %s - via.%s\n", likes, rts, convertDateString(content.Tweet.CreatedAt), via)
+
+		fmt.Fprintln(t.textView, "")
 	}
 }
