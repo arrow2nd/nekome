@@ -22,7 +22,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 }
 
 // FetchListTweets リストのツイートを取得
-func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetObj, error) {
+func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.ListTweetLookupOpts{
@@ -34,10 +34,10 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetObj, 
 		MaxResults: results,
 	}
 
-	result, err := client.ListTweetLookup(context.Background(), listID, opts)
+	res, err := client.ListTweetLookup(context.Background(), listID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("list tweet lookup error: %v", err)
 	}
 
-	return result.Raw.Tweets, nil
+	return createTweetDictionarySlice(res.Raw), nil
 }

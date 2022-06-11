@@ -8,7 +8,7 @@ import (
 )
 
 // SearchRecentTweets ツイートを検索
-func (a *API) SearchRecentTweets(query string, results int) ([]*twitter.TweetObj, error) {
+func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.TweetRecentSearchOpts{
@@ -17,12 +17,13 @@ func (a *API) SearchRecentTweets(query string, results int) ([]*twitter.TweetObj
 		UserFields:  userFields,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
+		SinceID:     sinceID,
 	}
 
-	result, err := client.TweetRecentSearch(context.Background(), query, opts)
+	res, err := client.TweetRecentSearch(context.Background(), query, opts)
 	if err != nil {
 		return nil, fmt.Errorf("tweet search error: %v", err)
 	}
 
-	return result.Raw.Tweets, nil
+	return createTweetDictionarySlice(res.Raw), nil
 }

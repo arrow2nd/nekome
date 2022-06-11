@@ -8,7 +8,7 @@ import (
 )
 
 // FetchBookmarkTweets ブックマークしたツイートを取得
-func (a *API) FetchBookmarkTweets() ([]*twitter.TweetObj, error) {
+func (a *API) FetchBookmarkTweets() ([]*twitter.TweetDictionary, error) {
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.TweetBookmarksLookupOpts{
@@ -18,12 +18,12 @@ func (a *API) FetchBookmarkTweets() ([]*twitter.TweetObj, error) {
 		Expansions:  tweetExpansions,
 	}
 
-	result, err := client.TweetBookmarksLookup(context.Background(), a.CurrentUser.ID, opts)
+	res, err := client.TweetBookmarksLookup(context.Background(), a.CurrentUser.ID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("tweet bookmarks error: %v", err)
 	}
 
-	return result.Raw.Tweets, nil
+	return createTweetDictionarySlice(res.Raw), nil
 }
 
 // AddBookmark ツイートをブックマークに追加
