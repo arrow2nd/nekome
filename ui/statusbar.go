@@ -8,24 +8,39 @@ import (
 )
 
 type statusBar struct {
-	textView *tview.TextView
+	flex      *tview.Flex
+	leftView  *tview.TextView
+	rightView *tview.TextView
 }
 
 func newStatusBar() *statusBar {
 	s := &statusBar{
-		textView: tview.NewTextView(),
+		flex:      tview.NewFlex(),
+		leftView:  tview.NewTextView(),
+		rightView: tview.NewTextView(),
 	}
 
-	s.textView.SetDynamicColors(true).
-		SetRegions(true).
-		SetWrap(false).
+	s.leftView.SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft).
-		SetBackgroundColor(tcell.ColorDarkCyan)
+		SetTextColor(tcell.ColorBlack).
+		SetBackgroundColor(tcell.ColorDarkGray)
+
+	s.rightView.SetDynamicColors(true).
+		SetTextAlign(tview.AlignRight).
+		SetTextColor(tcell.ColorBlack).
+		SetBackgroundColor(tcell.ColorDarkGray)
+
+	s.flex.SetDirection(tview.FlexColumn).
+		AddItem(s.leftView, 0, 1, false).
+		AddItem(s.rightView, 0, 1, false)
 
 	return s
 }
 
 func (s *statusBar) draw() {
-	s.textView.Clear()
-	fmt.Fprintf(s.textView, "@%s", shared.api.CurrentUser.UserName)
+	s.leftView.Clear()
+	fmt.Fprintf(s.leftView, " @%s", shared.api.CurrentUser.UserName)
+
+	s.rightView.Clear()
+	fmt.Fprintf(s.rightView, "L1 ")
 }
