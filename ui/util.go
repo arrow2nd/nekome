@@ -66,5 +66,5 @@ func getWindowWidth() int {
 		log.Fatal(err)
 	}
 
-	return w - 4
+	return w - 2
 }
