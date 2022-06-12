@@ -39,8 +39,11 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	home := newHomeTimeline()
 	home.load()
 
+	mention := newHomeTimeline()
+	mention.load()
+
 	u.view.addPage("Home", home.frame, true)
-	u.view.addPage("Mention", home.frame, false)
+	u.view.addPage("Mention", mention.frame, false)
 
 	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 
@@ -76,6 +79,24 @@ func (u *UI) eventReciever() {
 	}
 }
 
+func (u *UI) redraw() {
+	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
+	// https://github.com/rivo/tview/issues/693
+
+	pageId, _ := u.view.pages.GetFrontPage()
+	if pageId == "" {
+		shared.setStatus("No page to redraw")
+		return
+	}
+
+	// NOTE: 再描画する方法が見当たらなかったので、該当ページを非表示にして再度表示
+	// することで実質的に再描画を行う
+	u.view.pages.HidePage(pageId)
+	u.view.pages.ShowPage(pageId)
+
+	shared.setStatus("Redraw!")
+}
+
 func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	switch event.Key() {
 	case tcell.KeyLeft:
@@ -83,6 +104,9 @@ func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	case tcell.KeyRight:
 		u.view.selectNextTab()
+		return nil
+	case tcell.KeyCtrlL:
+		u.redraw()
 		return nil
 	case tcell.KeyRune:
 		switch event.Rune() {

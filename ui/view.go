@@ -62,7 +62,7 @@ func (v *view) addTab(tabName string, focus bool) string {
 
 func (v *view) addPage(tabName string, item tview.Primitive, focus bool) {
 	pageId := v.addTab(tabName, focus)
-	v.pages.AddPage(pageId, item, true, true)
+	v.pages.AddPage(pageId, item, true, focus)
 
 	v.drawTab()
 }

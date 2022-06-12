@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/g8rswimmer/go-twitter/v2"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -29,6 +30,8 @@ func newTweets() *tweets {
 		SetHighlightedFunc(func(added, removed, remaining []string) {
 			t.textView.ScrollToHighlight()
 		})
+
+	t.textView.SetBackgroundColor(tcell.ColorDefault)
 
 	return t
 }
