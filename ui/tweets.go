@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"unicode/utf8"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
@@ -72,7 +73,7 @@ func (t *tweets) draw() {
 		// }
 
 		text := t.createHeader(content.Author, i)
-		text += content.Tweet.Text + "\n"
+		text += t.createTweetText(&content.Tweet)
 		text += t.createFooter(&content.Tweet)
 
 		fmt.Fprintf(t.textView, "%s\n", text)
@@ -135,6 +136,52 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 	}
 
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
+}
+
+func (t *tweets) createTweetText(tweet *twitter.TweetObj) string {
+	text := tweet.Text
+
+	if tweet.Entities != nil && len(tweet.Entities.HashTags) != 0 {
+		text = t.highlightHashtags(text, tweet.Entities)
+	}
+
+	return text + "\n"
+}
+
+func (t *tweets) highlightHashtags(text string, entities *twitter.EntitiesObj) string {
+	result := ""
+	runes := []rune(text)
+	endPos := 0
+
+	for _, hashtag := range entities.HashTags {
+		// ハッシュタグの開始位置 ("#"を含まない)
+		beginPos := hashtag.Start + 1
+		textLength := utf8.RuneCountInString(hashtag.Tag) + 1
+
+		// NOTE: APIから帰ってくる開始位置が間違っている(値が大きすぎる)場合があるので
+		//       ハッシュタグが見つかるまで開始位置を前方にズラし、切り出した文字列がハッシュタグ名を含むか
+		//       チェックする
+		//       終了条件が i > 0 なので、beginPos は "#" を含むハッシュタグの開始位置になる
+		for ; beginPos > endPos; beginPos-- {
+			if i := strings.Index(string(runes[beginPos:beginPos+textLength]), hashtag.Tag); i > 0 {
+				break
+			}
+		}
+
+		// 前方の文とハイライトされたハッシュタグを結合
+		hashtagText := fmt.Sprintf("#%s", hashtag.Tag)
+		result += fmt.Sprintf("%s[blue]%s[-:-:-]", string(runes[endPos:beginPos]), hashtagText)
+
+		// ハッシュタグの終了位置
+		endPos = beginPos + utf8.RuneCountInString(hashtagText)
+	}
+
+	// 残りの文を結合
+	if len(runes) > endPos {
+		result += string(runes[endPos:])
+	}
+
+	return result
 }
 
 func (t *tweets) scrollToTweet(i int) {
