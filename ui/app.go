@@ -92,6 +92,7 @@ func (u *UI) redraw() {
 	// NOTE: 再描画する方法が見当たらなかったので、該当ページを非表示にして再度表示
 	// することで実質的に再描画を行う
 	u.view.pages.HidePage(pageId)
+	u.app.ForceDraw()
 	u.view.pages.ShowPage(pageId)
 
 	shared.setStatus("Redraw!")
