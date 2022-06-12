@@ -25,6 +25,8 @@ func newHomeTimeline() *homeTimeline {
 }
 
 func (h *homeTimeline) load() {
+	defer shared.drawApplication()
+
 	shared.setStatus("Loading...")
 
 	sinceID := h.tweets.getSinceID()
@@ -44,7 +46,7 @@ func (h *homeTimeline) setHomeTimelineKeyEvents() {
 		case tcell.KeyRune:
 			switch event.Rune() {
 			case 'R':
-				h.load()
+				go h.load()
 				return nil
 			}
 		}

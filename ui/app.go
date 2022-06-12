@@ -37,10 +37,10 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 
 	// ページ
 	home := newHomeTimeline()
-	home.load()
-
 	mention := newHomeTimeline()
-	mention.load()
+
+	go home.load()
+	// go mention.load()
 
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", mention.frame, false)
@@ -75,6 +75,8 @@ func (u *UI) eventReciever() {
 		select {
 		case status := <-shared.stateCh:
 			u.commandLine.SetPlaceholder(status)
+		case <-shared.appDrawCh:
+			u.app.Draw()
 		}
 	}
 }
