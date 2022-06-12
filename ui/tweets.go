@@ -34,6 +34,7 @@ func newTweets() *tweets {
 		})
 
 	t.textView.SetBackgroundColor(tcell.ColorDefault)
+	t.textView.SetInputCapture(t.handleKeyEvents)
 
 	return t
 }
@@ -72,6 +73,8 @@ func (t *tweets) draw() {
 
 		t.printTweet(i, text)
 	}
+
+	t.textView.Highlight(t.createTweetId(0))
 }
 
 func (t *tweets) createHeader(u *twitter.UserObj) string {
@@ -104,7 +107,7 @@ func (t *tweets) createFooter(tw *twitter.TweetObj) string {
 	createAt := convertDateString(tw.CreatedAt)
 	via := fmt.Sprintf("via %s", tw.Source)
 
-	return fmt.Sprintf("%s%s - %s\n", metrics, createAt, via)
+	return fmt.Sprintf("%s%s - %s", metrics, createAt, via)
 }
 
 func createMetricsString(unit, color string, count int, reverse bool) string {
@@ -123,5 +126,62 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 
 func (t *tweets) printTweet(i int, text string) {
 	cursor := fmt.Sprintf(`[blue]["tweet_%d"] [""][default] `, i)
-	fmt.Fprintf(t.textView, "%s%s\n", cursor, strings.Replace(text, "\n", "\n"+cursor, -1))
+	fmt.Fprintf(t.textView, "%s%s", cursor, strings.Replace(text, "\n", "\n"+cursor, -1))
+	fmt.Fprint(t.textView, "\n\n")
+}
+
+func (t *tweets) cursorUp() {
+	idx := getHighlightId(t.textView.GetHighlights())
+	if idx == -1 {
+		return
+	}
+
+	if idx--; idx < 0 {
+		idx = len(t.contents) - 1
+	}
+
+	t.textView.Highlight(t.createTweetId(idx))
+}
+
+func (t *tweets) cursorDown() {
+	idx := getHighlightId(t.textView.GetHighlights())
+	if idx == -1 {
+		return
+	}
+
+	idx = (idx + 1) % len(t.contents)
+
+	t.textView.Highlight(t.createTweetId(idx))
+}
+
+func (t *tweets) createTweetId(id int) string {
+	return fmt.Sprintf("tweet_%d", id)
+}
+
+func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	switch event.Key() {
+	case tcell.KeyUp:
+		t.cursorUp()
+		return nil
+	case tcell.KeyDown:
+		t.cursorDown()
+		return nil
+	case tcell.KeyRune:
+		switch event.Rune() {
+		case 'k':
+			t.cursorUp()
+			return nil
+		case 'j':
+			t.cursorDown()
+			return nil
+		case 'g':
+			t.textView.Highlight(t.createTweetId(0))
+			return nil
+		case 'G':
+			t.textView.Highlight(t.createTweetId(len(t.contents) - 1))
+			return nil
+		}
+	}
+
+	return event
 }
