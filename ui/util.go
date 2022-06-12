@@ -2,9 +2,13 @@ package ui
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 // getHighlightId ハイライト一覧からIDを取得
@@ -51,4 +55,16 @@ func convertDateString(createAt string) string {
 	}
 
 	return t.Local().Format(format)
+}
+
+// getWindowWidth 表示領域の幅を取得
+func getWindowWidth() int {
+	fd := int(os.Stdout.Fd())
+
+	w, _, err := terminal.GetSize(fd)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return w - 4
 }
