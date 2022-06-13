@@ -54,14 +54,17 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.initCommandLine()
 
 	// 画面レイアウト
-	layout := tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(u.view.tabTextView, 2, 1, false).
-		AddItem(u.view.pages, 0, 1, true).
-		AddItem(u.statusBar.flex, 1, 1, false).
-		AddItem(u.commandLine, 1, 1, false)
+	// NOTE: 追加順がキーハンドラの優先順になるっぽい
+	layout := tview.NewGrid().
+		SetRows(1, 0, 1, 1).
+		SetBorders(false).
+		AddItem(u.view.tabTextView, 0, 0, 1, 1, 0, 0, false).
+		AddItem(u.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
+		AddItem(u.commandLine, 3, 0, 1, 1, 0, 0, false).
+		AddItem(u.view.pages, 1, 0, 1, 1, 0, 0, true)
 
 	u.app.SetRoot(layout, true)
+	u.app.SetInputCapture(u.handleGlobalKeyEvents)
 }
 
 // Run 実行
@@ -75,6 +78,7 @@ func (u *UI) eventReciever() {
 		select {
 		case status := <-shared.stateCh:
 			u.commandLine.SetPlaceholder(status)
+			u.app.Draw()
 		case <-shared.appDrawCh:
 			u.app.Draw()
 		}
@@ -98,6 +102,15 @@ func (u *UI) redraw() {
 	u.view.pages.ShowPage(pageId)
 
 	shared.setStatus("Redraw!")
+}
+
+func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	if event.Key() == tcell.KeyCtrlC {
+		u.app.Stop()
+		return nil
+	}
+
+	return event
 }
 
 func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
