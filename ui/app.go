@@ -36,11 +36,8 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
 	// ページ
-	home := newHomeTimeline()
-	mention := newHomeTimeline()
-
-	go home.load()
-	// go mention.load()
+	home := newTimelinePage(HomeTL)
+	mention := newTimelinePage(MentionTL)
 
 	u.view.addPage("Home", home.frame, true)
 	u.view.addPage("Mention", mention.frame, false)

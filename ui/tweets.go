@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"unicode/utf8"
@@ -68,9 +69,18 @@ func (t *tweets) draw() {
 	t.textView.Clear()
 
 	for i, content := range t.contents {
-		// if len(content.ReferencedTweets) != 0 {
-		// 	fmt.Fprintf(t.textView, "type = %s\n", content.ReferencedTweets[0].Reference.Type)
-		// }
+		// 参照元のツイートに置換
+		if len(content.ReferencedTweets) != 0 {
+			ref := content.ReferencedTweets[0]
+
+			switch ref.Reference.Type {
+			case "retweeted":
+				fmt.Fprintf(t.textView, "[green:-:-]RT by %s [:-:i]@%s[-:-:-]\n", content.Author.Name, content.Author.UserName)
+				content = ref.TweetDictionary
+			case "quoted":
+				fmt.Fprintf(t.textView, "type = %s\n", content.ReferencedTweets[0].Reference.Type)
+			}
+		}
 
 		text := t.createHeader(content.Author, i)
 		text += t.createTweetText(&content.Tweet)
@@ -125,13 +135,24 @@ func (t *tweets) createFooter(tw *twitter.TweetObj) string {
 }
 
 func (t *tweets) createTweetText(tweet *twitter.TweetObj) string {
-	text := tweet.Text
+	text := tweet.Text + "\n"
 
-	if tweet.Entities != nil && len(tweet.Entities.HashTags) != 0 {
+	if tweet.Entities == nil {
+		return text
+	}
+
+	// ハッシュタグをハイライト
+	if len(tweet.Entities.HashTags) != 0 {
 		text = t.highlightHashtags(text, tweet.Entities)
 	}
 
-	return text + "\n"
+	// メンションをハイライト
+	if len(tweet.Entities.Mentions) != 0 {
+		rep := regexp.MustCompile(`(^|[^\w@#$%&])[@＠](\w+)`)
+		rep.ReplaceAllString(text, "$1[green]@$2[-:-:-]")
+	}
+
+	return text
 }
 
 func (t *tweets) highlightHashtags(text string, entities *twitter.EntitiesObj) string {

@@ -1,17 +1,27 @@
 package ui
 
 import (
+	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-type homeTimeline struct {
+type timelineType string
+
+const (
+	HomeTL    timelineType = "Home"
+	MentionTL timelineType = "Mention"
+)
+
+type timelinePage struct {
+	tlType timelineType
 	frame  *tview.Frame
 	tweets *tweets
 }
 
-func newHomeTimeline() *homeTimeline {
-	home := &homeTimeline{
+func newTimelinePage(tl timelineType) *timelinePage {
+	home := &timelinePage{
+		tlType: tl,
 		frame:  nil,
 		tweets: newTweets(),
 	}
@@ -19,38 +29,48 @@ func newHomeTimeline() *homeTimeline {
 	home.frame = tview.NewFrame(home.tweets.textView).
 		SetBorders(0, 0, 0, 0, 1, 1)
 
-	home.setHomeTimelineKeyEvents()
+	home.frame.SetInputCapture(home.handleTimelinePageKeyEvents)
 
 	return home
 }
 
-func (h *homeTimeline) load() {
+func (t *timelinePage) load() {
+	var (
+		tweets []*twitter.TweetDictionary
+		err    error
+	)
+
 	defer shared.drawApplication()
 
 	shared.setStatus("Loading...")
 
-	sinceID := h.tweets.getSinceID()
-	tweets, err := shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 100)
+	sinceID := t.tweets.getSinceID()
+
+	switch t.tlType {
+	case HomeTL:
+		tweets, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
+	case MentionTL:
+		tweets, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
+	}
+
 	if err != nil {
 		shared.setStatus(err.Error())
 		return
 	}
 
-	h.tweets.register(tweets)
-	h.tweets.draw()
+	t.tweets.register(tweets)
+	t.tweets.draw()
 }
 
-func (h *homeTimeline) setHomeTimelineKeyEvents() {
-	h.frame.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Key() {
-		case tcell.KeyRune:
-			switch event.Rune() {
-			case 'R':
-				go h.load()
-				return nil
-			}
+func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	switch event.Key() {
+	case tcell.KeyRune:
+		switch event.Rune() {
+		case 'R':
+			go t.load()
+			return nil
 		}
+	}
 
-		return event
-	})
+	return event
 }
