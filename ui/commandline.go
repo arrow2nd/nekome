@@ -14,7 +14,7 @@ func (u *UI) initCommandLine() {
 
 	u.commandLine.SetChangedFunc(func(text string) {
 		if text == "" {
-			// u.app.SetFocus(u.view.pages)
+			u.app.SetFocus(u.view.pages)
 		}
 	})
 
