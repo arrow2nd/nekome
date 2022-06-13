@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"html"
 	"regexp"
 	"strings"
 	"sync"
@@ -135,7 +136,7 @@ func (t *tweets) createFooter(tw *twitter.TweetObj) string {
 }
 
 func (t *tweets) createTweetText(tweet *twitter.TweetObj) string {
-	text := tweet.Text + "\n"
+	text := html.UnescapeString(tweet.Text) + "\n"
 
 	if tweet.Entities == nil {
 		return text
