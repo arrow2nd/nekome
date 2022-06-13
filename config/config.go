@@ -22,7 +22,7 @@ func New() *Config {
 
 	return &Config{
 		Cred:     &Cred{},
-		Settings: &Settings{},
+		Settings: defaultSettings(),
 		dirPath:  path,
 	}
 }

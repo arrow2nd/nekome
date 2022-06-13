@@ -10,6 +10,14 @@ type Settings struct {
 	TimeFormat string
 }
 
+func defaultSettings() *Settings {
+	return &Settings{
+		MainUser:   "",
+		DateFormat: "2006/01/02",
+		TimeFormat: "15:04:05",
+	}
+}
+
 func (c *Config) SaveSettings() error {
 	return c.save(setingsFileName, c.Settings)
 }
