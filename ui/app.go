@@ -4,6 +4,7 @@ import (
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
+	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
 )
 
@@ -27,6 +28,9 @@ func New() *UI {
 
 // Init 初期化
 func (u *UI) Init(a *api.API, c *config.Config) {
+	// 日本語環境等での罫線の乱れ対策
+	runewidth.DefaultCondition.EastAsianWidth = false
+
 	// 共有
 	shared.api = a
 	shared.conf = c
@@ -36,8 +40,8 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
 	// ページ
-	home := NewTimelinePage(homeTL)
-	mention := NewTimelinePage(mentionTL)
+	home := newTimelinePage(homeTL)
+	mention := newTimelinePage(mentionTL)
 
 	u.view.addPage("Home", home, true)
 	u.view.addPage("Mention", mention, false)
