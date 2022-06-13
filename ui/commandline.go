@@ -6,27 +6,27 @@ import (
 
 func (u *UI) initCommandLine() {
 	u.commandLine.SetFieldBackgroundColor(tcell.ColorDefault).
-		SetPlaceholderStyle(tcell.StyleDefault)
-
-	u.commandLine.SetFocusFunc(func() {
-		u.commandLine.SetText(":")
-	})
-
-	u.commandLine.SetChangedFunc(func(text string) {
-		if text == "" {
-			u.app.SetFocus(u.view.pages)
-		}
-	})
-
-	u.commandLine.SetInputCapture(u.handleCommandLineKeyEvents)
+		SetPlaceholderStyle(tcell.StyleDefault).
+		SetChangedFunc(func(text string) {
+			if text == "" {
+				u.app.SetFocus(u.view.pages)
+			}
+		}).
+		SetFocusFunc(func() {
+			u.commandLine.SetText(":")
+		}).
+		SetInputCapture(u.handleCommandLineKeyEvents)
 }
 
 func (u *UI) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	switch event.Key() {
-	case tcell.KeyEsc:
+	key := event.Key()
+
+	// フォーカスをページへ移す
+	if key == tcell.KeyEsc {
 		u.commandLine.SetText("")
 		u.app.SetFocus(u.view.pages)
 		return nil
+
 	}
 
 	return event

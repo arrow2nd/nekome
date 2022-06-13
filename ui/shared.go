@@ -20,13 +20,15 @@ type Shared struct {
 	appDrawCh chan bool
 }
 
+// setStatus ステータスをセット
 func (s *Shared) setStatus(state string) {
 	go func() {
 		shared.stateCh <- state
 	}()
 }
 
-func (s *Shared) drawApplication() {
+// reqestDrawApp アプリの描画処理をリクエスト
+func (s *Shared) reqestDrawApp() {
 	go func() {
 		shared.appDrawCh <- true
 	}()

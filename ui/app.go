@@ -36,8 +36,8 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
 	// ページ
-	home := newTimelinePage(HomeTL)
-	mention := newTimelinePage(MentionTL)
+	home := NewTimelinePage(homeTL)
+	mention := NewTimelinePage(mentionTL)
 
 	u.view.addPage("Home", home, true)
 	u.view.addPage("Mention", mention, false)
@@ -47,7 +47,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// ステータスバー
 	u.statusBar.draw()
 
-	// 入力フィールド
+	// コマンドライン
 	u.initCommandLine()
 
 	// 画面レイアウト
@@ -92,9 +92,10 @@ func (u *UI) redraw() {
 		return
 	}
 
-	// NOTE: 再描画する方法が見当たらなかったので、該当ページを非表示にして再度表示
-	// することで実質的に再描画を行う
+	// 一度非表示にして画面をクリア
 	u.view.pages.HidePage(pageId)
+
+	// 強制的に再描画して画面を再表示
 	u.app.ForceDraw()
 	u.view.pages.ShowPage(pageId)
 
@@ -102,6 +103,7 @@ func (u *UI) redraw() {
 }
 
 func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	// アプリを終了
 	if event.Key() == tcell.KeyCtrlC {
 		u.app.Stop()
 		return nil
@@ -111,28 +113,31 @@ func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 }
 
 func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
-	switch event.Key() {
-	case tcell.KeyLeft:
+	key := event.Key()
+	keyRune := event.Rune()
+
+	// 左のタブを選択
+	if key == tcell.KeyLeft || keyRune == 'h' {
 		u.view.selectPrevTab()
 		return nil
-	case tcell.KeyRight:
+	}
+
+	// 右のタブを選択
+	if key == tcell.KeyRight || keyRune == 'l' {
 		u.view.selectNextTab()
 		return nil
-	case tcell.KeyCtrlL:
+	}
+
+	// 再描画
+	if key == tcell.KeyCtrlL {
 		u.redraw()
 		return nil
-	case tcell.KeyRune:
-		switch event.Rune() {
-		case 'h':
-			u.view.selectPrevTab()
-			return nil
-		case 'l':
-			u.view.selectNextTab()
-			return nil
-		case ':':
-			u.app.SetFocus(u.commandLine)
-			return nil
-		}
+	}
+
+	// コマンドラインへフォーカスを移動
+	if keyRune == ':' {
+		u.app.SetFocus(u.commandLine)
+		return nil
 	}
 
 	return event

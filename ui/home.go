@@ -6,11 +6,12 @@ import (
 	"github.com/rivo/tview"
 )
 
+// timelineType タイムラインの種類
 type timelineType string
 
 const (
-	HomeTL    timelineType = "Home"
-	MentionTL timelineType = "Mention"
+	homeTL    timelineType = "Home"
+	mentionTL timelineType = "Mention"
 )
 
 type timelinePage struct {
@@ -20,40 +21,42 @@ type timelinePage struct {
 }
 
 func newTimelinePage(tl timelineType) *timelinePage {
-	home := &timelinePage{
+	page := &timelinePage{
 		tlType: tl,
 		frame:  nil,
 		tweets: newTweets(),
 	}
 
-	home.frame = tview.NewFrame(home.tweets.textView).
+	page.frame = tview.NewFrame(page.tweets.textView).
 		SetBorders(1, 1, 0, 0, 1, 1)
 
-	home.frame.SetInputCapture(home.handleTimelinePageKeyEvents)
+	page.frame.SetInputCapture(page.handleTimelinePageKeyEvents)
 
-	return home
+	return page
 }
 
+// GetPrimivite プリミティブを取得
 func (t *timelinePage) GetPrimivite() tview.Primitive {
 	return t.frame
 }
 
+// Load タイムライン読み込み
 func (t *timelinePage) Load() {
 	var (
 		tweets []*twitter.TweetDictionary
 		err    error
 	)
 
-	defer shared.drawApplication()
+	defer shared.reqestDrawApp()
 
 	shared.setStatus("Loading...")
 
 	sinceID := t.tweets.getSinceID()
 
 	switch t.tlType {
-	case HomeTL:
+	case homeTL:
 		tweets, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
-	case MentionTL:
+	case mentionTL:
 		tweets, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
 	}
 
@@ -67,13 +70,12 @@ func (t *timelinePage) Load() {
 }
 
 func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	switch event.Key() {
-	case tcell.KeyRune:
-		switch event.Rune() {
-		case 'R':
-			go t.Load()
-			return nil
-		}
+	keyRune := event.Rune()
+
+	// リロード
+	if keyRune == 'R' {
+		go t.Load()
+		return nil
 	}
 
 	return event

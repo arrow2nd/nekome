@@ -33,10 +33,9 @@ func newTweets() *tweets {
 		SetRegions(true).
 		SetHighlightedFunc(func(added, removed, remaining []string) {
 			t.textView.ScrollToHighlight()
-		})
-
-	t.textView.SetBackgroundColor(tcell.ColorDefault)
-	t.textView.SetInputCapture(t.handleKeyEvents)
+		}).
+		SetInputCapture(t.handleKeyEvents).
+		SetBackgroundColor(tcell.ColorDefault)
 
 	return t
 }
@@ -70,7 +69,7 @@ func (t *tweets) draw() {
 	t.textView.Clear()
 
 	for i, content := range t.contents {
-		// 参照元のツイートに置換
+		// 参照元のツイートを確認
 		if len(content.ReferencedTweets) != 0 {
 			ref := content.ReferencedTweets[0]
 
@@ -83,12 +82,14 @@ func (t *tweets) draw() {
 			}
 		}
 
+		// 表示部分を作成
 		text := t.createHeader(content.Author, i)
 		text += t.createTweetText(&content.Tweet)
 		text += t.createFooter(&content.Tweet)
 
 		fmt.Fprintf(t.textView, "%s\n", text)
 
+		// 末尾のツイートでないならセパレータを挿入
 		if i < t.count-1 {
 			fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("─", width-1))
 		}
