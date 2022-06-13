@@ -7,6 +7,11 @@ import (
 	"github.com/rivo/tview"
 )
 
+type page interface {
+	GetPrimivite() tview.Primitive
+	Load()
+}
+
 // view ページ・タブ管理
 type view struct {
 	pages       *tview.Pages
@@ -60,9 +65,11 @@ func (v *view) addTab(tabName string, focus bool) string {
 	return newPageId
 }
 
-func (v *view) addPage(tabName string, item tview.Primitive, focus bool) {
+func (v *view) addPage(tabName string, pg page, focus bool) {
+	go pg.Load()
+
 	pageId := v.addTab(tabName, focus)
-	v.pages.AddPage(pageId, item, true, focus)
+	v.pages.AddPage(pageId, pg.GetPrimivite(), true, focus)
 
 	v.drawTab()
 }

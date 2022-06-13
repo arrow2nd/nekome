@@ -39,8 +39,8 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	home := newTimelinePage(HomeTL)
 	mention := newTimelinePage(MentionTL)
 
-	u.view.addPage("Home", home.frame, true)
-	u.view.addPage("Mention", mention.frame, false)
+	u.view.addPage("Home", home, true)
+	u.view.addPage("Mention", mention, false)
 
 	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 

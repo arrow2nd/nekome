@@ -34,7 +34,11 @@ func newTimelinePage(tl timelineType) *timelinePage {
 	return home
 }
 
-func (t *timelinePage) load() {
+func (t *timelinePage) GetPrimivite() tview.Primitive {
+	return t.frame
+}
+
+func (t *timelinePage) Load() {
 	var (
 		tweets []*twitter.TweetDictionary
 		err    error
@@ -67,7 +71,7 @@ func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell
 	case tcell.KeyRune:
 		switch event.Rune() {
 		case 'R':
-			go t.load()
+			go t.Load()
 			return nil
 		}
 	}
