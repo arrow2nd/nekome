@@ -102,7 +102,7 @@ func (t *tweets) createHeader(u *twitter.UserObj, i int) string {
 	header := fmt.Sprintf(`[lightgray::b]["%s"]%s[""] [gray::i]@%s[-:-:-]`, id, u.Name, u.UserName)
 
 	if u.Verified {
-		header += "[cyan] [-:-:-]"
+		header += "[blue] [-:-:-]"
 	}
 
 	if u.Protected {
