@@ -27,7 +27,7 @@ func newTimelinePage(tl timelineType) *timelinePage {
 	}
 
 	home.frame = tview.NewFrame(home.tweets.textView).
-		SetBorders(0, 0, 0, 0, 1, 1)
+		SetBorders(1, 1, 0, 0, 1, 1)
 
 	home.frame.SetInputCapture(home.handleTimelinePageKeyEvents)
 
