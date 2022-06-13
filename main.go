@@ -30,7 +30,7 @@ func main() {
 
 	// 設定ファイルが無い場合,新規作成
 	if !ok {
-		createNewConfig()
+		createNewCred()
 	}
 
 	login()
@@ -47,7 +47,7 @@ func main() {
 	}
 }
 
-func createNewConfig() {
+func createNewCred() {
 	authUser, err := client.Auth()
 	if err != nil {
 		log.Fatal(err)

@@ -124,20 +124,6 @@ func (t *tweets) createFooter(tw *twitter.TweetObj) string {
 	return info + metrics
 }
 
-func createMetricsString(unit, color string, count int, reverse bool) string {
-	if count <= 0 {
-		return ""
-	} else if count > 1 {
-		unit += "s"
-	}
-
-	if reverse {
-		return fmt.Sprintf("[%s:-:r] %d%s [-:-:-]", color, count, unit)
-	}
-
-	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
-}
-
 func (t *tweets) createTweetText(tweet *twitter.TweetObj) string {
 	text := tweet.Text
 
@@ -158,9 +144,8 @@ func (t *tweets) highlightHashtags(text string, entities *twitter.EntitiesObj) s
 		beginPos := hashtag.Start + 1
 		textLength := utf8.RuneCountInString(hashtag.Tag) + 1
 
-		// NOTE: APIから帰ってくる開始位置が間違っている(値が大きすぎる)場合があるので
-		//       ハッシュタグが見つかるまで開始位置を前方にズラし、切り出した文字列がハッシュタグ名を含むか
-		//       チェックする
+		// NOTE: 絵文字の表示幅の関係で、開始位置が実際の値より大きい場合があるので
+		//       ハッシュタグが見つかるまで開始位置を前方にズラし、切り出した文字列がタグ名を含むかチェックする
 		//       終了条件が i > 0 なので、beginPos は "#" を含むハッシュタグの開始位置になる
 		for ; beginPos > endPos; beginPos-- {
 			if i := strings.Index(string(runes[beginPos:beginPos+textLength]), hashtag.Tag); i > 0 {
