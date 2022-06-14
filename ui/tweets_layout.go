@@ -23,8 +23,13 @@ func createTweetLayout(content *twitter.TweetDictionary, index int) string {
 }
 
 func createHeader(u *twitter.UserObj, i int) string {
-	id := createTweetId(i)
-	header := fmt.Sprintf(`[lightgray::b]["%s"]%s[""] [gray::i]@%s[-:-:-]`, id, u.Name, u.UserName)
+	name := u.Name
+
+	if i >= 0 {
+		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), u.Name)
+	}
+
+	header := fmt.Sprintf(`[lightgray::b]%s [gray::i]@%s[-:-:-]`, name, u.UserName)
 
 	if u.Verified {
 		header += "[blue] [-:-:-]"
