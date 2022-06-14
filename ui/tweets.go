@@ -2,11 +2,8 @@ package ui
 
 import (
 	"fmt"
-	"html"
-	"regexp"
 	"strings"
 	"sync"
-	"unicode/utf8"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
@@ -38,10 +35,6 @@ func newTweets() *tweets {
 		SetBackgroundColor(tcell.ColorDefault)
 
 	return t
-}
-
-func (t *tweets) createTweetId(id int) string {
-	return fmt.Sprintf("tweet_%d", id)
 }
 
 func (t *tweets) getSinceID() string {
@@ -83,11 +76,8 @@ func (t *tweets) draw() {
 		}
 
 		// 表示部分を作成
-		text := t.createHeader(content.Author, i)
-		text += t.createTweetText(&content.Tweet)
-		text += t.createFooter(&content.Tweet)
-
-		fmt.Fprintf(t.textView, "%s\n", text)
+		layout := createTweetLayout(content, i)
+		fmt.Fprintf(t.textView, "%s\n", layout)
 
 		// 末尾のツイートでないならセパレータを挿入
 		if i < t.count-1 {
@@ -98,102 +88,8 @@ func (t *tweets) draw() {
 	t.scrollToTweet(0)
 }
 
-func (t *tweets) createHeader(u *twitter.UserObj, i int) string {
-	id := t.createTweetId(i)
-	header := fmt.Sprintf(`[lightgray::b]["%s"]%s[""] [gray::i]@%s[-:-:-]`, id, u.Name, u.UserName)
-
-	if u.Verified {
-		header += "[blue] [-:-:-]"
-	}
-
-	if u.Protected {
-		header += "[gray] [-:-:-]"
-	}
-
-	return header + "\n"
-}
-
-func (t *tweets) createFooter(tw *twitter.TweetObj) string {
-	metrics := ""
-
-	likes := tw.PublicMetrics.Likes
-	if likes != 0 {
-		metrics += createMetricsString("Like", "pink", likes, false)
-	}
-
-	rts := tw.PublicMetrics.Retweets
-	if rts != 0 {
-		metrics += createMetricsString("RT", "green", rts, false)
-	}
-
-	if metrics != "" {
-		metrics = "\n" + metrics
-	}
-
-	createAt := convertDateString(tw.CreatedAt)
-	info := fmt.Sprintf("[gray]%s - via %s[-:-:-]", createAt, tw.Source)
-
-	return info + metrics
-}
-
-func (t *tweets) createTweetText(tweet *twitter.TweetObj) string {
-	text := html.UnescapeString(tweet.Text) + "\n"
-
-	if tweet.Entities == nil {
-		return text
-	}
-
-	// ハッシュタグをハイライト
-	if len(tweet.Entities.HashTags) != 0 {
-		text = t.highlightHashtags(text, tweet.Entities)
-	}
-
-	// メンションをハイライト
-	if len(tweet.Entities.Mentions) != 0 {
-		rep := regexp.MustCompile(`(^|[^\w@#$%&])[@＠](\w+)`)
-		text = rep.ReplaceAllString(text, "$1[green]@$2[-:-:-]")
-	}
-
-	return text
-}
-
-func (t *tweets) highlightHashtags(text string, entities *twitter.EntitiesObj) string {
-	result := ""
-	runes := []rune(text)
-	endPos := 0
-
-	for _, hashtag := range entities.HashTags {
-		// ハッシュタグの開始位置 ("#"を含まない)
-		beginPos := hashtag.Start + 1
-		textLength := utf8.RuneCountInString(hashtag.Tag) + 1
-
-		// NOTE: 絵文字の表示幅の関係で、開始位置が実際の値より大きい場合があるので
-		//       ハッシュタグが見つかるまで開始位置を前方にズラし、切り出した文字列がタグ名を含むかチェックする
-		//       終了条件が i > 0 なので、beginPos は "#" を含むハッシュタグの開始位置になる
-		for ; beginPos > endPos; beginPos-- {
-			if i := strings.Index(string(runes[beginPos:beginPos+textLength]), hashtag.Tag); i > 0 {
-				break
-			}
-		}
-
-		// 前方の文とハイライトされたハッシュタグを結合
-		hashtagText := fmt.Sprintf("#%s", hashtag.Tag)
-		result += fmt.Sprintf("%s[blue]%s[-:-:-]", string(runes[endPos:beginPos]), hashtagText)
-
-		// ハッシュタグの終了位置
-		endPos = beginPos + utf8.RuneCountInString(hashtagText)
-	}
-
-	// 残りの文を結合
-	if len(runes) > endPos {
-		result += string(runes[endPos:])
-	}
-
-	return result
-}
-
 func (t *tweets) scrollToTweet(i int) {
-	t.textView.Highlight(t.createTweetId(i))
+	t.textView.Highlight(createTweetId(i))
 }
 
 func (t *tweets) cursorUp() {
