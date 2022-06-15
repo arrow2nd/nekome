@@ -9,6 +9,9 @@ import (
 
 // FetchBookmarkTweets ブックマークしたツイートを取得
 func (a *API) FetchBookmarkTweets() ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.TweetBookmarksLookupOpts{
@@ -28,6 +31,9 @@ func (a *API) FetchBookmarkTweets() ([]*twitter.TweetDictionary, error) {
 
 // AddBookmark ツイートをブックマークに追加
 func (a *API) AddBookmark(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.AddTweetBookmark(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
@@ -39,6 +45,9 @@ func (a *API) AddBookmark(tweetID string) error {
 
 // DeleteBookmark ツイートをブックマークから削除
 func (a *API) DeleteBookmark(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.RemoveTweetBookmark(context.Background(), a.CurrentUser.ID, tweetID); err != nil {

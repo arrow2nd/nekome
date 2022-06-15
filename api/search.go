@@ -9,6 +9,9 @@ import (
 
 // SearchRecentTweets ツイートを検索
 func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.TweetRecentSearchOpts{

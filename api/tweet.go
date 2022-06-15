@@ -9,6 +9,9 @@ import (
 
 // PostTweet ツイートを投稿
 func (a *API) PostTweet(text string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	req := twitter.CreateTweetRequest{
@@ -24,6 +27,9 @@ func (a *API) PostTweet(text string) error {
 
 // DeleteTweet ツイートを削除
 func (a *API) DeleteTweet(tweetId string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.DeleteTweet(context.Background(), tweetId); err != nil {

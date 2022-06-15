@@ -32,6 +32,9 @@ func (a *API) Auth() (*User, error) {
 
 // authUserLookup トークンに紐づいたユーザの情報を取得
 func (a *API) authUserLookup(token *oauth.Token) (*twitter.UserObj, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(token)
 
 	opts := twitter.UserLookupOpts{}

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"sync"
+
 	"github.com/arrow2nd/nekome/oauth"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"golang.org/x/oauth2"
@@ -18,6 +20,7 @@ type API struct {
 	CurrentUser          *User
 	oauth                *oauth.OAuth
 	tokenRefreshCallback oauth.TokenRefreshCallback
+	mu                   sync.Mutex
 }
 
 // New 生成
@@ -69,11 +72,9 @@ func (a *API) SetTokenRefreshCallback(callback oauth.TokenRefreshCallback) {
 func (a *API) newClient(token *oauth.Token) *twitter.Client {
 	httpClient := a.oauth.NewClient(token, a.tokenRefreshCallback)
 
-	client := &twitter.Client{
+	return &twitter.Client{
 		Authorizer: token,
 		Client:     httpClient,
 		Host:       "https://api.twitter.com",
 	}
-
-	return client
 }

@@ -9,6 +9,9 @@ import (
 
 // FetchOwnedListIDs ユーザが所有するリストの情報を取得
 func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserListLookupOpts{}
@@ -23,6 +26,9 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 
 // FetchListTweets リストのツイートを取得
 func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.ListTweetLookupOpts{

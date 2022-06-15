@@ -7,6 +7,9 @@ import (
 
 // Follow ユーザをフォロー
 func (a *API) Follow(userID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.UserFollows(context.Background(), a.CurrentUser.ID, userID); err != nil {
@@ -18,6 +21,9 @@ func (a *API) Follow(userID string) error {
 
 // UnFollow ユーザのフォローを解除
 func (a *API) UnFollow(userID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.DeleteUserFollows(context.Background(), a.CurrentUser.ID, userID); err != nil {

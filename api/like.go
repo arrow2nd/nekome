@@ -9,6 +9,9 @@ import (
 
 // FetchLikedTweets ユーザのいいねしたツイートを取得
 func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserLikesLookupOpts{
@@ -30,6 +33,9 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 
 // Like いいね
 func (a *API) Like(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
@@ -41,6 +47,9 @@ func (a *API) Like(tweetID string) error {
 
 // UnLike いいねを解除
 func (a *API) UnLike(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {

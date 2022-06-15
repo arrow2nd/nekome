@@ -7,6 +7,9 @@ import (
 
 // Retweet リツイート
 func (a *API) Retweet(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.UserRetweet(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
@@ -18,6 +21,9 @@ func (a *API) Retweet(tweetID string) error {
 
 // UnRetweet リツイートを解除
 func (a *API) UnRetweet(tweetID string) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	if _, err := client.DeleteUserRetweet(context.Background(), a.CurrentUser.ID, tweetID); err != nil {

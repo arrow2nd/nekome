@@ -9,6 +9,9 @@ import (
 
 // FetchHomeTileline ホームタイムラインを取得
 func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
@@ -30,6 +33,9 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 
 // FetchUserTimeline ユーザタイムラインを取得
 func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserTweetTimelineOpts{
@@ -51,6 +57,9 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 
 // FetchUserMentionTimeline ユーザのメンションタイムラインを取得
 func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserMentionTimelineOpts{

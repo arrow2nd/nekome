@@ -9,6 +9,9 @@ import (
 
 // FetchUser UserNameからユーザ情報を取得
 func (a *API) FetchUser(userNames []string) ([]*twitter.UserObj, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
 	client := a.newClient(a.CurrentUser.Token)
 
 	opts := twitter.UserLookupOpts{

@@ -50,28 +50,23 @@ func (v *view) createPageId(id int) string {
 	return fmt.Sprintf("page_%d", id)
 }
 
-func (v *view) addTab(tabName string, focus bool) string {
+func (v *view) addPage(name string, pg page, focus bool) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
-	v.tabs = append(v.tabs, tabName)
+	// タブを追加
+	v.tabs = append(v.tabs, name)
+	v.drawTab()
 
-	newPageId := v.createPageId(len(v.tabs) - 1)
+	// ページを追加
+	pageID := v.createPageId(len(v.tabs) - 1)
+	v.pages.AddPage(pageID, pg.GetPrimivite(), true, focus)
 
 	if focus {
-		v.tabTextView.Highlight(newPageId)
+		v.tabTextView.Highlight(pageID)
 	}
 
-	return newPageId
-}
-
-func (v *view) addPage(tabName string, pg page, focus bool) {
 	go pg.Load()
-
-	pageId := v.addTab(tabName, focus)
-	v.pages.AddPage(pageId, pg.GetPrimivite(), true, focus)
-
-	v.drawTab()
 }
 
 func (v *view) selectPrevTab() {
