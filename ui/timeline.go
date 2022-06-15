@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"fmt"
+
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -65,8 +67,10 @@ func (t *timelinePage) Load() {
 		return
 	}
 
-	t.tweets.register(tweets)
+	count := t.tweets.register(tweets)
 	t.tweets.draw()
+
+	shared.setStatus(fmt.Sprintf("[%s] %d tweets loaded", t.tlType, count))
 }
 
 func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {

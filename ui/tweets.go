@@ -44,15 +44,14 @@ func (t *tweets) getSinceID() string {
 	return t.contents[0].Tweet.ID
 }
 
-func (t *tweets) register(tweets []*twitter.TweetDictionary) {
+func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	length := len(tweets)
 	t.contents = append(tweets, t.contents...)
 	t.count = len(t.contents)
 
-	shared.setStatus(fmt.Sprintf("%d tweets loaded", length))
+	return len(tweets)
 }
 
 func (t *tweets) draw() {
