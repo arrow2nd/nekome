@@ -10,8 +10,16 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
+func createSeparator(s string, width int) string {
+	return fmt.Sprintf("[gray:-:-]%s[-:-:-]", strings.Repeat(s, width))
+}
+
 func createTweetId(id int) string {
 	return fmt.Sprintf("tweet_%d", id)
+}
+
+func createAnnotation(s string, author *twitter.UserObj) string {
+	return fmt.Sprintf("[blue:-:-]%s %s [:-:i]@%s[-:-:-]", s, author.Name, author.UserName)
 }
 
 func createTweetLayout(content *twitter.TweetDictionary, index int) string {

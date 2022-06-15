@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/g8rswimmer/go-twitter/v2"
@@ -62,36 +61,35 @@ func (t *tweets) draw() {
 	t.textView.Clear()
 
 	for i, content := range t.contents {
-		refExists := len(content.ReferencedTweets) != 0
+		var quotedTweet *twitter.TweetDictionary = nil
 
-		// リツイートなら元ツイートに置き換え
-		if refExists && content.ReferencedTweets[0].Reference.Type == "retweeted" {
-			fmt.Fprintf(t.textView, "[green:-:-]RT by %s [:-:i]@%s[-:-:-]\n", content.Author.Name, content.Author.UserName)
-			content = content.ReferencedTweets[0].TweetDictionary
+		// 参照ツイートを確認
+		for _, rc := range content.ReferencedTweets {
+			switch rc.Reference.Type {
+			case "retweeted":
+				fmt.Fprintln(t.textView, createAnnotation("RT by", content.Author))
+				content = content.ReferencedTweets[0].TweetDictionary
+			case "replied_to":
+				fmt.Fprintln(t.textView, createAnnotation("Reply to", rc.TweetDictionary.Author))
+			case "quoted":
+				quotedTweet = rc.TweetDictionary
+			}
 		}
 
 		// 表示部分を作成
 		layout := createTweetLayout(content, i)
-		fmt.Fprintf(t.textView, "%s\n", layout)
+		fmt.Fprintln(t.textView, layout)
 
 		// 引用元ツイートを表示
-		if refExists {
-			for _, rc := range content.ReferencedTweets {
-				fmt.Fprintln(t.textView, rc.Reference.Type)
-
-				if rc.Reference.Type == "retweeted" {
-					continue
-				}
-
-				fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("-", width))
-				layout := createTweetLayout(rc.TweetDictionary, -1)
-				fmt.Fprintf(t.textView, "%s\n", layout)
-			}
+		if quotedTweet != nil {
+			fmt.Fprintln(t.textView, createSeparator("-", width))
+			layout := createTweetLayout(quotedTweet, -1)
+			fmt.Fprintln(t.textView, layout)
 		}
 
 		// 末尾のツイートでないならセパレータを挿入
 		if i < t.count-1 {
-			fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("─", width))
+			fmt.Fprintln(t.textView, createSeparator("─", width))
 		}
 	}
 
