@@ -88,7 +88,7 @@ func createTweetText(tweet *twitter.TweetObj) string {
 	// メンションをハイライト
 	if len(tweet.Entities.Mentions) != 0 {
 		rep := regexp.MustCompile(`(^|[^\w@#$%&])[@＠](\w+)`)
-		text = rep.ReplaceAllString(text, "$1[green]@$2[-:-:-]")
+		text = rep.ReplaceAllString(text, "$1[blue]@$2[-:-:-]")
 	}
 
 	return text
