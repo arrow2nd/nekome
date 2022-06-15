@@ -62,26 +62,36 @@ func (t *tweets) draw() {
 	t.textView.Clear()
 
 	for i, content := range t.contents {
-		// 参照元のツイートを確認
-		if len(content.ReferencedTweets) != 0 {
-			ref := content.ReferencedTweets[0]
+		refExists := len(content.ReferencedTweets) != 0
 
-			switch ref.Reference.Type {
-			case "retweeted":
-				fmt.Fprintf(t.textView, "[green:-:-]RT by %s [:-:i]@%s[-:-:-]\n", content.Author.Name, content.Author.UserName)
-				content = ref.TweetDictionary
-			case "quoted":
-				fmt.Fprintf(t.textView, "type = %s\n", content.ReferencedTweets[0].Reference.Type)
-			}
+		// リツイートなら元ツイートに置き換え
+		if refExists && content.ReferencedTweets[0].Reference.Type == "retweeted" {
+			fmt.Fprintf(t.textView, "[green:-:-]RT by %s [:-:i]@%s[-:-:-]\n", content.Author.Name, content.Author.UserName)
+			content = content.ReferencedTweets[0].TweetDictionary
 		}
 
 		// 表示部分を作成
 		layout := createTweetLayout(content, i)
 		fmt.Fprintf(t.textView, "%s\n", layout)
 
+		// 引用元ツイートを表示
+		if refExists {
+			for _, rc := range content.ReferencedTweets {
+				fmt.Fprintln(t.textView, rc.Reference.Type)
+
+				if rc.Reference.Type == "retweeted" {
+					continue
+				}
+
+				fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("-", width))
+				layout := createTweetLayout(rc.TweetDictionary, -1)
+				fmt.Fprintf(t.textView, "%s\n", layout)
+			}
+		}
+
 		// 末尾のツイートでないならセパレータを挿入
 		if i < t.count-1 {
-			fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("─", width-1))
+			fmt.Fprintf(t.textView, "[gray]%s[-:-:-]\n", strings.Repeat("─", width))
 		}
 	}
 

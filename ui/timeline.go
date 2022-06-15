@@ -55,7 +55,7 @@ func (t *timelinePage) Load() {
 
 	switch t.tlType {
 	case homeTL:
-		tweets, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
+		tweets, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 100)
 	case mentionTL:
 		tweets, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
 	}
