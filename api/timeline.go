@@ -9,11 +9,6 @@ import (
 
 // FetchHomeTileline ホームタイムラインを取得
 func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
@@ -23,7 +18,7 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 		SinceID:     sinceID,
 	}
 
-	res, err := client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)
+	res, err := a.client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("home timeline error: %v", err)
 	}
@@ -33,11 +28,6 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 
 // FetchUserTimeline ユーザタイムラインを取得
 func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
@@ -47,7 +37,7 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 		SinceID:     sinceID,
 	}
 
-	res, err := client.UserTweetTimeline(context.Background(), userID, opts)
+	res, err := a.client.UserTweetTimeline(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("user timeline error: %v", err)
 	}
@@ -57,11 +47,6 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 
 // FetchUserMentionTimeline ユーザのメンションタイムラインを取得
 func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.UserMentionTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
@@ -71,7 +56,7 @@ func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*
 		SinceID:     sinceID,
 	}
 
-	res, err := client.UserMentionTimeline(context.Background(), userID, opts)
+	res, err := a.client.UserMentionTimeline(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("mention timeline error: %v", err)
 	}

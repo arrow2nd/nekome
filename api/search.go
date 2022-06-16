@@ -9,11 +9,6 @@ import (
 
 // SearchRecentTweets ツイートを検索
 func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.TweetRecentSearchOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
@@ -23,7 +18,7 @@ func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter
 		SinceID:     sinceID,
 	}
 
-	res, err := client.TweetRecentSearch(context.Background(), query, opts)
+	res, err := a.client.TweetRecentSearch(context.Background(), query, opts)
 	if err != nil {
 		return nil, fmt.Errorf("tweet search error: %v", err)
 	}

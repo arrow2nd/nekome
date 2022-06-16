@@ -9,14 +9,9 @@ import (
 
 // FetchOwnedListIDs ユーザが所有するリストの情報を取得
 func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.UserListLookupOpts{}
 
-	result, err := client.UserListLookup(context.Background(), userID, opts)
+	result, err := a.client.UserListLookup(context.Background(), userID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("user owned list lookup error: %v", err)
 	}
@@ -26,11 +21,6 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 
 // FetchListTweets リストのツイートを取得
 func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFields,
@@ -40,7 +30,7 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDicti
 		MaxResults: results,
 	}
 
-	res, err := client.ListTweetLookup(context.Background(), listID, opts)
+	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
 	if err != nil {
 		return nil, fmt.Errorf("list tweet lookup error: %v", err)
 	}

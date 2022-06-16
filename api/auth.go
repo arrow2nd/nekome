@@ -4,40 +4,72 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/arrow2nd/nekome/oauth"
+	"github.com/dghubble/oauth1"
+	twauth "github.com/dghubble/oauth1/twitter"
 	"github.com/g8rswimmer/go-twitter/v2"
+)
+
+var (
+	consumerKey    = "mYt6BHZC7gFIgHWLAcFKLKAca"
+	consumerSecret = "uUkUPybUlc88IkJWUsd2PCNuW4I8HtSqbRfWNEabX8hqUtUrJg"
 )
 
 // Auth アプリケーション認証を行う
 func (a *API) Auth() (*User, error) {
-	token, err := a.oauth.Auth()
+	config := oauth1.Config{
+		ConsumerKey:    consumerKey,
+		ConsumerSecret: consumerSecret,
+		CallbackURL:    "oob",
+		Endpoint:       twauth.AuthorizeEndpoint,
+	}
+
+	requestToken, _, err := config.RequestToken()
 	if err != nil {
 		return nil, err
 	}
 
-	// 認証したユーザの情報を取得
-	authUser, err := a.authUserLookup(token)
+	authURL, err := config.AuthorizationURL(requestToken)
 	if err != nil {
 		return nil, err
 	}
 
-	user := &User{
-		UserName: authUser.UserName,
-		ID:       authUser.ID,
-		Token:    token,
+	fmt.Println("🐈 Go to the following URL to authenticate the application and enter the PIN that is displayed")
+	fmt.Println("-----")
+	fmt.Println(authURL.String())
+	fmt.Print("PIN: ")
+
+	var verifier string
+
+	_, err = fmt.Scanf("%s", &verifier)
+	if err != nil {
+		return nil, err
 	}
 
-	return user, nil
+	accessToken, accessSecret, err := config.AccessToken(requestToken, "", verifier)
+	if err != nil {
+		return nil, err
+	}
+
+	newToken := oauth1.NewToken(accessToken, accessSecret)
+
+	user, err := a.authUserLookup(newToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		UserName: user.UserName,
+		ID:       user.ID,
+		Token:    newToken,
+	}, nil
 }
 
 // authUserLookup トークンに紐づいたユーザの情報を取得
-func (a *API) authUserLookup(token *oauth.Token) (*twitter.UserObj, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(token)
+func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
+	client := newClient(token)
 
 	opts := twitter.UserLookupOpts{}
+
 	userResponse, err := client.AuthUserLookup(context.Background(), opts)
 	if err != nil {
 		return nil, fmt.Errorf("auth user lookup error: %v", err)

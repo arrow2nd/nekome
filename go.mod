@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/dghubble/oauth1 v0.7.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect

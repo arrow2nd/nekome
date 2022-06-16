@@ -6,9 +6,7 @@ import (
 
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
-	"github.com/arrow2nd/nekome/oauth"
 	"github.com/arrow2nd/nekome/ui"
-	"golang.org/x/oauth2"
 )
 
 var (
@@ -17,7 +15,6 @@ var (
 )
 
 func init() {
-	client = api.New()
 	conf = config.New()
 }
 
@@ -62,30 +59,14 @@ func createNewCred() {
 }
 
 func login() error {
-	// 使用するトークンを取得
+	// ログインするユーザを取得
 	userName := conf.Settings.MainUser
 	user, err := conf.Cred.Get(userName)
 	if err != nil {
 		return err
 	}
 
-	// クライアントを初期化
-	client.SetUser(user)
-	client.SetTokenRefreshCallback(handleTokenRefresh)
+	client = api.New(user)
 
 	return nil
-}
-
-func handleTokenRefresh(rawToken *oauth2.Token) error {
-	token := &oauth.Token{
-		AccessToken:  rawToken.AccessToken,
-		RefreshToken: rawToken.RefreshToken,
-		Expiry:       rawToken.Expiry,
-	}
-
-	// クライアントと設定ファイルのトークンを更新
-	client.SetToken(token)
-	conf.Cred.Write(client.CurrentUser)
-
-	return conf.SaveCred()
 }

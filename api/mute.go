@@ -7,12 +7,7 @@ import (
 
 // Mute ユーザをミュート
 func (a *API) Mute(userID string) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
-	if _, err := client.UserMutes(context.Background(), a.CurrentUser.ID, userID); err != nil {
+	if _, err := a.client.UserMutes(context.Background(), a.CurrentUser.ID, userID); err != nil {
 		return fmt.Errorf("user mute error: %v", err)
 	}
 
@@ -21,12 +16,7 @@ func (a *API) Mute(userID string) error {
 
 // UnMute ユーザのミュートを解除
 func (a *API) UnMute(userID string) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
-	if _, err := client.DeleteUserMutes(context.Background(), a.CurrentUser.ID, userID); err != nil {
+	if _, err := a.client.DeleteUserMutes(context.Background(), a.CurrentUser.ID, userID); err != nil {
 		return fmt.Errorf("user mute error: %v", err)
 	}
 

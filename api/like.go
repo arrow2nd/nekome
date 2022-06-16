@@ -9,11 +9,6 @@ import (
 
 // FetchLikedTweets ユーザのいいねしたツイートを取得
 func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
 	opts := twitter.UserLikesLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFields,
@@ -23,7 +18,7 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 		MaxResults: maxResults,
 	}
 
-	result, err := client.UserLikesLookup(context.Background(), userID, opts)
+	result, err := a.client.UserLikesLookup(context.Background(), userID, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -33,12 +28,7 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 
 // Like いいね
 func (a *API) Like(tweetID string) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
-	if _, err := client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
+	if _, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
 		return fmt.Errorf("like tweet error: %v", err)
 	}
 
@@ -47,12 +37,7 @@ func (a *API) Like(tweetID string) error {
 
 // UnLike いいねを解除
 func (a *API) UnLike(tweetID string) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	client := a.newClient(a.CurrentUser.Token)
-
-	if _, err := client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
+	if _, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
 		return fmt.Errorf("unlike tweet error: %v", err)
 	}
 
