@@ -49,8 +49,6 @@ func (t *timelinePage) Load() {
 		err    error
 	)
 
-	defer shared.reqestDrawApp()
-
 	shared.setStatus("Loading...")
 
 	sinceID := t.tweets.getSinceID()
@@ -74,13 +72,5 @@ func (t *timelinePage) Load() {
 }
 
 func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	keyRune := event.Rune()
-
-	// リロード
-	if keyRune == 'R' {
-		go t.Load()
-		return nil
-	}
-
-	return event
+	return handlePageKeyEvents(t, event)
 }

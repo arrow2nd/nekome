@@ -7,11 +7,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-type page interface {
-	GetPrimivite() tview.Primitive
-	Load()
-}
-
 // view ページ・タブ管理
 type view struct {
 	pages       *tview.Pages
@@ -50,7 +45,7 @@ func (v *view) createPageId(id int) string {
 	return fmt.Sprintf("page_%d", id)
 }
 
-func (v *view) addPage(name string, pg page, focus bool) {
+func (v *view) addPage(name string, p page, focus bool) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
@@ -60,13 +55,13 @@ func (v *view) addPage(name string, pg page, focus bool) {
 
 	// ページを追加
 	pageID := v.createPageId(len(v.tabs) - 1)
-	v.pages.AddPage(pageID, pg.GetPrimivite(), true, focus)
+	v.pages.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
 		v.tabTextView.Highlight(pageID)
 	}
 
-	go pg.Load()
+	go p.Load()
 }
 
 func (v *view) selectPrevTab() {
