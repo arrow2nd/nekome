@@ -97,33 +97,38 @@ func createTweetText(tweet *twitter.TweetObj) string {
 func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	result := ""
 	runes := []rune(text)
-	endPos := 0
+	end := 0
 
 	for _, hashtag := range entities.HashTags {
-		// ハッシュタグの開始位置 ("#"を含まない)
-		beginPos := hashtag.Start + 1
+		hashtagText := fmt.Sprintf("#%s", hashtag.Tag)
+
+		// NOTE: URLや絵文字を多く含むツイートなどで、ハッシュタグの開始位置が後方にズレていることがあるので
+		//       +1 して意図的にズラした後、ハッシュタグ全文が見つかるまで開始位置を前方に移動することで正しい位置を見つける
+
+		start := hashtag.Start + 1
 		textLength := utf8.RuneCountInString(hashtag.Tag) + 1
 
-		// NOTE: 絵文字の表示幅の関係で、開始位置が実際の値より大きい場合があるので
-		//       ハッシュタグが見つかるまで開始位置を前方にズラし、切り出した文字列がタグ名を含むかチェックする
-		//       終了条件が i > 0 なので、beginPos は "#" を含むハッシュタグの開始位置になる
-		for ; beginPos > endPos; beginPos-- {
-			if i := strings.Index(string(runes[beginPos:beginPos+textLength]), hashtag.Tag); i > 0 {
+		for ; start > end; start-- {
+			e := start + textLength
+			if e > len(runes) {
+				e = len(runes)
+			}
+
+			if string(runes[start:e]) == hashtagText {
 				break
 			}
 		}
 
 		// 前方の文とハイライトされたハッシュタグを結合
-		hashtagText := fmt.Sprintf("#%s", hashtag.Tag)
-		result += fmt.Sprintf("%s[blue]%s[-:-:-]", string(runes[endPos:beginPos]), hashtagText)
+		result += fmt.Sprintf("%s[blue]%s[-:-:-]", string(runes[end:start]), hashtagText)
 
 		// ハッシュタグの終了位置
-		endPos = beginPos + utf8.RuneCountInString(hashtagText)
+		end = start + utf8.RuneCountInString(hashtagText)
 	}
 
 	// 残りの文を結合
-	if len(runes) > endPos {
-		result += string(runes[endPos:])
+	if len(runes) > end {
+		result += string(runes[end:])
 	}
 
 	return result
