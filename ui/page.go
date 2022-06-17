@@ -21,3 +21,21 @@ func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
 
 	return event
 }
+
+type basePage struct {
+	page
+	frame  *tview.Frame
+	tweets *tweets
+}
+
+func newBasePage() *basePage {
+	return &basePage{
+		frame:  nil,
+		tweets: newTweets(),
+	}
+}
+
+// GetPrimivite プリミティブを取得
+func (b *basePage) GetPrimivite() tview.Primitive {
+	return b.frame
+}

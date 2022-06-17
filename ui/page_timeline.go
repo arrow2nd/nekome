@@ -17,29 +17,22 @@ const (
 )
 
 type timelinePage struct {
+	*basePage
 	tlType timelineType
-	frame  *tview.Frame
-	tweets *tweets
 }
 
-func newTimelinePage(tl timelineType) *timelinePage {
+func newTimelinePage(tt timelineType) *timelinePage {
 	page := &timelinePage{
-		tlType: tl,
-		frame:  nil,
-		tweets: newTweets(),
+		basePage: newBasePage(),
+		tlType:   tt,
 	}
 
 	page.frame = tview.NewFrame(page.tweets.textView).
 		SetBorders(1, 1, 0, 0, 1, 1)
 
-	page.frame.SetInputCapture(page.handleTimelinePageKeyEvents)
+	page.frame.SetInputCapture(page.handleKeyEvents)
 
 	return page
-}
-
-// GetPrimivite プリミティブを取得
-func (t *timelinePage) GetPrimivite() tview.Primitive {
-	return t.frame
 }
 
 // Load タイムライン読み込み
@@ -71,6 +64,6 @@ func (t *timelinePage) Load() {
 	shared.setStatus(fmt.Sprintf("[%s] %d tweets loaded", t.tlType, count))
 }
 
-func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	return handlePageKeyEvents(t, event)
 }
