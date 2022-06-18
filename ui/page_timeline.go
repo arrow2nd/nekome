@@ -5,7 +5,6 @@ import (
 
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
-	"github.com/rivo/tview"
 )
 
 // timelineType タイムラインの種類
@@ -27,9 +26,7 @@ func newTimelinePage(tt timelineType) *timelinePage {
 		tlType:   tt,
 	}
 
-	page.frame = tview.NewFrame(page.tweets.textView).
-		SetBorders(1, 1, 0, 0, 1, 1)
-
+	page.SetFrame(page.tweets.view)
 	page.frame.SetInputCapture(page.handleKeyEvents)
 
 	return page

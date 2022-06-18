@@ -59,7 +59,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	layout := tview.NewGrid().
 		SetRows(1, 0, 1, 1).
 		SetBorders(false).
-		AddItem(u.view.tabTextView, 0, 0, 1, 1, 0, 0, false).
+		AddItem(u.view.tabView, 0, 0, 1, 1, 0, 0, false).
 		AddItem(u.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
 		AddItem(u.commandLine, 3, 0, 1, 1, 0, 0, false).
 		AddItem(u.view.pages, 1, 0, 1, 1, 0, 0, true)

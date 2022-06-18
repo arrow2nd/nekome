@@ -10,7 +10,7 @@ import (
 )
 
 type tweets struct {
-	textView *tview.TextView
+	view     *tview.TextView
 	contents []*twitter.TweetDictionary
 	count    int
 	mu       sync.Mutex
@@ -18,17 +18,17 @@ type tweets struct {
 
 func newTweets() *tweets {
 	t := &tweets{
-		textView: tview.NewTextView(),
+		view:     tview.NewTextView(),
 		contents: []*twitter.TweetDictionary{},
 		count:    0,
 	}
 
-	t.textView.SetDynamicColors(true).
+	t.view.SetDynamicColors(true).
 		SetScrollable(true).
 		SetWrap(true).
 		SetRegions(true).
 		SetHighlightedFunc(func(added, removed, remaining []string) {
-			t.textView.ScrollToHighlight()
+			t.view.ScrollToHighlight()
 		}).
 		SetInputCapture(t.handleKeyEvents).
 		SetBackgroundColor(tcell.ColorDefault)
@@ -57,7 +57,7 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 func (t *tweets) draw() {
 	width := getWindowWidth()
 
-	t.textView.Clear()
+	t.view.Clear()
 
 	for i, content := range t.contents {
 		var quotedTweet *twitter.TweetDictionary = nil
@@ -66,10 +66,10 @@ func (t *tweets) draw() {
 		for _, rc := range content.ReferencedTweets {
 			switch rc.Reference.Type {
 			case "retweeted":
-				fmt.Fprintln(t.textView, createAnnotation("RT by", content.Author))
+				fmt.Fprintln(t.view, createAnnotation("RT by", content.Author))
 				content = content.ReferencedTweets[0].TweetDictionary
 			case "replied_to":
-				fmt.Fprintln(t.textView, createAnnotation("Reply to", rc.TweetDictionary.Author))
+				fmt.Fprintln(t.view, createAnnotation("Reply to", rc.TweetDictionary.Author))
 			case "quoted":
 				quotedTweet = rc.TweetDictionary
 			}
@@ -77,18 +77,18 @@ func (t *tweets) draw() {
 
 		// 表示部分を作成
 		layout := createTweetLayout(content, i)
-		fmt.Fprintln(t.textView, layout)
+		fmt.Fprintln(t.view, layout)
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
-			fmt.Fprintln(t.textView, createSeparator("-", width))
+			fmt.Fprintln(t.view, createSeparator("-", width))
 			layout := createTweetLayout(quotedTweet, -1)
-			fmt.Fprintln(t.textView, layout)
+			fmt.Fprintln(t.view, layout)
 		}
 
 		// 末尾のツイートでないならセパレータを挿入
 		if i < t.count-1 {
-			fmt.Fprintln(t.textView, createSeparator("─", width))
+			fmt.Fprintln(t.view, createSeparator("─", width))
 		}
 	}
 
@@ -96,11 +96,11 @@ func (t *tweets) draw() {
 }
 
 func (t *tweets) scrollToTweet(i int) {
-	t.textView.Highlight(createTweetId(i))
+	t.view.Highlight(createTweetId(i))
 }
 
 func (t *tweets) cursorUp() {
-	idx := getHighlightId(t.textView.GetHighlights())
+	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
 		return
 	}
@@ -113,7 +113,7 @@ func (t *tweets) cursorUp() {
 }
 
 func (t *tweets) cursorDown() {
-	idx := getHighlightId(t.textView.GetHighlights())
+	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
 		return
 	}

@@ -9,20 +9,20 @@ import (
 
 // view ページ・タブ管理
 type view struct {
-	pages       *tview.Pages
-	tabTextView *tview.TextView
-	tabs        []string
-	mu          sync.Mutex
+	pages   *tview.Pages
+	tabView *tview.TextView
+	tabs    []string
+	mu      sync.Mutex
 }
 
 func newView() *view {
 	v := &view{
-		pages:       tview.NewPages(),
-		tabTextView: tview.NewTextView(),
-		tabs:        []string{},
+		pages:   tview.NewPages(),
+		tabView: tview.NewTextView(),
+		tabs:    []string{},
 	}
 
-	v.tabTextView.
+	v.tabView.
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
@@ -34,10 +34,10 @@ func newView() *view {
 }
 
 func (v *view) drawTab() {
-	v.tabTextView.Clear()
+	v.tabView.Clear()
 
 	for i, name := range v.tabs {
-		fmt.Fprintf(v.tabTextView, `["%s"] %s `, v.createPageId(i), name)
+		fmt.Fprintf(v.tabView, `["%s"] %s `, v.createPageId(i), name)
 	}
 }
 
@@ -58,14 +58,14 @@ func (v *view) addPage(name string, p page, focus bool) {
 	v.pages.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
-		v.tabTextView.Highlight(pageID)
+		v.tabView.Highlight(pageID)
 	}
 
 	go p.Load()
 }
 
 func (v *view) selectPrevTab() {
-	index := getHighlightId(v.tabTextView.GetHighlights())
+	index := getHighlightId(v.tabView.GetHighlights())
 	if index == -1 {
 		return
 	}
@@ -76,11 +76,11 @@ func (v *view) selectPrevTab() {
 		index = pageCount - 1
 	}
 
-	v.tabTextView.Highlight(v.createPageId(index))
+	v.tabView.Highlight(v.createPageId(index))
 }
 
 func (v *view) selectNextTab() {
-	index := getHighlightId(v.tabTextView.GetHighlights())
+	index := getHighlightId(v.tabView.GetHighlights())
 	if index == -1 {
 		return
 	}
@@ -89,5 +89,5 @@ func (v *view) selectNextTab() {
 
 	index = (index + 1) % pageCount
 
-	v.tabTextView.Highlight(v.createPageId(index))
+	v.tabView.Highlight(v.createPageId(index))
 }
