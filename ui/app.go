@@ -42,9 +42,11 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// ページ
 	home := newTimelinePage(homeTL)
 	mention := newTimelinePage(mentionTL)
+	user := newUserPage()
 
 	u.view.addPage("Home", home, true)
 	u.view.addPage("Mention", mention, false)
+	u.view.addPage("User", user, false)
 
 	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 
