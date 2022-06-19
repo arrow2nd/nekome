@@ -7,6 +7,12 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
+// NOTE: 認証に必要なヘッダは oauth1 の Client() で設定してくれるので必要ないが
+//       Add() は go-twitter で必ず呼ばれるのでダミーとして用意してる
+type authorizer struct{}
+
+func (a *authorizer) Add(req *http.Request) {}
+
 // User ユーザ情報
 type User struct {
 	UserName string
@@ -19,12 +25,6 @@ type API struct {
 	CurrentUser *User
 	client      *twitter.Client
 }
-
-// NOTE: 認証に必要なヘッダは oauth1 の Client() で設定してくれるので必要ないが、
-//       Add() は go-twitter で必ず呼ばれるのでダミーとして用意してる
-type authorizer struct{}
-
-func (a *authorizer) Add(req *http.Request) {}
 
 func New(user *User) *API {
 	return &API{

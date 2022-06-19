@@ -19,8 +19,9 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 	}
 
 	res, err := a.client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("home timeline error: %v", err)
+
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return createTweetDictionarySlice(res.Raw), nil
@@ -57,8 +58,9 @@ func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*
 	}
 
 	res, err := a.client.UserMentionTimeline(context.Background(), userID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("mention timeline error: %v", err)
+
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return createTweetDictionarySlice(res.Raw), nil
