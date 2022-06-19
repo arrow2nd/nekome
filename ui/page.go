@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"sync"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -26,6 +28,7 @@ type basePage struct {
 	page
 	frame  *tview.Frame
 	tweets *tweets
+	mu     sync.Mutex
 }
 
 func newBasePage() *basePage {

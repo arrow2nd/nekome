@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"sync"
+
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
@@ -14,6 +16,7 @@ type UI struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *tview.InputField
+	mu          sync.Mutex
 }
 
 // New 生成
@@ -79,10 +82,11 @@ func (u *UI) Run() error {
 func (u *UI) eventReciever() {
 	for {
 		select {
-		case status := <-shared.stateCh:
-			u.commandLine.SetPlaceholder(status)
-			u.app.Draw()
-		case <-shared.appDrawCh:
+		case status := <-shared.chNormalState:
+			u.setStatusMessage(status, tcell.ColorDefault)
+		case status := <-shared.chErrorState:
+			u.setStatusMessage(status, tcell.ColorRed)
+		case <-shared.chDraw:
 			u.app.Draw()
 		}
 	}
@@ -94,7 +98,7 @@ func (u *UI) redraw() {
 
 	pageId, _ := u.view.pages.GetFrontPage()
 	if pageId == "" {
-		shared.setStatus("No page to redraw")
+		shared.setErrorStatus("App", "no page to redraw")
 		return
 	}
 
@@ -104,8 +108,6 @@ func (u *UI) redraw() {
 	// 強制的に再描画して画面を再表示
 	u.app.ForceDraw()
 	u.view.pages.ShowPage(pageId)
-
-	shared.setStatus("Redraw!")
 }
 
 func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {

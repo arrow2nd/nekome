@@ -83,3 +83,8 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
 }
+
+// createStatusMessage ステータスメッセージを作成
+func createStatusMessage(label, status string) string {
+	return fmt.Sprintf("[%s] %s", label, status)
+}
