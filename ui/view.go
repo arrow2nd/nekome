@@ -45,12 +45,12 @@ func (v *view) createPageId(id int) string {
 	return fmt.Sprintf("page_%d", id)
 }
 
-func (v *view) addPage(name string, p page, focus bool) {
+func (v *view) addPage(p page, focus bool) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
 	// タブを追加
-	v.tabs = append(v.tabs, name)
+	v.tabs = append(v.tabs, p.GetName())
 	v.drawTab()
 
 	// ページを追加

@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 )
@@ -22,7 +20,7 @@ type timelinePage struct {
 
 func newTimelinePage(tt timelineType) *timelinePage {
 	page := &timelinePage{
-		basePage: newBasePage(),
+		basePage: newBasePage(string(tt)),
 		tlType:   tt,
 	}
 
@@ -38,31 +36,31 @@ func (t *timelinePage) Load() {
 	defer t.mu.Unlock()
 
 	var (
-		tweets []*twitter.TweetDictionary
-		err    error
-		label  string = string(t.tlType)
+		tweets    []*twitter.TweetDictionary
+		rateLimit *twitter.RateLimit
+		err       error
 	)
 
-	shared.setStatus(label, "Loading...")
+	shared.setStatus(t.name, "Loading...")
 
 	sinceID := t.tweets.getSinceID()
 
 	switch t.tlType {
 	case homeTL:
-		tweets, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
+		tweets, rateLimit, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
 	case mentionTL:
-		tweets, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
+		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
 	}
 
 	if err != nil {
-		shared.setErrorStatus(label, err.Error())
+		shared.setErrorStatus(t.name, err.Error())
 		return
 	}
 
-	count := t.tweets.register(tweets)
+	t.tweets.register(tweets)
 	t.tweets.draw()
 
-	shared.setStatus(label, fmt.Sprintf("%d tweets loaded", count))
+	t.showLoadedStatus(rateLimit)
 }
 
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
