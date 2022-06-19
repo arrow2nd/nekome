@@ -11,7 +11,7 @@ import (
 func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
 	opts := twitter.UserLikesLookupOpts{
 		TweetFields: tweetFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForTL,
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionAuthorID,
 		},

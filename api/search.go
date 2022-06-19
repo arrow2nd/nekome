@@ -12,7 +12,7 @@ func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter
 	opts := twitter.TweetRecentSearchOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForTL,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
 		SinceID:     sinceID,

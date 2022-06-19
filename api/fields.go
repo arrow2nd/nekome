@@ -12,12 +12,20 @@ var (
 		twitter.TweetFieldReferencedTweets,
 	}
 
-	userFields = []twitter.UserField{
+	userFieldsForTL = []twitter.UserField{
 		twitter.UserFieldUserName,
 		twitter.UserFieldName,
 		twitter.UserFieldVerified,
 		twitter.UserFieldProtected,
 	}
+
+	userFieldsForUser = append(userFieldsForTL,
+		twitter.UserFieldDescription,
+		twitter.UserFieldLocation,
+		twitter.UserFieldURL,
+		twitter.UserFieldPinnedTweetID,
+		twitter.UserFieldPublicMetrics,
+	)
 
 	pollFields = []twitter.PollField{
 		twitter.PollFieldVotingStatus,

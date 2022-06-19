@@ -23,7 +23,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForTL,
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionAuthorID,
 		},

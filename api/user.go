@@ -10,7 +10,7 @@ import (
 // FetchUser UserNameからユーザ情報を取得
 func (a *API) FetchUser(userNames []string) ([]*twitter.UserObj, error) {
 	opts := twitter.UserLookupOpts{
-		UserFields: userFields,
+		UserFields: userFieldsForUser,
 	}
 
 	result, err := a.client.UserNameLookup(context.Background(), userNames, opts)

@@ -2,17 +2,16 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
 // FetchHomeTileline ホームタイムラインを取得
-func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForTL,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
 		SinceID:     sinceID,
@@ -21,37 +20,38 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 	res, err := a.client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)
 
 	if e := checkError(err); e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), nil
+	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
 
 // FetchUserTimeline ユーザタイムラインを取得
-func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForUser,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
 		SinceID:     sinceID,
 	}
 
 	res, err := a.client.UserTweetTimeline(context.Background(), userID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("user timeline error: %v", err)
+
+	if e := checkError(err); e != nil {
+		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), nil
+	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
 
 // FetchUserMentionTimeline ユーザのメンションタイムラインを取得
-func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, error) {
+func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserMentionTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
-		UserFields:  userFields,
+		UserFields:  userFieldsForTL,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
 		SinceID:     sinceID,
@@ -60,8 +60,8 @@ func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*
 	res, err := a.client.UserMentionTimeline(context.Background(), userID, opts)
 
 	if e := checkError(err); e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), nil
+	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
