@@ -8,50 +8,58 @@ import (
 	"github.com/rivo/tview"
 )
 
+const userProfilePaddingX = 4
+
 type userPage struct {
 	*basePage
-	detail *tview.TextView
-	// tweetCount     *tview.TextView
-	// followingCount *tview.TextView
-	// followersCount *tview.TextView
-	targetUserID string
-	user         *twitter.UserObj
+	flex             *tview.Flex
+	profile          *tview.TextView
+	tweetMetrics     *tview.TextView
+	followingMetrics *tview.TextView
+	followersMetrics *tview.TextView
+	userName         string
+	userDic          *twitter.UserDictionary
 }
 
-func newUserPage(name, userID string) *userPage {
-	page := &userPage{
-		basePage: newBasePage(name),
-		detail:   tview.NewTextView(),
-		// tweetCount:     newCountTextView(0xe06c75),
-		// followingCount: newCountTextView(0xc678dd),
-		// followersCount: newCountTextView(0x56b6c2),
-		targetUserID: userID,
-		user:         nil,
+func newUserPage(userName string) *userPage {
+	p := &userPage{
+		basePage:         newBasePage("@" + userName),
+		flex:             tview.NewFlex(),
+		profile:          tview.NewTextView(),
+		tweetMetrics:     createMetricsView(0xa094c7),
+		followingMetrics: createMetricsView(0x84a0c6),
+		followersMetrics: createMetricsView(0x89b8c2),
+		userName:         userName,
+		userDic:          nil,
 	}
 
-	page.detail.SetDynamicColors(true).
-		SetWrap(true)
+	p.profile.SetDynamicColors(true).
+		SetWrap(true).
+		SetTextAlign(tview.AlignCenter).
+		SetBorderPadding(0, 1, userProfilePaddingX, userProfilePaddingX)
 
-	page.tweets.view.SetBorderPadding(1, 0, 0, 0)
+	p.tweets.view.SetBorderPadding(1, 0, 0, 0)
 
-	// countView := tview.NewFlex().
-	// 	AddItem(page.tweetCount, 0, 1, false).
-	// 	AddItem(page.followingCount, 0, 1, false).
-	// 	AddItem(page.followersCount, 0, 1, false)
+	metrics := tview.NewFlex().
+		SetDirection(tview.FlexColumn).
+		AddItem(p.tweetMetrics, 0, 1, false).
+		AddItem(p.followingMetrics, 0, 1, false).
+		AddItem(p.followersMetrics, 0, 1, false)
 
-	layout := tview.NewFlex().
+	p.flex.
 		SetDirection(tview.FlexRow).
-		AddItem(page.detail, 5, 1, false).
-		AddItem(page.tweets.view, 0, 1, true)
+		AddItem(p.profile, 0, 1, false).
+		AddItem(metrics, 1, 1, false).
+		AddItem(p.tweets.view, 0, 1, true)
 
-	page.SetFrame(layout)
+	p.SetFrame(p.flex)
 
-	page.frame.SetInputCapture(page.handleKeyEvents)
+	p.frame.SetInputCapture(p.handleKeyEvents)
 
-	return page
+	return p
 }
 
-func newCountTextView(color int32) *tview.TextView {
+func createMetricsView(color int32) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
 		SetTextColor(tcell.ColorBlack).
@@ -65,34 +73,59 @@ func newCountTextView(color int32) *tview.TextView {
 func (u *userPage) Load() {
 	shared.setStatus(u.name, "Loading...")
 
+	// ユーザの情報を取得
+	if u.userDic == nil {
+		if err := u.loadProfile(); err != nil {
+			shared.setErrorStatus(u.name, err.Error())
+			return
+		}
+	}
+
+	// ユーザのツイートを取得
 	sinceID := u.tweets.getSinceID()
-	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.targetUserID, sinceID, 25)
+	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, 25)
 	if err != nil {
 		shared.setErrorStatus(u.name, err.Error())
+		return
 	}
+
+	u.drawProfile(&u.userDic.User)
 
 	u.tweets.register(tweets)
 	u.tweets.draw()
 
-	if u.tweets.count != 0 {
-		u.setUserDetail(tweets[0].Author)
-	}
-
-	u.showLoadedStatus(rateLimit)
+	u.showLoadedStatus(len(tweets), rateLimit)
 }
 
-func (u *userPage) setUserDetail(user *twitter.UserObj) {
-	u.detail.Clear()
+func (u *userPage) loadProfile() error {
+	users, err := shared.api.FetchUser([]string{u.userName})
+	if err != nil {
+		return err
+	}
 
-	fmt.Fprint(u.detail, createHeader(user, -1))
-	fmt.Fprintf(u.detail, "[white:-:-]%s\n", user.Description)
-	fmt.Fprintf(u.detail, " : %s\n", user.Location)
-	fmt.Fprintf(u.detail, " : %s\n", user.URL)
-	fmt.Fprintf(u.detail, "%d Tweets / %d Following / %d Followers", user.PublicMetrics.Tweets, user.PublicMetrics.Following, user.PublicMetrics.Followers)
+	if len(users) == 0 || users[0] == nil {
+		return err
+	}
 
-	// u.tweetCount.SetText(fmt.Sprintf("%d Tweets", user.PublicMetrics.Tweets))
-	// u.followingCount.SetText(fmt.Sprintf("%d Following", user.PublicMetrics.Following))
-	// u.followersCount.SetText(fmt.Sprintf("%d Followers", user.PublicMetrics.Followers))
+	u.userDic = users[0]
+
+	return nil
+}
+
+func (u *userPage) drawProfile(ur *twitter.UserObj) {
+	u.profile.Clear()
+
+	// プロフィール
+	profile, col := createUserProfile(ur)
+	fmt.Fprint(u.profile, profile)
+
+	// プロフィールの行数に合わせてリサイズ（+1 は下辺の padding 分）
+	u.flex.ResizeItem(u.profile, col+1, 1)
+
+	// ツイート・フォロイー・フォロワー数
+	u.tweetMetrics.SetText(fmt.Sprintf("%d Tweets", ur.PublicMetrics.Tweets))
+	u.followingMetrics.SetText(fmt.Sprintf("%d Following", ur.PublicMetrics.Following))
+	u.followersMetrics.SetText(fmt.Sprintf("%d Followers", ur.PublicMetrics.Followers))
 }
 
 func (u *userPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
