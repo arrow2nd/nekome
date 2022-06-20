@@ -31,7 +31,7 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
 		PollFields:  pollFields,
-		UserFields:  userFieldsForUser,
+		UserFields:  userFieldsForTL,
 		Expansions:  tweetExpansions,
 		MaxResults:  results,
 		SinceID:     sinceID,

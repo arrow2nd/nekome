@@ -12,3 +12,14 @@ func createTweetDictionarySlice(raw *twitter.TweetRaw) []*twitter.TweetDictionar
 
 	return contents
 }
+
+func createUserDictionarySlice(raw *twitter.UserRaw) []*twitter.UserDictionary {
+	users := []*twitter.UserDictionary{}
+	dics := raw.UserDictionaries()
+
+	for _, user := range raw.Users {
+		users = append(users, dics[user.ID])
+	}
+
+	return users
+}

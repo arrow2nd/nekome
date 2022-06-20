@@ -8,15 +8,19 @@ import (
 )
 
 // FetchUser UserNameからユーザ情報を取得
-func (a *API) FetchUser(userNames []string) ([]*twitter.UserObj, error) {
+func (a *API) FetchUser(userNames []string) ([]*twitter.UserDictionary, error) {
 	opts := twitter.UserLookupOpts{
-		UserFields: userFieldsForUser,
+		TweetFields: tweetFields,
+		UserFields:  userFieldsForUser,
+		Expansions: []twitter.Expansion{
+			twitter.ExpansionPinnedTweetID,
+		},
 	}
 
-	result, err := a.client.UserNameLookup(context.Background(), userNames, opts)
+	res, err := a.client.UserNameLookup(context.Background(), userNames, opts)
 	if err != nil {
 		return nil, fmt.Errorf("username lookup error: %v", err)
 	}
 
-	return result.Raw.Users, nil
+	return createUserDictionarySlice(res.Raw), nil
 }

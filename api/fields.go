@@ -23,7 +23,6 @@ var (
 		twitter.UserFieldDescription,
 		twitter.UserFieldLocation,
 		twitter.UserFieldURL,
-		twitter.UserFieldPinnedTweetID,
 		twitter.UserFieldPublicMetrics,
 	)
 
