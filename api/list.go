@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
@@ -12,8 +11,8 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	opts := twitter.UserListLookupOpts{}
 
 	result, err := a.client.UserListLookup(context.Background(), userID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("user owned list lookup error: %v", err)
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return result.Raw.Lists, nil
@@ -31,8 +30,8 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDicti
 	}
 
 	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
-	if err != nil {
-		return nil, fmt.Errorf("list tweet lookup error: %v", err)
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return createTweetDictionarySlice(res.Raw), nil

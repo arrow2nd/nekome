@@ -2,22 +2,18 @@ package api
 
 import (
 	"context"
-	"fmt"
 )
 
 // Retweet : リツイート
 func (a *API) Retweet(tweetID string) error {
-	if _, err := a.client.UserRetweet(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
-		return fmt.Errorf("retweet error: %v", err)
-	}
+	_, err := a.client.UserRetweet(context.Background(), a.CurrentUser.ID, tweetID)
 
-	return nil
+	return checkError(err)
 }
 
 // UnRetweet : リツイートを解除
 func (a *API) UnRetweet(tweetID string) error {
-	if _, err := a.client.DeleteUserRetweet(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
-		return fmt.Errorf("unretweet error: %v", err)
-	}
-	return nil
+	_, err := a.client.DeleteUserRetweet(context.Background(), a.CurrentUser.ID, tweetID)
+
+	return checkError(err)
 }

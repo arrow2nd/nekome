@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
@@ -19,8 +18,8 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 	}
 
 	result, err := a.client.UserLikesLookup(context.Background(), userID, opts)
-	if err != nil {
-		return nil, err
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return result.Raw.Tweets, nil
@@ -28,18 +27,14 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 
 // Like : いいね
 func (a *API) Like(tweetID string) error {
-	if _, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
-		return fmt.Errorf("like tweet error: %v", err)
-	}
+	_, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID)
 
-	return nil
+	return checkError(err)
 }
 
 // UnLike : いいねを解除
 func (a *API) UnLike(tweetID string) error {
-	if _, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
-		return fmt.Errorf("unlike tweet error: %v", err)
-	}
+	_, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID)
 
-	return nil
+	return checkError(err)
 }

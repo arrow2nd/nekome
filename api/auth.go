@@ -71,8 +71,8 @@ func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
 	opts := twitter.UserLookupOpts{}
 
 	userResponse, err := client.AuthUserLookup(context.Background(), opts)
-	if err != nil {
-		return nil, fmt.Errorf("auth user lookup error: %v", err)
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return userResponse.Raw.Users[0], nil

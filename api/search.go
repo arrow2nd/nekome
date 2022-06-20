@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
@@ -19,8 +18,8 @@ func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter
 	}
 
 	res, err := a.client.TweetRecentSearch(context.Background(), query, opts)
-	if err != nil {
-		return nil, fmt.Errorf("tweet search error: %v", err)
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return createTweetDictionarySlice(res.Raw), nil

@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 )
@@ -18,8 +17,8 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 	}
 
 	res, err := a.client.UserNameLookup(context.Background(), userNames, opts)
-	if err != nil {
-		return nil, fmt.Errorf("username lookup error: %v", err)
+	if e := checkError(err); e != nil {
+		return nil, e
 	}
 
 	return createUserDictionarySlice(res.Raw), nil
