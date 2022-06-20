@@ -11,6 +11,7 @@ import (
 
 type tweets struct {
 	view     *tview.TextView
+	pinned   *twitter.TweetDictionary
 	contents []*twitter.TweetDictionary
 	count    int
 	mu       sync.Mutex
@@ -19,6 +20,7 @@ type tweets struct {
 func newTweets() *tweets {
 	t := &tweets{
 		view:     tview.NewTextView(),
+		pinned:   nil,
 		contents: []*twitter.TweetDictionary{},
 		count:    0,
 	}
@@ -52,12 +54,27 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) {
 	t.count = len(t.contents)
 }
 
+func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
+	if t.pinned == nil {
+		t.count++
+	}
+
+	t.pinned = tweet
+}
+
 func (t *tweets) draw() {
 	width := getWindowWidth()
 
 	t.view.Clear()
 
-	for i, content := range t.contents {
+	contents := t.contents
+
+	// ピン留めツイートがある場合、先頭に追加
+	if t.pinned != nil {
+		contents = append([]*twitter.TweetDictionary{t.pinned}, t.contents...)
+	}
+
+	for i, content := range contents {
 		var quotedTweet *twitter.TweetDictionary = nil
 
 		// 参照ツイートを確認
@@ -71,6 +88,11 @@ func (t *tweets) draw() {
 			case "quoted":
 				quotedTweet = rc.TweetDictionary
 			}
+		}
+
+		// ピン留めツイート
+		if i == 0 && t.pinned != nil {
+			fmt.Fprintln(t.view, "[gray:-:-] Pinned Tweet[r]")
 		}
 
 		// 表示部分を作成

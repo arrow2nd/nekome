@@ -8,7 +8,7 @@ import (
 )
 
 // FetchUser UserNameからユーザ情報を取得
-func (a *API) FetchUser(userNames []string) ([]*twitter.UserDictionary, error) {
+func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 	opts := twitter.UserLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForUser,

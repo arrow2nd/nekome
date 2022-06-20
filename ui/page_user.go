@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 
+	"github.com/arrow2nd/nekome/api"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -18,7 +19,7 @@ type userPage struct {
 	followingMetrics *tview.TextView
 	followersMetrics *tview.TextView
 	userName         string
-	userDic          *twitter.UserDictionary
+	userDic          *api.UserDictionary
 }
 
 func newUserPage(userName string) *userPage {
@@ -89,7 +90,9 @@ func (u *userPage) Load() {
 		return
 	}
 
-	u.drawProfile(&u.userDic.User)
+	u.drawProfile(u.userDic.User)
+
+	u.tweets.RegisterPinned(u.userDic.PinnedTweet)
 
 	u.tweets.register(tweets)
 	u.tweets.draw()
