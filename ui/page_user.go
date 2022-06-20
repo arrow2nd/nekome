@@ -92,7 +92,9 @@ func (u *userPage) Load() {
 
 	u.drawProfile(u.userDic.User)
 
-	u.tweets.RegisterPinned(u.userDic.PinnedTweet)
+	if u.userDic.PinnedTweet != nil {
+		u.tweets.RegisterPinned(u.userDic.PinnedTweet)
+	}
 
 	u.tweets.register(tweets)
 	u.tweets.draw()

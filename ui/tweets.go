@@ -10,19 +10,19 @@ import (
 )
 
 type tweets struct {
-	view     *tview.TextView
-	pinned   *twitter.TweetDictionary
-	contents []*twitter.TweetDictionary
-	count    int
-	mu       sync.Mutex
+	view          *tview.TextView
+	pinned        *twitter.TweetDictionary
+	contents      []*twitter.TweetDictionary
+	contentsCount int
+	mu            sync.Mutex
 }
 
 func newTweets() *tweets {
 	t := &tweets{
-		view:     tview.NewTextView(),
-		pinned:   nil,
-		contents: []*twitter.TweetDictionary{},
-		count:    0,
+		view:          tview.NewTextView(),
+		pinned:        nil,
+		contents:      []*twitter.TweetDictionary{},
+		contentsCount: 0,
 	}
 
 	t.view.SetDynamicColors(true).
@@ -51,14 +51,9 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) {
 	defer t.mu.Unlock()
 
 	t.contents = append(tweets, t.contents...)
-	t.count = len(t.contents)
 }
 
 func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
-	if t.pinned == nil {
-		t.count++
-	}
-
 	t.pinned = tweet
 }
 
@@ -73,6 +68,8 @@ func (t *tweets) draw() {
 	if t.pinned != nil {
 		contents = append([]*twitter.TweetDictionary{t.pinned}, t.contents...)
 	}
+
+	t.contentsCount = len(contents)
 
 	for i, content := range contents {
 		var quotedTweet *twitter.TweetDictionary = nil
@@ -107,7 +104,7 @@ func (t *tweets) draw() {
 		}
 
 		// 末尾のツイートでないならセパレータを挿入
-		if i < t.count-1 {
+		if i < t.contentsCount-1 {
 			fmt.Fprintln(t.view, createSeparator("─", width))
 		}
 	}
@@ -126,7 +123,7 @@ func (t *tweets) cursorUp() {
 	}
 
 	if idx--; idx < 0 {
-		idx = t.count - 1
+		idx = t.contentsCount - 1
 	}
 
 	t.scrollToTweet(idx)
@@ -138,7 +135,7 @@ func (t *tweets) cursorDown() {
 		return
 	}
 
-	idx = (idx + 1) % t.count
+	idx = (idx + 1) % t.contentsCount
 
 	t.scrollToTweet(idx)
 }
@@ -163,7 +160,7 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	}
 
 	if keyRune == 'G' {
-		t.scrollToTweet(t.count - 1)
+		t.scrollToTweet(t.contentsCount - 1)
 		return nil
 	}
 
