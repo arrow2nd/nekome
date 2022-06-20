@@ -13,19 +13,20 @@ type authorizer struct{}
 
 func (a *authorizer) Add(req *http.Request) {}
 
-// User ユーザ情報
+// User : ユーザ情報
 type User struct {
 	UserName string
 	ID       string
 	Token    *oauth1.Token
 }
 
-// API TwitterAPI
+// API : TwitterAPI
 type API struct {
 	CurrentUser *User
 	client      *twitter.Client
 }
 
+// New : 作成
 func New(user *User) *API {
 	return &API{
 		CurrentUser: user,

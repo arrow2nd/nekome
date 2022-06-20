@@ -14,7 +14,7 @@ var (
 	consumerSecret = "uUkUPybUlc88IkJWUsd2PCNuW4I8HtSqbRfWNEabX8hqUtUrJg"
 )
 
-// Auth アプリケーション認証を行う
+// Auth : アプリケーション認証を行う
 func (a *API) Auth() (*User, error) {
 	config := oauth1.Config{
 		ConsumerKey:    consumerKey,
@@ -64,7 +64,7 @@ func (a *API) Auth() (*User, error) {
 	}, nil
 }
 
-// authUserLookup トークンに紐づいたユーザの情報を取得
+// authUserLookup : トークンに紐づいたユーザの情報を取得
 func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
 	client := newClient(token)
 

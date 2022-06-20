@@ -43,18 +43,18 @@ func newBasePage(name string) *basePage {
 	}
 }
 
-// GetName ページ名を取得
+// GetName : ページ名を取得
 func (b *basePage) GetName() string {
 	return b.name
 }
 
-// SetFrame フレームを設定
+// SetFrame : フレームを設定
 func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame = tview.NewFrame(p)
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
-// GetPrimivite プリミティブを取得
+// GetPrimivite : プリミティブを取得
 func (b *basePage) GetPrimivite() tview.Primitive {
 	return b.frame
 }

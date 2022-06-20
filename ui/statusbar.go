@@ -37,7 +37,8 @@ func newStatusBar() *statusBar {
 	return s
 }
 
-func (s *statusBar) draw() {
+// Draw : 描画（ユーザ認証前に呼ぶとエラー）
+func (s *statusBar) Draw() {
 	s.leftView.Clear()
 	fmt.Fprintf(s.leftView, " @%s", shared.api.CurrentUser.UserName)
 

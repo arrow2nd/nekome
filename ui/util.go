@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// getWindowWidth 表示領域の幅を取得
+// getWindowWidth : 表示領域の幅を取得
 func getWindowWidth() int {
 	fd := int(os.Stdout.Fd())
 
@@ -23,7 +23,7 @@ func getWindowWidth() int {
 	return w - 2
 }
 
-// getHighlightId ハイライト一覧からIDを取得
+// getHighlightId : ハイライト一覧からIDを取得
 func getHighlightId(ids []string) int {
 	if ids == nil {
 		return -1
@@ -42,7 +42,7 @@ func getHighlightId(ids []string) int {
 	return id
 }
 
-// isSameDate 同じ日付かどうか
+// isSameDate : 同じ日付かどうか
 func isSameDate(t time.Time) bool {
 	now := time.Now()
 	location := now.Location()
@@ -54,7 +54,7 @@ func isSameDate(t time.Time) bool {
 	return t1.Equal(t2)
 }
 
-// convertDateString 日付文字列を変換
+// convertDateString : 日付文字列を変換
 func convertDateString(createAt string) string {
 	t, _ := time.Parse(time.RFC3339, createAt)
 	format := ""
@@ -69,7 +69,7 @@ func convertDateString(createAt string) string {
 	return t.Local().Format(format)
 }
 
-// createMetricsString ツイートのリアクション数文字列を作成
+// createMetricsString : ツイートのリアクション数文字列を作成
 func createMetricsString(unit, color string, count int, reverse bool) string {
 	if count <= 0 {
 		return ""
@@ -84,7 +84,7 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
 }
 
-// createStatusMessage ステータスメッセージを作成
+// createStatusMessage : ステータスメッセージを作成
 func createStatusMessage(label, status string) string {
 	return fmt.Sprintf("[%s] %s", label, status)
 }

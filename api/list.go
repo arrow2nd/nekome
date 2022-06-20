@@ -7,7 +7,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchOwnedListIDs ユーザが所有するリストの情報を取得
+// FetchOwnedListIDs : ユーザが所有するリストの情報を取得
 func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	opts := twitter.UserListLookupOpts{}
 
@@ -19,7 +19,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	return result.Raw.Lists, nil
 }
 
-// FetchListTweets リストのツイートを取得
+// FetchListTweets : リストのツイートを取得
 func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,

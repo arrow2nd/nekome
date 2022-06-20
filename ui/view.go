@@ -7,7 +7,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-// view ページ・タブ管理
+// view : ページ・タブ管理
 type view struct {
 	pages   *tview.Pages
 	tabView *tview.TextView
@@ -45,7 +45,8 @@ func (v *view) createPageId(id int) string {
 	return fmt.Sprintf("page_%d", id)
 }
 
-func (v *view) addPage(p page, focus bool) {
+// AddPage : ページを追加
+func (v *view) AddPage(p page, focus bool) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 

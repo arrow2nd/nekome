@@ -6,7 +6,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchHomeTileline ホームタイムラインを取得
+// FetchHomeTileline : ホームタイムラインを取得
 func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
 		TweetFields: tweetFields,
@@ -26,7 +26,7 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
 
-// FetchUserTimeline ユーザタイムラインを取得
+// FetchUserTimeline : ユーザタイムラインを取得
 func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserTweetTimelineOpts{
 		TweetFields: tweetFields,
@@ -46,7 +46,7 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
 
-// FetchUserMentionTimeline ユーザのメンションタイムラインを取得
+// FetchUserMentionTimeline : ユーザのメンションタイムラインを取得
 func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserMentionTimelineOpts{
 		TweetFields: tweetFields,

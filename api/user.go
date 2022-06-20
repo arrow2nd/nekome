@@ -7,7 +7,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchUser UserNameからユーザ情報を取得
+// FetchUser : UserNameからユーザ情報を取得
 func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 	opts := twitter.UserLookupOpts{
 		TweetFields: tweetFields,

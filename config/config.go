@@ -4,16 +4,16 @@ import (
 	"log"
 )
 
-// Config 設定
+// Config : 設定
 type Config struct {
-	// Cred 認証情報
+	// Cred : 認証情報
 	Cred *Cred
-	// Settings 設定情報
+	// Settings : 設定情報
 	Settings *Settings
 	dirPath  string
 }
 
-// New 生成
+// New : 生成
 func New() *Config {
 	path, err := getConfigDir()
 	if err != nil {

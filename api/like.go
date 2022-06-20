@@ -7,7 +7,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchLikedTweets ユーザのいいねしたツイートを取得
+// FetchLikedTweets : ユーザのいいねしたツイートを取得
 func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
 	opts := twitter.UserLikesLookupOpts{
 		TweetFields: tweetFields,
@@ -26,7 +26,7 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 	return result.Raw.Tweets, nil
 }
 
-// Like いいね
+// Like : いいね
 func (a *API) Like(tweetID string) error {
 	if _, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
 		return fmt.Errorf("like tweet error: %v", err)
@@ -35,7 +35,7 @@ func (a *API) Like(tweetID string) error {
 	return nil
 }
 
-// UnLike いいねを解除
+// UnLike : いいねを解除
 func (a *API) UnLike(tweetID string) error {
 	if _, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID); err != nil {
 		return fmt.Errorf("unlike tweet error: %v", err)

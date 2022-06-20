@@ -10,7 +10,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-// UI ユーザインターフェース
+// UI :  ユーザインターフェース
 type UI struct {
 	app         *tview.Application
 	view        *view
@@ -19,7 +19,7 @@ type UI struct {
 	mu          sync.Mutex
 }
 
-// New 生成
+// New : 生成
 func New() *UI {
 	return &UI{
 		app:         tview.NewApplication(),
@@ -29,7 +29,7 @@ func New() *UI {
 	}
 }
 
-// Init 初期化
+// Init : 初期化
 func (u *UI) Init(a *api.API, c *config.Config) {
 	// 日本語環境等での罫線の乱れ対策
 	runewidth.DefaultCondition.EastAsianWidth = false
@@ -45,11 +45,13 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// ページ
 	home := newTimelinePage(homeTL)
 	mention := newTimelinePage(mentionTL)
-	user := newUserPage()
+	user := newUserPage("imas_official")
+	userB := newUserPage("arrow_2nd")
 
-	u.view.addPage("Home", home, true)
-	u.view.addPage("Mention", mention, false)
-	u.view.addPage("User", user, false)
+	u.view.addPage(home, true)
+	u.view.addPage(mention, false)
+	u.view.addPage(user, false)
+	u.view.addPage(userB, false)
 
 	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 
@@ -73,7 +75,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.app.SetInputCapture(u.handleGlobalKeyEvents)
 }
 
-// Run 実行
+// Run : 実行
 func (u *UI) Run() error {
 	go u.eventReciever()
 	return u.app.Run()
@@ -86,8 +88,6 @@ func (u *UI) eventReciever() {
 			u.setStatusMessage(status, tcell.ColorDefault)
 		case status := <-shared.chErrorState:
 			u.setStatusMessage(status, tcell.ColorRed)
-		case <-shared.chDraw:
-			u.app.Draw()
 		}
 	}
 }
@@ -98,7 +98,7 @@ func (u *UI) redraw() {
 
 	pageId, _ := u.view.pages.GetFrontPage()
 	if pageId == "" {
-		shared.setErrorStatus("App", "no page to redraw")
+		shared.SetErrorStatus("App", "no page to redraw")
 		return
 	}
 
@@ -111,8 +111,10 @@ func (u *UI) redraw() {
 }
 
 func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	key := event.Key()
+
 	// アプリを終了
-	if event.Key() == tcell.KeyCtrlC {
+	if key == tcell.KeyCtrlC || key == tcell.KeyCtrlQ {
 		u.app.Stop()
 		return nil
 	}

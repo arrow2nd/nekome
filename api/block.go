@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// Block ユーザをブロック
+// Block : ユーザをブロック
 func (a *API) Block(userID string) error {
 	if _, err := a.client.UserBlocks(context.Background(), a.CurrentUser.ID, userID); err != nil {
 		return fmt.Errorf("user block error: %v", err)
@@ -14,7 +14,7 @@ func (a *API) Block(userID string) error {
 	return nil
 }
 
-// UnBlock ユーザのブロックを解除
+// UnBlock : ユーザのブロックを解除
 func (a *API) UnBlock(userID string) error {
 	if _, err := a.client.DeleteUserBlocks(context.Background(), a.CurrentUser.ID, userID); err != nil {
 		return fmt.Errorf("user unblock error: %v", err)

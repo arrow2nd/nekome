@@ -38,7 +38,8 @@ func newTweets() *tweets {
 	return t
 }
 
-func (t *tweets) getSinceID() string {
+// GetSinceID : 一番新しいツイートIDを取得
+func (t *tweets) GetSinceID() string {
 	if len(t.contents) == 0 {
 		return ""
 	}
@@ -46,18 +47,21 @@ func (t *tweets) getSinceID() string {
 	return t.contents[0].Tweet.ID
 }
 
-func (t *tweets) register(tweets []*twitter.TweetDictionary) {
+// Register : ツイートを登録
+func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	t.contents = append(tweets, t.contents...)
 }
 
+// RegisterPinned : ピン留めツイートを登録
 func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
 	t.pinned = tweet
 }
 
-func (t *tweets) draw() {
+// Draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
+func (t *tweets) Draw() {
 	width := getWindowWidth()
 
 	t.view.Clear()

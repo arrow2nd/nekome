@@ -6,12 +6,12 @@ import (
 	"github.com/arrow2nd/nekome/api"
 )
 
-// Cred 認証情報
+// Cred : 認証情報
 type Cred struct {
 	users []api.User
 }
 
-// Get 取得
+// Get : 取得
 func (c *Cred) Get(userName string) (*api.User, error) {
 	for _, user := range c.users {
 		if user.UserName == userName {
@@ -22,7 +22,7 @@ func (c *Cred) Get(userName string) (*api.User, error) {
 	return nil, fmt.Errorf("user \"%s\" does not exist", userName)
 }
 
-// Write 書込む
+// Write : 書込む
 func (c *Cred) Write(newUser *api.User) {
 	// 同じIDをもつユーザが居れば上書きする
 	for i, user := range c.users {
@@ -36,7 +36,7 @@ func (c *Cred) Write(newUser *api.User) {
 	c.users = append(c.users, *newUser)
 }
 
-// Delete 削除
+// Delete : 削除
 func (c *Cred) Delete(userName string) {
 	var tmp []api.User
 
@@ -49,7 +49,7 @@ func (c *Cred) Delete(userName string) {
 	c.users = tmp
 }
 
-// SaveCred 認証情報を保存
+// SaveCred : 認証情報を保存
 func (c *Config) SaveCred() error {
 	return c.save(credFileName, c.Cred.users)
 }

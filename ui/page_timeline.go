@@ -5,7 +5,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-// timelineType タイムラインの種類
+// timelineType : タイムラインの種類
 type timelineType string
 
 const (
@@ -30,7 +30,7 @@ func newTimelinePage(tt timelineType) *timelinePage {
 	return page
 }
 
-// Load タイムライン読み込み
+// Load : タイムライン読み込み
 func (t *timelinePage) Load() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -43,7 +43,7 @@ func (t *timelinePage) Load() {
 
 	shared.setStatus(t.name, "Loading...")
 
-	sinceID := t.tweets.getSinceID()
+	sinceID := t.tweets.GetSinceID()
 
 	switch t.tlType {
 	case homeTL:
@@ -57,8 +57,8 @@ func (t *timelinePage) Load() {
 		return
 	}
 
-	t.tweets.register(tweets)
-	t.tweets.draw()
+	t.tweets.Register(tweets)
+	t.tweets.Draw()
 
 	t.showLoadedStatus(len(tweets), rateLimit)
 }

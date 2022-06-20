@@ -10,35 +10,26 @@ var shared = Shared{
 	conf:          nil,
 	chNormalState: make(chan string, 1),
 	chErrorState:  make(chan string, 1),
-	chDraw:        make(chan bool, 1),
 }
 
-// Shared 共有
+// Shared : 全体共有
 type Shared struct {
 	api           *api.API
 	conf          *config.Config
 	chNormalState chan string
 	chErrorState  chan string
-	chDraw        chan bool
 }
 
-// setStatus ステータスメッセージを設定
-func (s *Shared) setStatus(label, status string) {
+// SetStatus : ステータスメッセージを設定
+func (s *Shared) SetStatus(label, status string) {
 	go func() {
 		shared.chNormalState <- createStatusMessage(label, status)
 	}()
 }
 
-// setErrorStatus エラーメッセージを設定
-func (s *Shared) setErrorStatus(label, errStatus string) {
+// SetErrorStatus : エラーメッセージを設定
+func (s *Shared) SetErrorStatus(label, errStatus string) {
 	go func() {
 		shared.chErrorState <- createStatusMessage(label, errStatus)
-	}()
-}
-
-// reqestDrawApp アプリの描画処理をリクエスト
-func (s *Shared) reqestDrawApp() {
-	go func() {
-		shared.chDraw <- true
 	}()
 }

@@ -71,6 +71,7 @@ func createMetricsView(color int32) *tview.TextView {
 	return t
 }
 
+// Load : ユーザタイムライン読み込み
 func (u *userPage) Load() {
 	shared.setStatus(u.name, "Loading...")
 
@@ -83,7 +84,7 @@ func (u *userPage) Load() {
 	}
 
 	// ユーザのツイートを取得
-	sinceID := u.tweets.getSinceID()
+	sinceID := u.tweets.GetSinceID()
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, 25)
 	if err != nil {
 		shared.setErrorStatus(u.name, err.Error())
@@ -96,8 +97,8 @@ func (u *userPage) Load() {
 		u.tweets.RegisterPinned(u.userDic.PinnedTweet)
 	}
 
-	u.tweets.register(tweets)
-	u.tweets.draw()
+	u.tweets.Register(tweets)
+	u.tweets.Draw()
 
 	u.showLoadedStatus(len(tweets), rateLimit)
 }

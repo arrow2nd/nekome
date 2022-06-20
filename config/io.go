@@ -24,7 +24,7 @@ func getConfigDir() (string, error) {
 	return filepath.Join(path, ".nekome"), nil
 }
 
-// LoadAll 一括読込み
+// LoadAll : 一括読込み
 func (c *Config) LoadAll() (bool, error) {
 	if ok, err := c.hasAllFileExists(); !ok {
 		return false, err
@@ -41,7 +41,7 @@ func (c *Config) LoadAll() (bool, error) {
 	return true, nil
 }
 
-// SaveAll 一括保存
+// SaveAll : 一括保存
 func (c *Config) SaveAll() error {
 	if err := c.SaveCred(); err != nil {
 		return err
