@@ -60,6 +60,14 @@ func (b *basePage) GetPrimivite() tview.Primitive {
 }
 
 func (b *basePage) showLoadedStatus(count int, r *twitter.RateLimit) {
-	text := fmt.Sprintf("%d tweets loaded (API limit: %d / %d)", count, r.Remaining, r.Limit)
+	text := ""
+	limit := fmt.Sprintf("(API limit: %d / %d)", r.Remaining, r.Limit)
+
+	if count <= 0 {
+		text = "no new tweets " + limit
+	} else {
+		text = fmt.Sprintf("%d tweets loaded %s", count, limit)
+	}
+
 	shared.setStatus(b.name, text)
 }
