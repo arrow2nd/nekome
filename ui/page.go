@@ -59,7 +59,7 @@ func (b *basePage) GetPrimivite() tview.Primitive {
 	return b.frame
 }
 
-func (b *basePage) showLoadedStatus(r *twitter.RateLimit) {
-	text := fmt.Sprintf("%d tweets loaded (API limit: %d / %d)", b.tweets.count, r.Remaining, r.Limit)
+func (b *basePage) showLoadedStatus(count int, r *twitter.RateLimit) {
+	text := fmt.Sprintf("%d tweets loaded (API limit: %d / %d)", count, r.Remaining, r.Limit)
 	shared.setStatus(b.name, text)
 }

@@ -60,7 +60,7 @@ func (t *timelinePage) Load() {
 	t.tweets.register(tweets)
 	t.tweets.draw()
 
-	t.showLoadedStatus(rateLimit)
+	t.showLoadedStatus(len(tweets), rateLimit)
 }
 
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
