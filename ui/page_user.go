@@ -73,12 +73,12 @@ func createMetricsView(color int32) *tview.TextView {
 
 // Load : ユーザタイムライン読み込み
 func (u *userPage) Load() {
-	shared.setStatus(u.name, "Loading...")
+	shared.SetStatus(u.name, "Loading...")
 
 	// ユーザの情報を取得
 	if u.userDic == nil {
 		if err := u.loadProfile(); err != nil {
-			shared.setErrorStatus(u.name, err.Error())
+			shared.SetErrorStatus(u.name, err.Error())
 			return
 		}
 	}
@@ -87,7 +87,7 @@ func (u *userPage) Load() {
 	sinceID := u.tweets.GetSinceID()
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, 25)
 	if err != nil {
-		shared.setErrorStatus(u.name, err.Error())
+		shared.SetErrorStatus(u.name, err.Error())
 		return
 	}
 

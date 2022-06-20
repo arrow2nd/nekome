@@ -41,7 +41,7 @@ func (t *timelinePage) Load() {
 		err       error
 	)
 
-	shared.setStatus(t.name, "Loading...")
+	shared.SetStatus(t.name, "Loading...")
 
 	sinceID := t.tweets.GetSinceID()
 
@@ -53,7 +53,7 @@ func (t *timelinePage) Load() {
 	}
 
 	if err != nil {
-		shared.setErrorStatus(t.name, err.Error())
+		shared.SetErrorStatus(t.name, err.Error())
 		return
 	}
 

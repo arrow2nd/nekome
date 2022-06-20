@@ -48,15 +48,15 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	user := newUserPage("imas_official")
 	userB := newUserPage("arrow_2nd")
 
-	u.view.addPage(home, true)
-	u.view.addPage(mention, false)
-	u.view.addPage(user, false)
-	u.view.addPage(userB, false)
+	u.view.AddPage(home, true)
+	u.view.AddPage(mention, false)
+	u.view.AddPage(user, false)
+	u.view.AddPage(userB, false)
 
 	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
 
 	// ステータスバー
-	u.statusBar.draw()
+	u.statusBar.Draw()
 
 	// コマンドライン
 	u.initCommandLine()

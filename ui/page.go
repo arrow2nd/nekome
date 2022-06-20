@@ -69,5 +69,5 @@ func (b *basePage) showLoadedStatus(count int, r *twitter.RateLimit) {
 		text = fmt.Sprintf("%d tweets loaded %s", count, limit)
 	}
 
-	shared.setStatus(b.name, text)
+	shared.SetStatus(b.name, text)
 }
