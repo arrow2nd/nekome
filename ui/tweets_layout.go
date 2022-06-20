@@ -76,6 +76,10 @@ func createFooter(tw *twitter.TweetObj) string {
 func createTweetText(tweet *twitter.TweetObj) string {
 	text := html.UnescapeString(tweet.Text) + "\n"
 
+	// 全角記号を置換
+	text = strings.ReplaceAll(text, "＃", "#")
+	text = strings.ReplaceAll(text, "＠", "@")
+
 	if tweet.Entities == nil {
 		return text
 	}
@@ -87,7 +91,7 @@ func createTweetText(tweet *twitter.TweetObj) string {
 
 	// メンションをハイライト
 	if len(tweet.Entities.Mentions) != 0 {
-		rep := regexp.MustCompile(`(^|[^\w@#$%&])[@＠](\w+)`)
+		rep := regexp.MustCompile(`(^|[^\w@#$%&])@(\w+)`)
 		text = rep.ReplaceAllString(text, "$1[blue]@$2[-:-:-]")
 	}
 
