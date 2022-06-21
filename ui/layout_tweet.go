@@ -40,14 +40,14 @@ func createUserText(u *twitter.UserObj, i int) string {
 		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), u.Name)
 	}
 
-	header := fmt.Sprintf(`[lightgray::b]%s [gray::i]@%s[-:-:-]`, name, u.UserName)
+	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]@%s[-:-:-]`, name, u.UserName)
 
 	if u.Verified {
-		header += "[blue] [-:-:-]"
+		header += "[blue] \uf4a1[-:-:-]"
 	}
 
 	if u.Protected {
-		header += "[gray] [-:-:-]"
+		header += "[gray] \uf83d[-:-:-]"
 	}
 
 	return header + "\n"
@@ -78,7 +78,7 @@ func createPollText(p []*twitter.PollObj) string {
 		per := float64(o.Votes) / float64(allVotes)
 		graph := strings.Repeat("▇", int(math.Floor(per*graphMaxWidth)))
 
-		text += fmt.Sprintf(" %s\n", o.Label)
+		text += fmt.Sprintf("\uf14a %s\n", o.Label)
 		text += fmt.Sprintf("[blue]%s[-:-:-] %.1f%% (%d)\n", graph, per*100, o.Votes)
 	}
 

@@ -26,11 +26,11 @@ func createUserInfo(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
-		texts = append(texts, " "+u.Location)
+		texts = append(texts, "\uf276 "+u.Location)
 	}
 
 	if u.URL != "" {
-		texts = append(texts, " "+u.URL)
+		texts = append(texts, "\uf838 "+u.URL)
 	}
 
 	return "[gray:-:-]" + strings.Join(texts, " | ")
