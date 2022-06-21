@@ -58,7 +58,7 @@ func (v *view) AddPage(p page, focus bool) {
 	v.drawTab()
 
 	// ページを追加
-	pageID := v.createPageTag(len(v.tabs) - 1)
+	pageID := createPageTag(len(v.tabs) - 1)
 	v.pages.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
@@ -81,7 +81,7 @@ func (v *view) selectPrevTab() {
 		index = pageCount - 1
 	}
 
-	v.tabView.Highlight(v.createPageTag(index))
+	v.tabView.Highlight(createPageTag(index))
 }
 
 // selectNextTab : 次のタブを選択
@@ -95,5 +95,5 @@ func (v *view) selectNextTab() {
 
 	index = (index + 1) % pageCount
 
-	v.tabView.Highlight(v.createPageTag(index))
+	v.tabView.Highlight(createPageTag(index))
 }

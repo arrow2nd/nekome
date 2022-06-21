@@ -25,8 +25,8 @@ func getWindowWidth() int {
 	return w - 2
 }
 
-// getStringDisplayColumn 文字列の表示列数を取得
-func getStringDisplayColumn(s string, w int) int {
+// getStringDisplayRow 文字列の表示列数を取得
+func getStringDisplayRow(s string, w int) int {
 	return int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
 }
 
