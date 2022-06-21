@@ -49,7 +49,7 @@ func newUserPage(userName string) *userPage {
 
 	p.flex.
 		SetDirection(tview.FlexRow).
-		AddItem(p.profile, 0, 1, false).
+		AddItem(p.profile, 1, 1, false).
 		AddItem(metrics, 1, 1, false).
 		AddItem(p.tweets.view, 0, 1, true)
 

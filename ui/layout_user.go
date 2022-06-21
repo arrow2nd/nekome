@@ -38,7 +38,7 @@ func createUserInfo(u *twitter.UserObj) string {
 
 func createUserProfile(u *twitter.UserObj) (string, int) {
 	isInfoEmpty := u.Location == "" && u.URL == ""
-	profile := createHeader(u, -1)
+	profile := createUserText(u, -1)
 
 	desc, col := createUserDesc(u.Description)
 	profile += fmt.Sprintf("[white:-:-]%s\n", desc)
