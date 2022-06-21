@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strings"
+
 	"github.com/gdamore/tcell/v2"
 )
 
@@ -21,13 +23,20 @@ func (u *UI) initCommandLine() {
 }
 
 // setStatusMessage : ステータスメッセージを設定して再描画
-func (u *UI) setStatusMessage(m string, c tcell.Color) {
+func (u *UI) setStatusMessage(s string) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
+	color := tcell.ColorDefault
+
+	// エラーステータスなら文字色を赤に
+	if strings.HasPrefix(s, "[ERR") {
+		color = tcell.ColorRed
+	}
+
 	u.commandLine.
-		SetPlaceholderTextColor(c).
-		SetPlaceholder(m)
+		SetPlaceholderTextColor(color).
+		SetPlaceholder(s)
 
 	u.app.Draw()
 }

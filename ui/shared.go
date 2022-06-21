@@ -6,30 +6,26 @@ import (
 )
 
 var shared = Shared{
-	api:           nil,
-	conf:          nil,
-	chNormalState: make(chan string, 1),
-	chErrorState:  make(chan string, 1),
+	api:      nil,
+	conf:     nil,
+	chStatus: make(chan string, 1),
 }
 
 // Shared : 全体共有
 type Shared struct {
-	api           *api.API
-	conf          *config.Config
-	chNormalState chan string
-	chErrorState  chan string
+	api      *api.API
+	conf     *config.Config
+	chStatus chan string
 }
 
 // SetStatus : ステータスメッセージを設定
 func (s *Shared) SetStatus(label, status string) {
 	go func() {
-		shared.chNormalState <- createStatusMessage(label, status)
+		shared.chStatus <- createStatusMessage(label, status)
 	}()
 }
 
 // SetErrorStatus : エラーメッセージを設定
 func (s *Shared) SetErrorStatus(label, errStatus string) {
-	go func() {
-		shared.chErrorState <- createStatusMessage(label, errStatus)
-	}()
+	s.SetStatus("ERR: "+label, errStatus)
 }

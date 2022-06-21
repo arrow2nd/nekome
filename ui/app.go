@@ -85,10 +85,8 @@ func (u *UI) Run() error {
 func (u *UI) eventReciever() {
 	for {
 		select {
-		case status := <-shared.chNormalState:
-			u.setStatusMessage(status, tcell.ColorDefault)
-		case status := <-shared.chErrorState:
-			u.setStatusMessage(status, tcell.ColorRed)
+		case status := <-shared.chStatus:
+			u.setStatusMessage(status)
 		}
 	}
 }
