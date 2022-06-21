@@ -19,20 +19,18 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 }
 
 // FetchListTweets : リストのツイートを取得
-func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, error) {
+func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForTL,
-		Expansions: []twitter.Expansion{
-			twitter.ExpansionAuthorID,
-		},
-		MaxResults: results,
+		Expansions:  tweetExpansions,
+		MaxResults:  results,
 	}
 
 	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
 	if e := checkError(err); e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), nil
+	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
 }
