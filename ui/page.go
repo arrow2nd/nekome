@@ -19,7 +19,7 @@ func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// リロード
-	if keyRune == 'R' {
+	if keyRune == 'r' {
 		go p.Load()
 		return nil
 	}
