@@ -45,8 +45,8 @@ func (t *tweets) GetSinceID() string {
 	return t.contents[0].Tweet.ID
 }
 
-// GetContentsCount コンテンツ数を取得
-func (t *tweets) GetContentsCount() int {
+// GetTweetsCount 表示中のツイート数を取得
+func (t *tweets) GetTweetsCount() int {
 	c := len(t.contents)
 
 	if t.pinned != nil {
@@ -115,7 +115,7 @@ func (t *tweets) Draw() {
 		}
 
 		// 末尾のツイートでないならセパレータを挿入
-		lastIndex := t.GetContentsCount() - 1
+		lastIndex := t.GetTweetsCount() - 1
 		if i < lastIndex {
 			fmt.Fprintln(t.view, createSeparator("─", width))
 		}
@@ -135,7 +135,7 @@ func (t *tweets) cursorUp() {
 	}
 
 	if idx--; idx < 0 {
-		idx = t.GetContentsCount() - 1
+		idx = t.GetTweetsCount() - 1
 	}
 
 	t.scrollToTweet(idx)
@@ -147,7 +147,7 @@ func (t *tweets) cursorDown() {
 		return
 	}
 
-	idx = (idx + 1) % t.GetContentsCount()
+	idx = (idx + 1) % t.GetTweetsCount()
 
 	t.scrollToTweet(idx)
 }
@@ -172,7 +172,7 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	}
 
 	if keyRune == 'G' {
-		lastIndex := t.GetContentsCount() - 1
+		lastIndex := t.GetTweetsCount() - 1
 		t.scrollToTweet(lastIndex)
 		return nil
 	}
