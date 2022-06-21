@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -28,7 +29,8 @@ func newView() *view {
 		SetTextAlign(tview.AlignLeft).
 		SetHighlightedFunc(func(added, removed, remaining []string) {
 			v.pages.SwitchToPage(added[0])
-		})
+		}).
+		SetBackgroundColor(tcell.ColorDefault)
 
 	return v
 }
