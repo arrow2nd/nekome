@@ -156,6 +156,20 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
 
+	// 1行スクロール
+	if key == tcell.KeyCtrlK {
+		r, c := t.view.GetScrollOffset()
+		t.view.ScrollTo(r-1, c)
+		return nil
+	}
+
+	if key == tcell.KeyCtrlJ {
+		r, c := t.view.GetScrollOffset()
+		t.view.ScrollTo(r+1, c)
+		return nil
+	}
+
+	// カーソルを移動
 	if key == tcell.KeyUp || keyRune == 'k' {
 		t.cursorUp()
 		return nil
@@ -166,12 +180,12 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	if keyRune == 'g' {
+	if key == tcell.KeyHome || keyRune == 'g' {
 		t.scrollToTweet(0)
 		return nil
 	}
 
-	if keyRune == 'G' {
+	if key == tcell.KeyEnd || keyRune == 'G' {
 		lastIndex := t.GetTweetsCount() - 1
 		t.scrollToTweet(lastIndex)
 		return nil
