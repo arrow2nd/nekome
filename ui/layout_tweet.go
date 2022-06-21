@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"html"
+	"math"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -23,16 +24,18 @@ func createAnnotation(s string, author *twitter.UserObj) string {
 }
 
 func createTweetLayout(content *twitter.TweetDictionary, index int) string {
-	text := createHeader(content.Author, index)
-	text += createTweetText(&content.Tweet)
-	text += createFooter(&content.Tweet)
+	layout := createUserText(content.Author, index)
+	layout += createTweetText(&content.Tweet)
+	layout += createPollText(content.AttachmentPolls)
+	layout += createTweetDetailText(&content.Tweet)
 
-	return text
+	return layout
 }
 
-func createHeader(u *twitter.UserObj, i int) string {
+func createUserText(u *twitter.UserObj, i int) string {
 	name := u.Name
 
+	// カーソル選択用のタグを埋め込む
 	if i >= 0 {
 		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), u.Name)
 	}
@@ -50,7 +53,43 @@ func createHeader(u *twitter.UserObj, i int) string {
 	return header + "\n"
 }
 
-func createFooter(tw *twitter.TweetObj) string {
+func createPollText(p []*twitter.PollObj) string {
+	if len(p) == 0 {
+		return ""
+	}
+
+	// グラフの表示幅を計算
+	windowWidth := float64(getWindowWidth())
+	graphMaxWidth := float64(30)
+
+	if graphMaxWidth > windowWidth {
+		graphMaxWidth = windowWidth
+	}
+
+	// 総投票数を計算
+	allVotes := 0
+	for _, o := range p[0].Options {
+		allVotes += o.Votes
+	}
+
+	// グラフを作成
+	text := "\n"
+	for _, o := range p[0].Options {
+		per := float64(o.Votes) / float64(allVotes)
+		graph := strings.Repeat("▇", int(math.Floor(per*graphMaxWidth)))
+
+		text += fmt.Sprintf(" %s\n", o.Label)
+		text += fmt.Sprintf("[blue]%s[-:-:-] %.1f%% (%d)\n", graph, per*100, o.Votes)
+	}
+
+	// アンケートの詳細情報
+	endDate := convertDateString(p[0].EndDateTime)
+	text += fmt.Sprintf("[gray]%s | %d votes | ends on %s[-:-:-]\n\n", p[0].VotingStatus, allVotes, endDate)
+
+	return text
+}
+
+func createTweetDetailText(tw *twitter.TweetObj) string {
 	metrics := ""
 
 	likes := tw.PublicMetrics.Likes
@@ -68,9 +107,8 @@ func createFooter(tw *twitter.TweetObj) string {
 	}
 
 	createAt := convertDateString(tw.CreatedAt)
-	info := fmt.Sprintf("[gray]%s - via %s[-:-:-]", createAt, tw.Source)
 
-	return info + metrics
+	return fmt.Sprintf("[gray]%s | via %s[-:-:-]%s", createAt, tw.Source, metrics)
 }
 
 func createTweetText(tweet *twitter.TweetObj) string {
