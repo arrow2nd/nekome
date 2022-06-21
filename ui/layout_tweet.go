@@ -11,7 +11,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// createTweetTag : 管理用のタグを作成
+// createTweetTag : ツイート管理用のタグ文字列を作成
 func createTweetTag(id int) string {
 	return fmt.Sprintf("tweet_%d", id)
 }

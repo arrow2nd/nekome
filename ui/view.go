@@ -34,18 +34,18 @@ func newView() *view {
 	return v
 }
 
+// createPageTag : ページ管理用のタグ文字列を作成
+func createPageTag(id int) string {
+	return fmt.Sprintf("page_%d", id)
+}
+
 // drawTab : タブを描画
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
 	for i, name := range v.tabs {
-		fmt.Fprintf(v.tabView, `["%s"] %s `, v.createPageTag(i), name)
+		fmt.Fprintf(v.tabView, `["%s"] %s `, createPageTag(i), name)
 	}
-}
-
-// createPageTag : 管理用のページタグ文字列を作成
-func (v *view) createPageTag(id int) string {
-	return fmt.Sprintf("page_%d", id)
 }
 
 // AddPage : ページを追加
