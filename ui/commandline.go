@@ -13,7 +13,7 @@ func (u *UI) initCommandLine() {
 		SetPlaceholderStyle(tcell.StyleDefault).
 		SetChangedFunc(func(text string) {
 			if text == "" {
-				u.app.SetFocus(u.view.pages)
+				u.app.SetFocus(u.view.pagesView)
 			}
 		}).
 		SetFocusFunc(func() {
@@ -48,7 +48,7 @@ func (u *UI) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	// フォーカスをページへ移す
 	if key == tcell.KeyEsc {
 		u.commandLine.SetText("")
-		u.app.SetFocus(u.view.pages)
+		u.app.SetFocus(u.view.pagesView)
 		return nil
 
 	}

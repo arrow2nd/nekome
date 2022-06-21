@@ -101,7 +101,8 @@ func (u *userPage) Load() {
 	u.tweets.Register(tweets)
 	u.tweets.Draw()
 
-	u.showLoadedStatus(len(tweets), rateLimit)
+	u.updateDetail("", rateLimit)
+	u.showLoadedStatus(len(tweets))
 }
 
 // loadProfile : プロフィール情報の読み込み

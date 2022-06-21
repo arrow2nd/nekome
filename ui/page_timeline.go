@@ -60,7 +60,8 @@ func (t *timelinePage) Load() {
 	t.tweets.Register(tweets)
 	t.tweets.Draw()
 
-	t.showLoadedStatus(len(tweets), rateLimit)
+	t.updateDetail("", rateLimit)
+	t.showLoadedStatus(len(tweets))
 }
 
 // handleKeyEvents : タイムラインページのキーハンドラ

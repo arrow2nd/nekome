@@ -9,17 +9,19 @@ import (
 )
 
 type view struct {
-	pages   *tview.Pages
-	tabView *tview.TextView
-	tabs    []string
-	mu      sync.Mutex
+	pagesView *tview.Pages
+	tabView   *tview.TextView
+	pages     map[string]page
+	tabNames  []string
+	mu        sync.Mutex
 }
 
 func newView() *view {
 	v := &view{
-		pages:   tview.NewPages(),
-		tabView: tview.NewTextView(),
-		tabs:    []string{},
+		pagesView: tview.NewPages(),
+		tabView:   tview.NewTextView(),
+		pages:     map[string]page{},
+		tabNames:  []string{},
 	}
 
 	v.tabView.
@@ -27,7 +29,8 @@ func newView() *view {
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
 		SetHighlightedFunc(func(added, removed, remaining []string) {
-			v.pages.SwitchToPage(added[0])
+			v.pagesView.SwitchToPage(added[0])
+			v.pages[added[0]].OnVisible()
 		}).
 		SetBackgroundColor(tcell.ColorDefault)
 
@@ -43,7 +46,7 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
-	for i, name := range v.tabs {
+	for i, name := range v.tabNames {
 		fmt.Fprintf(v.tabView, `["%s"] %s `, createPageTag(i), name)
 	}
 }
@@ -54,12 +57,14 @@ func (v *view) AddPage(p page, focus bool) {
 	defer v.mu.Unlock()
 
 	// タブを追加
-	v.tabs = append(v.tabs, p.GetName())
+	v.tabNames = append(v.tabNames, p.GetName())
 	v.drawTab()
 
+	pageID := createPageTag(len(v.tabNames) - 1)
+
 	// ページを追加
-	pageID := createPageTag(len(v.tabs) - 1)
-	v.pages.AddPage(pageID, p.GetPrimivite(), true, focus)
+	v.pages[pageID] = p
+	v.pagesView.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
 		v.tabView.Highlight(pageID)
@@ -75,7 +80,7 @@ func (v *view) selectPrevTab() {
 		return
 	}
 
-	pageCount := v.pages.GetPageCount()
+	pageCount := v.pagesView.GetPageCount()
 
 	if index--; index < 0 {
 		index = pageCount - 1
@@ -91,7 +96,7 @@ func (v *view) selectNextTab() {
 		return
 	}
 
-	pageCount := v.pages.GetPageCount()
+	pageCount := v.pagesView.GetPageCount()
 
 	index = (index + 1) % pageCount
 

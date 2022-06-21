@@ -13,6 +13,7 @@ type page interface {
 	GetName() string
 	GetPrimivite() tview.Primitive
 	Load()
+	OnVisible()
 }
 
 // handlePageKeyEvents : ページの共通キーハンドラ
@@ -31,6 +32,7 @@ func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
 type basePage struct {
 	page
 	name   string
+	detail string
 	frame  *tview.Frame
 	tweets *tweets
 	mu     sync.Mutex
@@ -49,26 +51,33 @@ func (b *basePage) GetName() string {
 	return b.name
 }
 
+// GetPrimivite : プリミティブを取得
+func (b *basePage) GetPrimivite() tview.Primitive {
+	return b.frame
+}
+
 // SetFrame : フレームを設定
 func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame = tview.NewFrame(p)
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
-// GetPrimivite : プリミティブを取得
-func (b *basePage) GetPrimivite() tview.Primitive {
-	return b.frame
+// OnVisible : ページが表示された
+func (b *basePage) OnVisible() {
+	shared.SetDetail(b.detail)
+}
+
+func (b *basePage) updateDetail(s string, r *twitter.RateLimit) {
+	b.detail = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
+	shared.SetDetail(b.detail)
 }
 
 // showLoadedStatus : ロード後のステータスメッセージを設定
-func (b *basePage) showLoadedStatus(count int, r *twitter.RateLimit) {
-	text := ""
-	limit := fmt.Sprintf("(API limit: %d / %d)", r.Remaining, r.Limit)
+func (b *basePage) showLoadedStatus(count int) {
+	text := "no new tweets"
 
-	if count <= 0 {
-		text = "no new tweets " + limit
-	} else {
-		text = fmt.Sprintf("%d tweets loaded %s", count, limit)
+	if count > 0 {
+		text = fmt.Sprintf("%d tweets loaded", count)
 	}
 
 	shared.SetStatus(b.name, text)

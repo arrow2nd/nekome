@@ -53,10 +53,10 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.view.AddPage(user, false)
 	u.view.AddPage(userB, false)
 
-	u.view.pages.SetInputCapture(u.handlePageKeyEvent)
+	u.view.pagesView.SetInputCapture(u.handlePageKeyEvent)
 
 	// ステータスバー
-	u.statusBar.Draw()
+	u.statusBar.DrawLeft()
 
 	// コマンドライン
 	u.initCommandLine()
@@ -69,7 +69,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 		AddItem(u.view.tabView, 0, 0, 1, 1, 0, 0, false).
 		AddItem(u.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
 		AddItem(u.commandLine, 3, 0, 1, 1, 0, 0, false).
-		AddItem(u.view.pages, 1, 0, 1, 1, 0, 0, true)
+		AddItem(u.view.pagesView, 1, 0, 1, 1, 0, 0, true)
 
 	u.app.SetRoot(layout, true)
 	u.app.SetInputCapture(u.handleGlobalKeyEvents)
@@ -87,6 +87,9 @@ func (u *UI) eventReciever() {
 		select {
 		case status := <-shared.chStatus:
 			u.setStatusMessage(status)
+		case detail := <-shared.chDetail:
+			u.statusBar.DrawRight(detail)
+			u.app.Draw()
 		}
 	}
 }
@@ -96,18 +99,18 @@ func (u *UI) redraw() {
 	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
 	// https://github.com/rivo/tview/issues/693
 
-	pageId, _ := u.view.pages.GetFrontPage()
+	pageId, _ := u.view.pagesView.GetFrontPage()
 	if pageId == "" {
 		shared.SetErrorStatus("App", "no page to redraw")
 		return
 	}
 
 	// 一度非表示にして画面をクリア
-	u.view.pages.HidePage(pageId)
+	u.view.pagesView.HidePage(pageId)
 
 	// 強制的に再描画して画面を再表示
 	u.app.ForceDraw()
-	u.view.pages.ShowPage(pageId)
+	u.view.pagesView.ShowPage(pageId)
 }
 
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
