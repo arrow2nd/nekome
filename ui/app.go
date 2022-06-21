@@ -115,7 +115,7 @@ func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
 	// アプリを終了
-	if key == tcell.KeyCtrlC || key == tcell.KeyCtrlQ {
+	if key == tcell.KeyCtrlQ {
 		u.app.Stop()
 		return nil
 	}
