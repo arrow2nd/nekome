@@ -25,7 +25,7 @@ func getWindowWidth() int {
 	return w - 2
 }
 
-// getStringDisplayRow 文字列の表示列数を取得
+// getStringDisplayRow 文字列の表示行数を取得
 func getStringDisplayRow(s string, w int) int {
 	return int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
 }
@@ -101,7 +101,7 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
 }
 
-// createStatusMessage : ステータスメッセージを作成
+// createStatusMessage : ラベル付きステータスメッセージを作成
 func createStatusMessage(label, status string) string {
 	return fmt.Sprintf("[%s] %s", label, status)
 }

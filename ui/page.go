@@ -16,8 +16,8 @@ type page interface {
 	OnVisible()
 }
 
-// handlePageKeyEvents : ページの共通キーハンドラ
-func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
+// handleCommonPageKeyEvent : ページ共通のキーハンドラ
+func handleCommonPageKeyEvent(p page, event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// リロード
@@ -31,18 +31,19 @@ func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
 
 type basePage struct {
 	page
-	name   string
-	detail string
-	frame  *tview.Frame
-	tweets *tweets
-	mu     sync.Mutex
+	name      string
+	indicator string
+	frame     *tview.Frame
+	tweets    *tweets
+	mu        sync.Mutex
 }
 
 func newBasePage(name string) *basePage {
 	return &basePage{
-		name:   name,
-		frame:  nil,
-		tweets: newTweets(),
+		name:      name,
+		indicator: "",
+		frame:     nil,
+		tweets:    newTweets(),
 	}
 }
 
@@ -62,18 +63,20 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
-// OnVisible : ページが表示された
+// OnVisible : ページが表示された際に呼ばれるコールバック
 func (b *basePage) OnVisible() {
-	shared.SetDetail(b.detail)
+	// 以前のインジケータの内容を反映
+	shared.SetIndicator(b.indicator)
 }
 
-func (b *basePage) updateDetail(s string, r *twitter.RateLimit) {
-	b.detail = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
-	shared.SetDetail(b.detail)
+// updateIndicator : インジケータを更新
+func (b *basePage) updateIndicator(s string, r *twitter.RateLimit) {
+	b.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
+	shared.SetIndicator(b.indicator)
 }
 
-// showLoadedStatus : ロード後のステータスメッセージを設定
-func (b *basePage) showLoadedStatus(count int) {
+// updateLoadedStatus : ステータスメッセージを更新
+func (b *basePage) updateLoadedStatus(count int) {
 	text := "no new tweets"
 
 	if count > 0 {

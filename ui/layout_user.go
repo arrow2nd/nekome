@@ -7,14 +7,13 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-const userBioColMax = 3
+const userBioRowMax = 3
 
-// createUserBioLayout : レイアウト済みのBIO文字列を作成し、その表示列数を返す
+// createUserBioLayout : レイアウト済みのBIO文字列を作成し、その表示行数を返す
 func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
-	desc = truncate(desc, w*userBioColMax)
 
-	return desc, getStringDisplayRow(desc, w)
+	return truncate(desc, w*userBioRowMax), getStringDisplayRow(desc, w)
 }
 
 // createUserDetailLayout : レイアウト済みのユーザ詳細文字列を作成
@@ -32,7 +31,7 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 	return "[gray:-:-]" + strings.Join(texts, " | ")
 }
 
-// createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示列数を返す
+// createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示行数を返す
 func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
 	width := w - userProfilePaddingX*2
 

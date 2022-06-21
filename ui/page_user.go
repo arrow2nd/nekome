@@ -101,11 +101,11 @@ func (u *userPage) Load() {
 	u.tweets.Register(tweets)
 	u.tweets.Draw()
 
-	u.updateDetail("", rateLimit)
-	u.showLoadedStatus(len(tweets))
+	u.updateIndicator("", rateLimit)
+	u.updateLoadedStatus(len(tweets))
 }
 
-// loadProfile : プロフィール情報の読み込み
+// loadProfile : プロフィール読み込み
 func (u *userPage) loadProfile() error {
 	users, err := shared.api.FetchUser([]string{u.userName})
 	if err != nil {
@@ -113,7 +113,7 @@ func (u *userPage) loadProfile() error {
 	}
 
 	if len(users) == 0 || users[0] == nil {
-		return err
+		return fmt.Errorf("no user profile data: %w", err)
 	}
 
 	u.userDic = users[0]
@@ -131,7 +131,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	profile, row := createProfileLayout(ur, width)
 	fmt.Fprint(u.profile, profile)
 
-	// プロフィールの行数に合わせてリサイズ（+1 は下辺の padding 分）
+	// プロフィールの行数に合わせて表示域をリサイズ（+1 は下辺の padding 分）
 	u.flex.ResizeItem(u.profile, row+1, 1)
 
 	// ツイート・フォロイー・フォロワー数
@@ -142,5 +142,5 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 
 // handleKeyEvents : ユーザページのキーハンドラ
 func (u *userPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	return handlePageKeyEvents(u, event)
+	return handleCommonPageKeyEvent(u, event)
 }

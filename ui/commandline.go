@@ -10,7 +10,9 @@ import (
 func (u *UI) initCommandLine() {
 	u.commandLine.
 		SetFieldBackgroundColor(tcell.ColorDefault).
-		SetPlaceholderStyle(tcell.StyleDefault).
+		SetPlaceholderStyle(tcell.StyleDefault)
+
+	u.commandLine.
 		SetChangedFunc(func(text string) {
 			if text == "" {
 				u.app.SetFocus(u.view.pagesView)
@@ -18,15 +20,13 @@ func (u *UI) initCommandLine() {
 		}).
 		SetFocusFunc(func() {
 			u.commandLine.SetText(":")
-		}).
-		SetInputCapture(u.handleCommandLineKeyEvents)
+		})
+
+	u.commandLine.SetInputCapture(u.handleCommandLineKeyEvents)
 }
 
-// setStatusMessage : ステータスメッセージを設定して再描画
-func (u *UI) setStatusMessage(s string) {
-	u.mu.Lock()
-	defer u.mu.Unlock()
-
+// updateStatusMessage : ステータスメッセージを更新
+func (u *UI) updateStatusMessage(s string) {
 	color := tcell.ColorDefault
 
 	// エラーステータスなら文字色を赤に

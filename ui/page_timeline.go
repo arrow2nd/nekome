@@ -60,11 +60,11 @@ func (t *timelinePage) Load() {
 	t.tweets.Register(tweets)
 	t.tweets.Draw()
 
-	t.updateDetail("", rateLimit)
-	t.showLoadedStatus(len(tweets))
+	t.updateIndicator("", rateLimit)
+	t.updateLoadedStatus(len(tweets))
 }
 
 // handleKeyEvents : タイムラインページのキーハンドラ
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	return handlePageKeyEvents(t, event)
+	return handleCommonPageKeyEvent(t, event)
 }

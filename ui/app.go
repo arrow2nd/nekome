@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"sync"
-
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
@@ -16,7 +14,6 @@ type UI struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *tview.InputField
-	mu          sync.Mutex
 }
 
 // New : 生成
@@ -34,7 +31,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// 日本語環境等での罫線の乱れ対策
 	runewidth.DefaultCondition.EastAsianWidth = false
 
-	// 共有
+	// 全体共有
 	shared.api = a
 	shared.conf = c
 
@@ -56,7 +53,7 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	u.view.pagesView.SetInputCapture(u.handlePageKeyEvent)
 
 	// ステータスバー
-	u.statusBar.DrawLeft()
+	u.statusBar.DrawAccountInfo()
 
 	// コマンドライン
 	u.initCommandLine()
@@ -86,15 +83,15 @@ func (u *UI) eventReciever() {
 	for {
 		select {
 		case status := <-shared.chStatus:
-			u.setStatusMessage(status)
-		case detail := <-shared.chDetail:
-			u.statusBar.DrawRight(detail)
+			u.updateStatusMessage(status)
+		case indicator := <-shared.chIndicator:
+			u.statusBar.DrawPageIndicator(indicator)
 			u.app.Draw()
 		}
 	}
 }
 
-// redraw : 全体を再描画
+// redraw : アプリ全体を再描画
 func (u *UI) redraw() {
 	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
 	// https://github.com/rivo/tview/issues/693

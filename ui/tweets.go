@@ -23,15 +23,18 @@ func newTweets() *tweets {
 		contents: []*twitter.TweetDictionary{},
 	}
 
-	t.view.SetDynamicColors(true).
+	t.view.
+		SetDynamicColors(true).
 		SetScrollable(true).
 		SetWrap(true).
 		SetRegions(true).
+		SetBackgroundColor(tcell.ColorDefault)
+
+	t.view.
 		SetHighlightedFunc(func(added, removed, remaining []string) {
 			t.view.ScrollToHighlight()
 		}).
-		SetInputCapture(t.handleKeyEvents).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetInputCapture(t.handleKeyEvents)
 
 	return t
 }
