@@ -12,8 +12,9 @@ const userBioRowMax = 3
 // createUserBioLayout : レイアウト済みのBIO文字列を作成し、その表示行数を返す
 func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
+	desc = truncate(desc, w*userBioRowMax)
 
-	return truncate(desc, w*userBioRowMax), getStringDisplayRow(desc, w)
+	return desc, getStringDisplayRow(desc, w)
 }
 
 // createUserDetailLayout : レイアウト済みのユーザ詳細文字列を作成
