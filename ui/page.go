@@ -15,6 +15,7 @@ type page interface {
 	Load()
 }
 
+// handlePageKeyEvents : ページの共通キーハンドラ
 func handlePageKeyEvents(p page, event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
@@ -59,6 +60,7 @@ func (b *basePage) GetPrimivite() tview.Primitive {
 	return b.frame
 }
 
+// showLoadedStatus : ロード後のステータスメッセージを設定
 func (b *basePage) showLoadedStatus(count int, r *twitter.RateLimit) {
 	text := ""
 	limit := fmt.Sprintf("(API limit: %d / %d)", r.Remaining, r.Limit)

@@ -63,6 +63,7 @@ func (t *timelinePage) Load() {
 	t.showLoadedStatus(len(tweets), rateLimit)
 }
 
+// handleKeyEvents : タイムラインページのキーハンドラ
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	return handlePageKeyEvents(t, event)
 }

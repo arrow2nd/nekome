@@ -81,6 +81,7 @@ func (u *UI) Run() error {
 	return u.app.Run()
 }
 
+// eventReciever : イベントレシーバ
 func (u *UI) eventReciever() {
 	for {
 		select {
@@ -92,6 +93,7 @@ func (u *UI) eventReciever() {
 	}
 }
 
+// redraw : 全体を再描画
 func (u *UI) redraw() {
 	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
 	// https://github.com/rivo/tview/issues/693
@@ -110,6 +112,7 @@ func (u *UI) redraw() {
 	u.view.pages.ShowPage(pageId)
 }
 
+// handleGlobalKeyEvents : アプリ全体のキーハンドラ
 func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
@@ -122,6 +125,7 @@ func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	return event
 }
 
+// handlePageKeyEvent : ページビューのキーハンドラ
 func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()

@@ -11,42 +11,34 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-func createSeparator(s string, width int) string {
-	return fmt.Sprintf("[gray:-:-]%s[-:-:-]", strings.Repeat(s, width))
-}
-
-func createTweetId(id int) string {
+// createTweetTag : 管理用のタグを作成
+func createTweetTag(id int) string {
 	return fmt.Sprintf("tweet_%d", id)
 }
 
+// createAnnotation : 「RT by」等のアノテーション文字列を作成
 func createAnnotation(s string, author *twitter.UserObj) string {
 	return fmt.Sprintf("[blue:-:-]%s %s [:-:i]@%s[-:-:-]", s, author.Name, author.UserName)
 }
 
-func createTweetLayout(content *twitter.TweetDictionary, i, w int) string {
-	layout := createUserText(content.Author, i, w)
-	layout += createTweetText(&content.Tweet)
-	layout += createPollText(content.AttachmentPolls)
-	layout += createTweetDetailText(&content.Tweet)
-
-	return layout
-}
-
-func createUserText(u *twitter.UserObj, i, w int) string {
+// createUserInfoLayout : レイアウト済みのユーザ情報文字列を作成
+func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	name := truncate(u.Name, w/2)
 	userName := truncate("@"+u.UserName, w/2)
 
 	// カーソル選択用のタグを埋め込む
 	if i >= 0 {
-		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), name)
+		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetTag(i), name)
 	}
 
 	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]%s[-:-:-]`, name, userName)
 
+	// 認証済み
 	if u.Verified {
 		header += "[blue] \uf4a1[-:-:-]"
 	}
 
+	// 鍵付き
 	if u.Protected {
 		header += "[gray] \uf83d[-:-:-]"
 	}
@@ -54,7 +46,8 @@ func createUserText(u *twitter.UserObj, i, w int) string {
 	return header + "\n"
 }
 
-func createPollText(p []*twitter.PollObj) string {
+// createPollLayout : レイアウト済みの投票文字列を作成
+func createPollLayout(p []*twitter.PollObj) string {
 	if len(p) == 0 {
 		return ""
 	}
@@ -83,14 +76,15 @@ func createPollText(p []*twitter.PollObj) string {
 		text += fmt.Sprintf("[blue]%s[-:-:-] %.1f%% (%d)\n", graph, per*100, o.Votes)
 	}
 
-	// アンケートの詳細情報
+	// 投票の詳細情報
 	endDate := convertDateString(p[0].EndDateTime)
 	text += fmt.Sprintf("[gray]%s | %d votes | ends on %s[-:-:-]\n\n", p[0].VotingStatus, allVotes, endDate)
 
 	return text
 }
 
-func createTweetDetailText(tw *twitter.TweetObj) string {
+// createTweetDetailLayout : レイアウト済みのツイート詳細文字列を作成
+func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	metrics := ""
 
 	likes := tw.PublicMetrics.Likes
@@ -112,7 +106,8 @@ func createTweetDetailText(tw *twitter.TweetObj) string {
 	return fmt.Sprintf("[gray]%s | via %s[-:-:-]%s", createAt, tw.Source, metrics)
 }
 
-func createTweetText(tweet *twitter.TweetObj) string {
+// createTweetTextLayout : レイアウト済みのツイート文字列を作成
+func createTweetTextLayout(tweet *twitter.TweetObj) string {
 	text := html.UnescapeString(tweet.Text) + "\n"
 
 	// 全角記号を置換
@@ -137,6 +132,7 @@ func createTweetText(tweet *twitter.TweetObj) string {
 	return text
 }
 
+// highlightHashtags : ハッシュタグをハイライトしたツイート文字列を作成
 func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	result := ""
 	runes := []rune(text)
@@ -175,4 +171,12 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	}
 
 	return result
+}
+
+// createTweetLayout : レイアウト済みのツイート文字列を作成
+func createTweetLayout(c *twitter.TweetDictionary, i, w int) string {
+	return createUserInfoLayout(c.Author, i, w) +
+		createTweetTextLayout(&c.Tweet) +
+		createPollLayout(c.AttachmentPolls) +
+		createTweetDetailLayout(&c.Tweet)
 }

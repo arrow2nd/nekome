@@ -45,7 +45,7 @@ func (t *tweets) GetSinceID() string {
 	return t.contents[0].Tweet.ID
 }
 
-// GetTweetsCount 表示中のツイート数を取得
+// GetTweetsCount : 表示中のツイート数を取得
 func (t *tweets) GetTweetsCount() int {
 	c := len(t.contents)
 
@@ -124,10 +124,12 @@ func (t *tweets) Draw() {
 	t.scrollToTweet(0)
 }
 
+// scrollToTweet : 指定ツイートまでスクロール
 func (t *tweets) scrollToTweet(i int) {
-	t.view.Highlight(createTweetId(i))
+	t.view.Highlight(createTweetTag(i))
 }
 
+// cursorUp : カーソルを上に移動
 func (t *tweets) cursorUp() {
 	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
@@ -141,6 +143,7 @@ func (t *tweets) cursorUp() {
 	t.scrollToTweet(idx)
 }
 
+// cursorDown : カーソルを下に移動
 func (t *tweets) cursorDown() {
 	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
@@ -152,6 +155,7 @@ func (t *tweets) cursorDown() {
 	t.scrollToTweet(idx)
 }
 
+// handleKeyEvents : ツイートビューのキーハンドラ
 func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()

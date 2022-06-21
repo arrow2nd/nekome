@@ -60,6 +60,7 @@ func newUserPage(userName string) *userPage {
 	return p
 }
 
+// createMetricsView : 各メトリクス表示用のTextViewを作成
 func createMetricsView(color int32) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
@@ -103,6 +104,7 @@ func (u *userPage) Load() {
 	u.showLoadedStatus(len(tweets), rateLimit)
 }
 
+// loadProfile : プロフィール情報の読み込み
 func (u *userPage) loadProfile() error {
 	users, err := shared.api.FetchUser([]string{u.userName})
 	if err != nil {
@@ -118,17 +120,18 @@ func (u *userPage) loadProfile() error {
 	return nil
 }
 
+// drawProfile : プロフィールを描画
 func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	width := getWindowWidth()
 
 	u.profile.Clear()
 
 	// プロフィール
-	profile, col := createProfileLayout(ur, width)
+	profile, row := createProfileLayout(ur, width)
 	fmt.Fprint(u.profile, profile)
 
 	// プロフィールの行数に合わせてリサイズ（+1 は下辺の padding 分）
-	u.flex.ResizeItem(u.profile, col+1, 1)
+	u.flex.ResizeItem(u.profile, row+1, 1)
 
 	// ツイート・フォロイー・フォロワー数
 	u.tweetMetrics.SetText(fmt.Sprintf("%d Tweets", ur.PublicMetrics.Tweets))
@@ -136,6 +139,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	u.followersMetrics.SetText(fmt.Sprintf("%d Followers", ur.PublicMetrics.Followers))
 }
 
+// handleKeyEvents : ユーザページのキーハンドラ
 func (u *userPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	return handlePageKeyEvents(u, event)
 }

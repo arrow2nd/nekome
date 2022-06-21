@@ -8,7 +8,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-// view : ページ・タブ管理
 type view struct {
 	pages   *tview.Pages
 	tabView *tview.TextView
@@ -35,15 +34,17 @@ func newView() *view {
 	return v
 }
 
+// drawTab : タブを描画
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
 	for i, name := range v.tabs {
-		fmt.Fprintf(v.tabView, `["%s"] %s `, v.createPageId(i), name)
+		fmt.Fprintf(v.tabView, `["%s"] %s `, v.createPageTag(i), name)
 	}
 }
 
-func (v *view) createPageId(id int) string {
+// createPageTag : 管理用のページタグ文字列を作成
+func (v *view) createPageTag(id int) string {
 	return fmt.Sprintf("page_%d", id)
 }
 
@@ -57,7 +58,7 @@ func (v *view) AddPage(p page, focus bool) {
 	v.drawTab()
 
 	// ページを追加
-	pageID := v.createPageId(len(v.tabs) - 1)
+	pageID := v.createPageTag(len(v.tabs) - 1)
 	v.pages.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
@@ -67,6 +68,7 @@ func (v *view) AddPage(p page, focus bool) {
 	go p.Load()
 }
 
+// selectPrevTab : 前のタブを選択
 func (v *view) selectPrevTab() {
 	index := getHighlightId(v.tabView.GetHighlights())
 	if index == -1 {
@@ -79,9 +81,10 @@ func (v *view) selectPrevTab() {
 		index = pageCount - 1
 	}
 
-	v.tabView.Highlight(v.createPageId(index))
+	v.tabView.Highlight(v.createPageTag(index))
 }
 
+// selectNextTab : 次のタブを選択
 func (v *view) selectNextTab() {
 	index := getHighlightId(v.tabView.GetHighlights())
 	if index == -1 {
@@ -92,5 +95,5 @@ func (v *view) selectNextTab() {
 
 	index = (index + 1) % pageCount
 
-	v.tabView.Highlight(v.createPageId(index))
+	v.tabView.Highlight(v.createPageTag(index))
 }

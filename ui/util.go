@@ -81,6 +81,11 @@ func convertDateString(createAt string) string {
 	return t.Local().Format(format)
 }
 
+// createSeparator : 指定幅のセパレータ文字列を作成
+func createSeparator(s string, width int) string {
+	return fmt.Sprintf("[gray:-:-]%s[-:-:-]", strings.Repeat(s, width))
+}
+
 // createMetricsString : ツイートのリアクション数文字列を作成
 func createMetricsString(unit, color string, count int, reverse bool) string {
 	if count <= 0 {

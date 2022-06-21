@@ -7,16 +7,18 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-const userDescColMax = 3
+const userBioColMax = 3
 
-func createUserDescText(d string, w int) (string, int) {
+// createUserBioLayout : レイアウト済みのBIO文字列を作成し、その表示列数を返す
+func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
-	desc = truncate(desc, w*userDescColMax)
+	desc = truncate(desc, w*userBioColMax)
 
-	return desc, getStringDisplayColumn(desc, w)
+	return desc, getStringDisplayRow(desc, w)
 }
 
-func createUserInfoText(u *twitter.UserObj) string {
+// createUserDetailLayout : レイアウト済みのユーザ詳細文字列を作成
+func createUserDetailLayout(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
@@ -30,18 +32,19 @@ func createUserInfoText(u *twitter.UserObj) string {
 	return "[gray:-:-]" + strings.Join(texts, " | ")
 }
 
+// createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示列数を返す
 func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
 	width := w - userProfilePaddingX*2
 
-	profile := createUserText(u, -1, width)
+	desc, row := createUserBioLayout(u.Description, width)
 
-	desc, col := createUserDescText(u.Description, width)
-	profile += fmt.Sprintf("[white:-:-]%s\n", desc)
+	profile := createUserInfoLayout(u, -1, width) +
+		fmt.Sprintf("[white:-:-]%s\n", desc)
 
 	// 詳細情報が無い
 	if u.Location == "" && u.URL == "" {
-		return profile, col + 1
+		return profile, row + 1
 	}
 
-	return profile + createUserInfoText(u), col + 2
+	return profile + createUserDetailLayout(u), row + 2
 }

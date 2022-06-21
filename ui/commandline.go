@@ -4,6 +4,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
+// initCommandLine : コマンドラインを初期化
 func (u *UI) initCommandLine() {
 	u.commandLine.
 		SetFieldBackgroundColor(tcell.ColorDefault).
@@ -19,6 +20,7 @@ func (u *UI) initCommandLine() {
 		SetInputCapture(u.handleCommandLineKeyEvents)
 }
 
+// setStatusMessage : ステータスメッセージを設定して再描画
 func (u *UI) setStatusMessage(m string, c tcell.Color) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -30,6 +32,7 @@ func (u *UI) setStatusMessage(m string, c tcell.Color) {
 	u.app.Draw()
 }
 
+// handleCommandLineKeyEvents : コマンドラインのキーハンドラ
 func (u *UI) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
