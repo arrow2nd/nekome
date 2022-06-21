@@ -3,11 +3,13 @@ package ui
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -21,6 +23,11 @@ func getWindowWidth() int {
 	}
 
 	return w - 2
+}
+
+// getStringDisplayColumn 文字列の表示列数を取得
+func getStringDisplayColumn(s string, w int) int {
+	return int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
 }
 
 // getHighlightId : ハイライト一覧からIDを取得
@@ -40,6 +47,11 @@ func getHighlightId(ids []string) int {
 	}
 
 	return id
+}
+
+// truncate : 文字列を指定幅で丸める
+func truncate(s string, w int) string {
+	return runewidth.Truncate(s, w, "…")
 }
 
 // isSameDate : 同じ日付かどうか

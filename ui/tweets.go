@@ -104,13 +104,13 @@ func (t *tweets) Draw() {
 		}
 
 		// 表示部分を作成
-		layout := createTweetLayout(content, i)
+		layout := createTweetLayout(content, i, width)
 		fmt.Fprintln(t.view, layout)
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
 			fmt.Fprintln(t.view, createSeparator("-", width))
-			layout := createTweetLayout(quotedTweet, -1)
+			layout := createTweetLayout(quotedTweet, -1, width)
 			fmt.Fprintln(t.view, layout)
 		}
 

@@ -23,8 +23,8 @@ func createAnnotation(s string, author *twitter.UserObj) string {
 	return fmt.Sprintf("[blue:-:-]%s %s [:-:i]@%s[-:-:-]", s, author.Name, author.UserName)
 }
 
-func createTweetLayout(content *twitter.TweetDictionary, index int) string {
-	layout := createUserText(content.Author, index)
+func createTweetLayout(content *twitter.TweetDictionary, i, w int) string {
+	layout := createUserText(content.Author, i, w)
 	layout += createTweetText(&content.Tweet)
 	layout += createPollText(content.AttachmentPolls)
 	layout += createTweetDetailText(&content.Tweet)
@@ -32,15 +32,16 @@ func createTweetLayout(content *twitter.TweetDictionary, index int) string {
 	return layout
 }
 
-func createUserText(u *twitter.UserObj, i int) string {
-	name := u.Name
+func createUserText(u *twitter.UserObj, i, w int) string {
+	name := truncate(u.Name, w/2)
+	userName := truncate("@"+u.UserName, w/2)
 
 	// カーソル選択用のタグを埋め込む
 	if i >= 0 {
-		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), u.Name)
+		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetId(i), name)
 	}
 
-	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]@%s[-:-:-]`, name, u.UserName)
+	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]%s[-:-:-]`, name, userName)
 
 	if u.Verified {
 		header += "[blue] \uf4a1[-:-:-]"

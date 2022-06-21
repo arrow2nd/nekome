@@ -119,10 +119,12 @@ func (u *userPage) loadProfile() error {
 }
 
 func (u *userPage) drawProfile(ur *twitter.UserObj) {
+	width := getWindowWidth()
+
 	u.profile.Clear()
 
 	// プロフィール
-	profile, col := createUserProfile(ur)
+	profile, col := createProfileLayout(ur, width)
 	fmt.Fprint(u.profile, profile)
 
 	// プロフィールの行数に合わせてリサイズ（+1 は下辺の padding 分）

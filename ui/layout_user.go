@@ -2,27 +2,21 @@ package ui
 
 import (
 	"fmt"
-	"math"
 	"strings"
 
 	"github.com/g8rswimmer/go-twitter/v2"
-	"github.com/mattn/go-runewidth"
 )
 
 const userDescColMax = 3
 
-func createUserDesc(d string) (string, int) {
-	width := getWindowWidth() - userProfilePaddingX*2
-
+func createUserDescText(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
-	desc = runewidth.Truncate(desc, width*userDescColMax, "…")
+	desc = truncate(desc, w*userDescColMax)
 
-	col := int(math.Ceil(float64(runewidth.StringWidth(desc)) / float64(width)))
-
-	return desc, col
+	return desc, getStringDisplayColumn(desc, w)
 }
 
-func createUserInfo(u *twitter.UserObj) string {
+func createUserInfoText(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
@@ -36,16 +30,18 @@ func createUserInfo(u *twitter.UserObj) string {
 	return "[gray:-:-]" + strings.Join(texts, " | ")
 }
 
-func createUserProfile(u *twitter.UserObj) (string, int) {
-	isInfoEmpty := u.Location == "" && u.URL == ""
-	profile := createUserText(u, -1)
+func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
+	width := w - userProfilePaddingX*2
 
-	desc, col := createUserDesc(u.Description)
+	profile := createUserText(u, -1, width)
+
+	desc, col := createUserDescText(u.Description, width)
 	profile += fmt.Sprintf("[white:-:-]%s\n", desc)
 
-	if isInfoEmpty {
+	// 詳細情報が無い
+	if u.Location == "" && u.URL == "" {
 		return profile, col + 1
 	}
 
-	return profile + createUserInfo(u), col + 2
+	return profile + createUserInfoText(u), col + 2
 }
