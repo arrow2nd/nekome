@@ -93,7 +93,7 @@ func (t *tweets) Draw() {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			fmt.Fprintln(t.view, "[gray:-:-] Pinned Tweet[r]")
+			fmt.Fprintln(t.view, "[gray:-:-] Pinned Tweet[-:-:-]")
 		}
 
 		// 表示部分を作成
