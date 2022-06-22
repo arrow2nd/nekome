@@ -10,12 +10,12 @@ import (
 func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	opts := twitter.UserListLookupOpts{}
 
-	result, err := a.client.UserListLookup(context.Background(), userID, opts)
+	res, err := a.client.UserListLookup(context.Background(), userID, opts)
 	if e := checkError(err); e != nil {
 		return nil, e
 	}
 
-	return result.Raw.Lists, nil
+	return res.Raw.Lists, nil
 }
 
 // FetchListTweets : リストのツイートを取得

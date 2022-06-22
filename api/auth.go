@@ -70,10 +70,10 @@ func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
 
 	opts := twitter.UserLookupOpts{}
 
-	userResponse, err := client.AuthUserLookup(context.Background(), opts)
+	res, err := client.AuthUserLookup(context.Background(), opts)
 	if e := checkError(err); e != nil {
 		return nil, e
 	}
 
-	return userResponse.Raw.Users[0], nil
+	return res.Raw.Users[0], nil
 }
