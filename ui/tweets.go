@@ -62,17 +62,27 @@ func (t *tweets) GetTweetsCount() int {
 // getSelectTweet : 選択中のツイートを取得
 func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 	id := getHighlightId(t.view.GetHighlights())
+	c := &twitter.TweetDictionary{}
 
-	// ピン留めツイートが無いならそのまま添字として使う
 	if t.pinned == nil {
-		return t.contents[id]
+		// ピン留めツイートが無い
+		c = t.contents[id]
+	} else if id == 0 {
+		// ピン留めツイートが選択されている
+		c = t.pinned
+	} else {
+		// ピン留めツイート意外が選択されている
+		c = t.contents[id-1]
 	}
 
-	if id == 0 {
-		return t.pinned
+	// リツイートなら参照先に置き換え
+	for _, rc := range c.ReferencedTweets {
+		if rc.Reference.Type == "retweeted" {
+			c = c.ReferencedTweets[0].TweetDictionary
+		}
 	}
 
-	return t.contents[id-1]
+	return c
 }
 
 // Register : ツイートを登録
@@ -238,8 +248,21 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	// いいね解除
 	if keyRune == 'F' {
 		t.unLike()
+		return nil
+	}
+
+	// リツイート
+	if keyRune == 't' {
+		t.retweet()
+		return nil
+	}
+
+	// リツイート解除
+	if keyRune == 'T' {
+		t.unRetweet()
 		return nil
 	}
 
