@@ -2,7 +2,12 @@ package api
 
 import "github.com/g8rswimmer/go-twitter/v2"
 
-func createTweetDictionarySlice(raw *twitter.TweetRaw) []*twitter.TweetDictionary {
+func createTweetDictionarySlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
+	// データがあるかチェック
+	if len(raw.Tweets) == 0 || raw.Tweets[0] == nil {
+		return false, nil
+	}
+
 	contents := []*twitter.TweetDictionary{}
 	dics := raw.TweetDictionaries()
 
@@ -10,7 +15,7 @@ func createTweetDictionarySlice(raw *twitter.TweetRaw) []*twitter.TweetDictionar
 		contents = append(contents, dics[tweet.ID])
 	}
 
-	return contents
+	return true, contents
 }
 
 // UserDictionary : 独自の twitter.UserDictionary 型
@@ -19,7 +24,12 @@ type UserDictionary struct {
 	PinnedTweet *twitter.TweetDictionary
 }
 
-func createUserDictionarySlice(raw *twitter.UserRaw) []*UserDictionary {
+func createUserDictionarySlice(raw *twitter.UserRaw) (bool, []*UserDictionary) {
+	// データがあるかチェック
+	if len(raw.Users) == 0 || raw.Users[0] == nil {
+		return false, nil
+	}
+
 	users := []*UserDictionary{}
 	dics := raw.UserDictionaries()
 
@@ -45,5 +55,5 @@ func createUserDictionarySlice(raw *twitter.UserRaw) []*UserDictionary {
 		})
 	}
 
-	return users
+	return true, users
 }

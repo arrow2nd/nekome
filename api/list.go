@@ -16,7 +16,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 		return nil, e
 	}
 
-	if e := checkPartialError(res.Raw.Errors); e != nil {
+	if e := checkPartialError(res.Raw.Errors); len(res.Raw.Lists) == 0 && e != nil {
 		return nil, e
 	}
 
@@ -33,14 +33,14 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDicti
 	}
 
 	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
-
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
 
-	if e := checkPartialError(res.Raw.Errors); e != nil {
+	ok, tweets := createTweetDictionarySlice(res.Raw)
+	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
+	return tweets, res.RateLimit, nil
 }

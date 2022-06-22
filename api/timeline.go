@@ -18,16 +18,16 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 	}
 
 	res, err := a.client.UserTweetReverseChronologicalTimeline(context.Background(), userID, opts)
-
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
 
-	if e := checkPartialError(res.Raw.Errors); e != nil {
+	ok, tweets := createTweetDictionarySlice(res.Raw)
+	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
+	return tweets, res.RateLimit, nil
 }
 
 // FetchUserTimeline : ユーザタイムラインを取得
@@ -42,16 +42,16 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 	}
 
 	res, err := a.client.UserTweetTimeline(context.Background(), userID, opts)
-
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
 
-	if e := checkPartialError(res.Raw.Errors); e != nil {
+	ok, tweets := createTweetDictionarySlice(res.Raw)
+	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
+	return tweets, res.RateLimit, nil
 }
 
 // FetchUserMentionTimeline : ユーザのメンションタイムラインを取得
@@ -71,9 +71,10 @@ func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*
 		return nil, nil, e
 	}
 
-	if e := checkPartialError(res.Raw.Errors); e != nil {
+	ok, tweets := createTweetDictionarySlice(res.Raw)
+	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
 
-	return createTweetDictionarySlice(res.Raw), res.RateLimit, nil
+	return tweets, res.RateLimit, nil
 }
