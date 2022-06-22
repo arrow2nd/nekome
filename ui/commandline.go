@@ -9,8 +9,8 @@ import (
 // initCommandLine : コマンドラインを初期化
 func (u *UI) initCommandLine() {
 	u.commandLine.
-		SetFieldBackgroundColor(tcell.ColorDefault).
-		SetPlaceholderStyle(tcell.StyleDefault)
+		SetPlaceholderStyle(tcell.StyleDefault).
+		SetBackgroundColor(tcell.ColorDefault)
 
 	u.commandLine.
 		SetChangedFunc(func(text string) {
