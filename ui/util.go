@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -101,7 +102,13 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
 }
 
+// createTweetSummary : ツイートの要約文を作成
+func createTweetSummary(t *twitter.TweetDictionary) string {
+	return fmt.Sprintf("%s @%s | %s", t.Author.Name, t.Author.UserName, t.Tweet.Text)
+}
+
 // createStatusMessage : ラベル付きステータスメッセージを作成
 func createStatusMessage(label, status string) string {
-	return fmt.Sprintf("[%s] %s", label, status)
+	width := getWindowWidth()
+	return truncate(fmt.Sprintf("[%s] %s", label, status), width)
 }

@@ -59,6 +59,22 @@ func (t *tweets) GetTweetsCount() int {
 	return c
 }
 
+// getSelectTweet : 選択中のツイートを取得
+func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
+	id := getHighlightId(t.view.GetHighlights())
+
+	// ピン留めツイートが無いならそのまま添字として使う
+	if t.pinned == nil {
+		return t.contents[id]
+	}
+
+	if id == 0 {
+		return t.pinned
+	}
+
+	return t.contents[id-1]
+}
+
 // Register : ツイートを登録
 func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	t.mu.Lock()
@@ -213,6 +229,17 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	if key == tcell.KeyEnd || keyRune == 'G' {
 		lastIndex := t.GetTweetsCount() - 1
 		t.scrollToTweet(lastIndex)
+		return nil
+	}
+
+	// いいね
+	if keyRune == 'f' {
+		t.like()
+		return nil
+	}
+
+	if keyRune == 'F' {
+		t.unLike()
 		return nil
 	}
 
