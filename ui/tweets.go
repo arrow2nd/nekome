@@ -78,6 +78,14 @@ func (t *tweets) Draw() {
 
 	t.view.Clear()
 
+	// 表示するツイートが無いなら処理を中断
+	if t.GetTweetsCount() == 0 {
+		t.view.SetTextAlign(tview.AlignCenter).SetText("No tweets")
+		return
+	} else {
+		t.view.SetTextAlign(tview.AlignLeft)
+	}
+
 	contents := t.contents
 
 	// ピン留めツイートがある場合、先頭に追加
