@@ -266,5 +266,17 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	// ブラウザで開く
+	if keyRune == 'o' {
+		t.openBrower()
+		return nil
+	}
+
+	// リンクをコピー
+	if keyRune == 'c' {
+		t.copyLinkToClipBoard()
+		return nil
+	}
+
 	return event
 }

@@ -1,5 +1,10 @@
 package ui
 
+import (
+	"github.com/atotto/clipboard"
+	"github.com/pkg/browser"
+)
+
 // like : いいね
 func (t *tweets) like() {
 	c := t.getSelectTweet()
@@ -50,4 +55,22 @@ func (t *tweets) unRetweet() {
 	}
 
 	shared.SetStatus("UnRetweeted", createTweetSummary(c))
+}
+
+// openBrower : ブラウザで表示
+func (t *tweets) openBrower() {
+	c := t.getSelectTweet()
+
+	browser.OpenURL(createTweetURL(c))
+
+	shared.SetStatus("Opened", createTweetSummary(c))
+}
+
+// copyLinkToClipBoard : リンクをクリップボードへコピー
+func (t *tweets) copyLinkToClipBoard() {
+	c := t.getSelectTweet()
+
+	clipboard.WriteAll(createTweetURL(c))
+
+	shared.SetStatus("Copied", createTweetSummary(c))
 }

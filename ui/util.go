@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -105,6 +106,11 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 // createTweetSummary : ツイートの要約文を作成
 func createTweetSummary(t *twitter.TweetDictionary) string {
 	return fmt.Sprintf("%s @%s | %s", t.Author.Name, t.Author.UserName, t.Tweet.Text)
+}
+
+// createTweetURL : ツイートのURLを作成
+func createTweetURL(t *twitter.TweetDictionary) string {
+	return path.Join("https://twitter.com", t.Author.UserName, "status", t.Tweet.ID)
 }
 
 // createStatusMessage : ラベル付きステータスメッセージを作成
