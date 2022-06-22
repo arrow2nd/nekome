@@ -18,7 +18,12 @@ func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter
 	}
 
 	res, err := a.client.TweetRecentSearch(context.Background(), query, opts)
+
 	if e := checkError(err); e != nil {
+		return nil, nil, e
+	}
+
+	if e := checkPartialError(res.Raw.Errors); e != nil {
 		return nil, nil, e
 	}
 

@@ -71,7 +71,12 @@ func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
 	opts := twitter.UserLookupOpts{}
 
 	res, err := client.AuthUserLookup(context.Background(), opts)
+
 	if e := checkError(err); e != nil {
+		return nil, e
+	}
+
+	if e := checkPartialError(res.Raw.Errors); e != nil {
 		return nil, e
 	}
 

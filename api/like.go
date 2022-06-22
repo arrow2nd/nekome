@@ -17,12 +17,17 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 		MaxResults: maxResults,
 	}
 
-	result, err := a.client.UserLikesLookup(context.Background(), userID, opts)
+	res, err := a.client.UserLikesLookup(context.Background(), userID, opts)
+
 	if e := checkError(err); e != nil {
 		return nil, e
 	}
 
-	return result.Raw.Tweets, nil
+	if e := checkPartialError(res.Raw.Errors); e != nil {
+		return nil, e
+	}
+
+	return res.Raw.Tweets, nil
 }
 
 // Like : いいね

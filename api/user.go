@@ -17,7 +17,12 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 	}
 
 	res, err := a.client.UserNameLookup(context.Background(), userNames, opts)
+
 	if e := checkError(err); e != nil {
+		return nil, e
+	}
+
+	if e := checkPartialError(res.Raw.Errors); e != nil {
 		return nil, e
 	}
 
