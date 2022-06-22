@@ -35,6 +35,7 @@ func (s *searchPage) Load() {
 	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, 25)
 
 	if err != nil {
+		s.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(s.name, err.Error())
 		return
 	}

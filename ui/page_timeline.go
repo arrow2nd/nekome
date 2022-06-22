@@ -53,6 +53,7 @@ func (t *timelinePage) Load() {
 	}
 
 	if err != nil {
+		t.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(t.name, err.Error())
 		return
 	}

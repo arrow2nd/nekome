@@ -28,6 +28,7 @@ func (l *listPage) Load() {
 
 	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, 25)
 	if err != nil {
+		l.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(l.name, err.Error())
 		return
 	}

@@ -76,14 +76,15 @@ func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
 func (t *tweets) Draw() {
 	width := getWindowWidth()
 
-	t.view.Clear()
+	// ビューの初期化
+	t.view.
+		SetTextAlign(tview.AlignLeft).
+		Clear()
 
-	// 表示するツイートが無いなら処理を中断
+	// 表示するツイートが無いなら描画を中断
 	if t.GetTweetsCount() == 0 {
-		t.view.SetTextAlign(tview.AlignCenter).SetText("No tweets")
+		t.DrawMessage("No tweets")
 		return
-	} else {
-		t.view.SetTextAlign(tview.AlignLeft)
 	}
 
 	contents := t.contents
@@ -133,6 +134,15 @@ func (t *tweets) Draw() {
 	}
 
 	t.scrollToTweet(0)
+}
+
+// DrawMessage : ビューにメッセージを表示
+func (t *tweets) DrawMessage(s string) {
+	t.view.Clear()
+
+	t.view.
+		SetTextAlign(tview.AlignCenter).
+		SetText(s)
 }
 
 // scrollToTweet : 指定ツイートまでスクロール

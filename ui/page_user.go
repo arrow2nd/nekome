@@ -79,6 +79,7 @@ func (u *userPage) Load() {
 	// ユーザの情報を取得
 	if u.userDic == nil {
 		if err := u.loadProfile(); err != nil {
+			u.tweets.DrawMessage(err.Error())
 			shared.SetErrorStatus(u.name, err.Error())
 			return
 		}
@@ -88,6 +89,7 @@ func (u *userPage) Load() {
 	sinceID := u.tweets.GetSinceID()
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, 25)
 	if err != nil {
+		u.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(u.name, err.Error())
 		return
 	}
