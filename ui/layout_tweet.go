@@ -69,7 +69,11 @@ func createPollLayout(p []*twitter.PollObj) string {
 	// グラフを作成
 	text := "\n"
 	for _, o := range p[0].Options {
-		per := float64(o.Votes) / float64(allVotes)
+		per := float64(0)
+		if allVotes > 0 {
+			per = float64(o.Votes) / float64(allVotes)
+		}
+
 		graph := strings.Repeat("▇", int(math.Floor(per*graphMaxWidth)))
 
 		text += fmt.Sprintln(o.Label)
