@@ -31,7 +31,8 @@ func (s *searchPage) Load() {
 	shared.SetStatus(s.name, "Loading...")
 
 	sinceID := s.tweets.GetSinceID()
-	tweets, rateLimit, err := shared.api.SearchRecentTweets(s.query, sinceID, 25)
+	query := s.query + " -is:retweet"
+	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, 25)
 
 	if err != nil {
 		shared.SetErrorStatus(s.name, err.Error())
