@@ -45,8 +45,9 @@ func (l *listPage) Load() {
 	// 新規ツイートのみを登録
 	if newTweetsCount > 0 {
 		l.tweets.Register(tweets[0:newTweetsCount])
-		l.tweets.Draw()
 	}
+
+	l.tweets.Draw()
 
 	l.updateIndicator("", rateLimit)
 	l.updateLoadedStatus(newTweetsCount)
