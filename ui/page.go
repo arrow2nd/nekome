@@ -21,7 +21,7 @@ func handleCommonPageKeyEvent(p page, event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// リロード
-	if keyRune == 'r' {
+	if keyRune == '.' {
 		go p.Load()
 		return nil
 	}
