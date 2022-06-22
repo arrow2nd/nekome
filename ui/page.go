@@ -40,7 +40,7 @@ type basePage struct {
 
 func newBasePage(name string) *basePage {
 	return &basePage{
-		name:      name,
+		name:      truncate(name, 15),
 		indicator: "",
 		frame:     nil,
 		tweets:    newTweets(),
