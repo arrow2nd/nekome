@@ -1,4 +1,4 @@
-package ui
+package app
 
 import (
 	"github.com/arrow2nd/nekome/api"
@@ -8,8 +8,8 @@ import (
 	"github.com/rivo/tview"
 )
 
-// UI :  ユーザインターフェース
-type UI struct {
+// App : アプリケーション
+type App struct {
 	app         *tview.Application
 	view        *view
 	statusBar   *statusBar
@@ -17,8 +17,8 @@ type UI struct {
 }
 
 // New : 生成
-func New() *UI {
-	return &UI{
+func New() *App {
+	return &App{
 		app:         tview.NewApplication(),
 		view:        newView(),
 		statusBar:   newStatusBar(),
@@ -27,13 +27,13 @@ func New() *UI {
 }
 
 // Init : 初期化
-func (u *UI) Init(a *api.API, c *config.Config) {
+func (a *App) Init(app *api.API, conf *config.Config) {
 	// 日本語環境等での罫線の乱れ対策
 	runewidth.DefaultCondition.EastAsianWidth = false
 
 	// 全体共有
-	shared.api = a
-	shared.conf = c
+	shared.api = app
+	shared.conf = conf
 
 	// 配色設定
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
@@ -42,81 +42,83 @@ func (u *UI) Init(a *api.API, c *config.Config) {
 	// ページ
 	home := newTimelinePage(homeTL)
 	mention := newTimelinePage(mentionTL)
-	user := newUserPage("imas_official")
-	userB := newUserPage("arrow_2nd")
+	user := newUserPage("arrow_2nd")
+	list := newListPage("1024320237519290368", "petitcom")
+	search := newSearchPage("白菊ほたる")
 
-	u.view.AddPage(home, true)
-	u.view.AddPage(mention, false)
-	u.view.AddPage(user, false)
-	u.view.AddPage(userB, false)
+	a.view.AddPage(home, true)
+	a.view.AddPage(mention, false)
+	a.view.AddPage(user, false)
+	a.view.AddPage(list, false)
+	a.view.AddPage(search, false)
 
-	u.view.pagesView.SetInputCapture(u.handlePageKeyEvent)
+	a.view.pagesView.SetInputCapture(a.handlePageKeyEvent)
 
 	// ステータスバー
-	u.statusBar.DrawAccountInfo()
+	a.statusBar.DrawAccountInfo()
 
 	// コマンドライン
-	u.initCommandLine()
+	a.initCommandLine()
 
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
 	layout := tview.NewGrid().
 		SetRows(1, 0, 1, 1).
 		SetBorders(false).
-		AddItem(u.view.tabView, 0, 0, 1, 1, 0, 0, false).
-		AddItem(u.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
-		AddItem(u.commandLine, 3, 0, 1, 1, 0, 0, false).
-		AddItem(u.view.pagesView, 1, 0, 1, 1, 0, 0, true)
+		AddItem(a.view.tabView, 0, 0, 1, 1, 0, 0, false).
+		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
+		AddItem(a.commandLine, 3, 0, 1, 1, 0, 0, false).
+		AddItem(a.view.pagesView, 1, 0, 1, 1, 0, 0, true)
 
-	u.app.SetRoot(layout, true)
-	u.app.SetInputCapture(u.handleGlobalKeyEvents)
+	a.app.SetRoot(layout, true)
+	a.app.SetInputCapture(a.handleGlobalKeyEvents)
 }
 
 // Run : 実行
-func (u *UI) Run() error {
-	go u.eventReciever()
-	return u.app.Run()
+func (a *App) Run() error {
+	go a.eventReciever()
+	return a.app.Run()
 }
 
 // eventReciever : イベントレシーバ
-func (u *UI) eventReciever() {
+func (a *App) eventReciever() {
 	for {
 		select {
 		case status := <-shared.chStatus:
-			u.updateStatusMessage(status)
+			a.updateStatusMessage(status)
 		case indicator := <-shared.chIndicator:
-			u.statusBar.DrawPageIndicator(indicator)
-			u.app.Draw()
+			a.statusBar.DrawPageIndicator(indicator)
+			a.app.Draw()
 		}
 	}
 }
 
 // redraw : アプリ全体を再描画
-func (u *UI) redraw() {
+func (a *App) redraw() {
 	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
 	// https://github.com/rivo/tview/issues/693
 
-	pageId, _ := u.view.pagesView.GetFrontPage()
+	pageId, _ := a.view.pagesView.GetFrontPage()
 	if pageId == "" {
 		shared.SetErrorStatus("App", "no page to redraw")
 		return
 	}
 
 	// 一度非表示にして画面をクリア
-	u.view.pagesView.HidePage(pageId)
+	a.view.pagesView.HidePage(pageId)
 
 	// 強制的に再描画して画面を再表示
-	u.app.ForceDraw()
-	u.view.pagesView.ShowPage(pageId)
+	a.app.ForceDraw()
+	a.view.pagesView.ShowPage(pageId)
 }
 
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
-func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
-		u.app.Stop()
+		a.app.Stop()
 		return nil
 	}
 
@@ -124,31 +126,31 @@ func (u *UI) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 }
 
 // handlePageKeyEvent : ページビューのキーハンドラ
-func (u *UI) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
 
 	// 左のタブを選択
 	if key == tcell.KeyLeft || keyRune == 'h' {
-		u.view.selectPrevTab()
+		a.view.selectPrevTab()
 		return nil
 	}
 
 	// 右のタブを選択
 	if key == tcell.KeyRight || keyRune == 'l' {
-		u.view.selectNextTab()
+		a.view.selectNextTab()
 		return nil
 	}
 
 	// 再描画
 	if key == tcell.KeyCtrlL {
-		u.redraw()
+		a.redraw()
 		return nil
 	}
 
 	// コマンドラインへフォーカスを移動
 	if keyRune == ':' {
-		u.app.SetFocus(u.commandLine)
+		a.app.SetFocus(a.commandLine)
 		return nil
 	}
 

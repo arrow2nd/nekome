@@ -1,4 +1,4 @@
-package ui
+package app
 
 import (
 	"strings"
@@ -7,26 +7,26 @@ import (
 )
 
 // initCommandLine : コマンドラインを初期化
-func (u *UI) initCommandLine() {
-	u.commandLine.
+func (a *App) initCommandLine() {
+	a.commandLine.
 		SetPlaceholderStyle(tcell.StyleDefault).
 		SetBackgroundColor(tcell.ColorDefault)
 
-	u.commandLine.
+	a.commandLine.
 		SetChangedFunc(func(text string) {
 			if text == "" {
-				u.app.SetFocus(u.view.pagesView)
+				a.app.SetFocus(a.view.pagesView)
 			}
 		}).
 		SetFocusFunc(func() {
-			u.commandLine.SetText(":")
+			a.commandLine.SetText(":")
 		})
 
-	u.commandLine.SetInputCapture(u.handleCommandLineKeyEvents)
+	a.commandLine.SetInputCapture(a.handleCommandLineKeyEvents)
 }
 
 // updateStatusMessage : ステータスメッセージを更新
-func (u *UI) updateStatusMessage(s string) {
+func (a *App) updateStatusMessage(s string) {
 	color := tcell.ColorDefault
 
 	// エラーステータスなら文字色を赤に
@@ -34,21 +34,21 @@ func (u *UI) updateStatusMessage(s string) {
 		color = tcell.ColorRed
 	}
 
-	u.commandLine.
+	a.commandLine.
 		SetPlaceholderTextColor(color).
 		SetPlaceholder(s)
 
-	u.app.Draw()
+	a.app.Draw()
 }
 
 // handleCommandLineKeyEvents : コマンドラインのキーハンドラ
-func (u *UI) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
 	// フォーカスをページへ移す
 	if key == tcell.KeyEsc {
-		u.commandLine.SetText("")
-		u.app.SetFocus(u.view.pagesView)
+		a.commandLine.SetText("")
+		a.app.SetFocus(a.view.pagesView)
 		return nil
 
 	}

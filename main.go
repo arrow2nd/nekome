@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/arrow2nd/nekome/api"
+	"github.com/arrow2nd/nekome/app"
 	"github.com/arrow2nd/nekome/config"
-	"github.com/arrow2nd/nekome/ui"
 )
 
 var (
@@ -35,11 +35,11 @@ func main() {
 	// NOTE: テスト用
 	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
-	// UI初期化
-	tui := ui.New()
-	tui.Init(client, conf)
+	// アプリ初期化
+	app := app.New()
+	app.Init(client, conf)
 
-	if err := tui.Run(); err != nil {
+	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

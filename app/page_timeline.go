@@ -1,4 +1,4 @@
-package ui
+package app
 
 import (
 	"github.com/g8rswimmer/go-twitter/v2"

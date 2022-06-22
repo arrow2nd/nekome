@@ -1,4 +1,4 @@
-package ui
+package app
 
 import (
 	"github.com/arrow2nd/nekome/api"
