@@ -59,6 +59,8 @@ func (t *tweets) unRetweet() {
 
 // openBrower : ブラウザで表示
 func (t *tweets) openBrower() {
+	shared.SetStatus("Open", "Wait...")
+
 	c := t.getSelectTweet()
 
 	browser.OpenURL(createTweetURL(c))
