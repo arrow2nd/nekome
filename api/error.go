@@ -14,17 +14,17 @@ func checkError(err error) error {
 		return fmt.Errorf("http error: %d %s", httpErr.StatusCode, httpErr.Status)
 	}
 
-	// calloutエラー
+	// calloutエラーではないならそのまま返す
 	tErr := &twitter.ErrorResponse{}
-	if errors.As(err, &tErr) {
-		return fmt.Errorf("server error: %d %s %s", tErr.StatusCode, tErr.Title, tErr.Detail)
+	if !errors.As(err, &tErr) {
+		return err
 	}
 
 	// レート制限
-	if rateLimit, has := twitter.RateLimitFromError(err); has {
-		t := rateLimit.Reset.Time().Local().Format("15:04:05")
+	if tErr.StatusCode == 429 {
+		t := tErr.RateLimit.Reset.Time().Local().Format("15:04:05")
 		return fmt.Errorf("Rate limit exceeded (Reset time: %s)", t)
 	}
 
-	return err
+	return fmt.Errorf("server error: %d %s | %s", tErr.StatusCode, tErr.Title, tErr.Detail)
 }
