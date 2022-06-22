@@ -33,8 +33,8 @@ func (s *Shared) SetErrorStatus(label, errStatus string) {
 }
 
 // SetIndicator : インジケータを設定
-func (s *Shared) SetIndicator(detail string) {
+func (s *Shared) SetIndicator(indicator string) {
 	go func() {
-		shared.chIndicator <- detail
+		shared.chIndicator <- indicator
 	}()
 }
