@@ -28,10 +28,7 @@ func newView() *view {
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
-		SetHighlightedFunc(func(added, removed, remaining []string) {
-			v.pagesView.SwitchToPage(added[0])
-			v.pages[added[0]].OnVisible()
-		}).
+		SetHighlightedFunc(v.handleTabHighlight).
 		SetBackgroundColor(tcell.ColorDefault)
 
 	return v
@@ -101,4 +98,14 @@ func (v *view) selectNextTab() {
 	index = (index + 1) % pageCount
 
 	v.tabView.Highlight(createPageTag(index))
+}
+
+// handleTabHighlight : タブがハイライトされたときのコールバック
+func (v *view) handleTabHighlight(added, removed, remaining []string) {
+	// ハイライトされたタブまでスクロール
+	v.tabView.ScrollToHighlight()
+
+	// ページを切り替え
+	v.pagesView.SwitchToPage(added[0])
+	v.pages[added[0]].OnVisible()
 }
