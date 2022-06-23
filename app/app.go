@@ -38,8 +38,8 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	shared.conf = conf
 
 	// 配色設定
-	// tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
-	// tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
+	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
+	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
 	// ページ
 	home := newTimelinePage(homeTL)
