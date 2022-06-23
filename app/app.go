@@ -14,6 +14,7 @@ type App struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *tview.InputField
+	modal       *tview.Modal
 }
 
 // New : 生成
@@ -23,6 +24,7 @@ func New() *App {
 		view:        newView(),
 		statusBar:   newStatusBar(),
 		commandLine: tview.NewInputField(),
+		modal:       tview.NewModal(),
 	}
 }
 
@@ -36,8 +38,8 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	shared.conf = conf
 
 	// 配色設定
-	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
-	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
+	// tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
+	// tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
 	// ページ
 	home := newTimelinePage(homeTL)
@@ -60,6 +62,9 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// コマンドライン
 	a.initCommandLine()
 
+	// モーダル
+	a.initModal()
+
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
 	layout := tview.NewGrid().
@@ -70,8 +75,9 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 		AddItem(a.commandLine, 3, 0, 1, 1, 0, 0, false).
 		AddItem(a.view.pagesView, 1, 0, 1, 1, 0, 0, true)
 
-	a.app.SetRoot(layout, true)
-	a.app.SetInputCapture(a.handleGlobalKeyEvents)
+	a.app.
+		SetRoot(layout, true).
+		SetInputCapture(a.handleGlobalKeyEvents)
 }
 
 // Run : 実行
@@ -118,7 +124,7 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
-		a.app.Stop()
+		a.popupModal("Do you want to exit the app?", a.app.Stop)
 		return nil
 	}
 
@@ -129,6 +135,11 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
+
+	// モーダル表示中は操作を受け付けない
+	if a.modal.HasFocus() {
+		return event
+	}
 
 	// 左のタブを選択
 	if key == tcell.KeyLeft || keyRune == 'h' {
