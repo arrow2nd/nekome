@@ -43,14 +43,10 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	home := newTimelinePage(homeTL)
 	mention := newTimelinePage(mentionTL)
 	user := newUserPage("arrow_2nd")
-	list := newListPage("1024320237519290368", "petitcom")
-	search := newSearchPage("白菊ほたる")
 
 	a.view.AddPage(home, true)
 	a.view.AddPage(mention, false)
 	a.view.AddPage(user, false)
-	a.view.AddPage(list, false)
-	a.view.AddPage(search, false)
 
 	a.view.SetInputCapture(a.handlePageKeyEvent)
 
