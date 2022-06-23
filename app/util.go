@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"html"
 	"log"
 	"math"
 	"os"
@@ -121,7 +122,7 @@ func createUserSummary(u *twitter.UserObj) string {
 
 // createTweetSummary : ツイートの要約文を作成
 func createTweetSummary(t *twitter.TweetDictionary) string {
-	return fmt.Sprintf("%s | %s", createUserSummary(t.Author), t.Tweet.Text)
+	return fmt.Sprintf("%s | %s", createUserSummary(t.Author), html.EscapeString(t.Tweet.Text))
 }
 
 // createTweetURL : ツイートのURLを作成
