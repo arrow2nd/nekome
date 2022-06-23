@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -86,7 +87,7 @@ func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
 }
 
 // AddPage : ページを追加
-func (v *view) AddPage(p page, focus bool) {
+func (v *view) AddPage(p page, focus bool) error {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
@@ -95,10 +96,10 @@ func (v *view) AddPage(p page, focus bool) {
 		name: p.GetName(),
 	}
 
-	// タブを追加
-	v.tabs = append(v.tabs, newTab)
-
-	v.drawTab()
+	// ページの重複チェック
+	if _, ok := v.pages[newTab.id]; ok {
+		return errors.New("this page already exists")
+	}
 
 	// ページを追加
 	v.pages[newTab.id] = p
@@ -106,11 +107,16 @@ func (v *view) AddPage(p page, focus bool) {
 
 	if focus {
 		v.tabView.Highlight(newTab.id)
+		v.tabIndex = v.pageView.GetPageCount() - 1
 	}
 
-	v.tabIndex++
+	// タブを追加
+	v.tabs = append(v.tabs, newTab)
+	v.drawTab()
 
 	go p.Load()
+
+	return nil
 }
 
 // RemoveCurrentPage : 現在のページを削除
