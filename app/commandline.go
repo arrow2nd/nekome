@@ -10,6 +10,7 @@ import (
 func (a *App) initCommandLine() {
 	a.commandLine.
 		SetPlaceholderStyle(tcell.StyleDefault).
+		SetFieldBackgroundColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault)
 
 	a.commandLine.
@@ -41,14 +42,19 @@ func (a *App) updateStatusMessage(s string) {
 	a.app.Draw()
 }
 
+// blurCommandLine : コマンドラインからフォーカスを外す
+func (a *App) blurCommandLine() {
+	a.commandLine.SetText("")
+	a.app.SetFocus(a.view.pageView)
+}
+
 // handleCommandLineKeyEvents : コマンドラインのキーハンドラ
 func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 
 	// フォーカスをページへ移す
 	if key == tcell.KeyEsc {
-		a.commandLine.SetText("")
-		a.app.SetFocus(a.view.pageView)
+		a.blurCommandLine()
 		return nil
 
 	}
