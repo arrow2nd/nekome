@@ -2,124 +2,105 @@ package app
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/atotto/clipboard"
 	"github.com/pkg/browser"
 )
 
-// like : いいね
-func (t *tweets) like() {
+type tweetActionType string
+type userActionType string
+
+const (
+	like      tweetActionType = "Like"
+	unlike    tweetActionType = "Unlike"
+	retweet   tweetActionType = "Retweet"
+	unretweet tweetActionType = "Unretweet"
+	follow    userActionType  = "Follow"
+	unfollow  userActionType  = "UnFollow"
+	block     userActionType  = "Block"
+	unblock   userActionType  = "Unblock"
+	mute      userActionType  = "Mute"
+	unmute    userActionType  = "Unmute"
+)
+
+// actionOnTweet : ツイートに対しての操作
+func (t *tweets) actionOnTweet(a tweetActionType) {
 	c := t.getSelectTweet()
+
+	label := string(a)
+	id := c.Tweet.ID
+	summary := createTweetSummary(c)
+
 	f := func() {
-		if err := shared.api.Like(c.Tweet.ID); err != nil {
-			shared.SetErrorStatus("Like", err.Error())
+		var err error
+
+		switch a {
+		case like:
+			err = shared.api.Like(id)
+		case unlike:
+			err = shared.api.UnLike(id)
+		case retweet:
+			err = shared.api.Retweet(id)
+		case unretweet:
+			err = shared.api.UnRetweet(id)
+		}
+
+		if err != nil {
+			shared.SetErrorStatus(label, err.Error())
 			return
 		}
 
-		shared.SetStatus("Liked", createTweetSummary(c))
+		shared.SetStatus(label+"ed", summary)
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		"Are you sure you want to like this tweet?",
+		fmt.Sprintf("Are you sure you want to %s this tweet?", strings.ToLower(label)),
 		f,
 	})
 }
 
-// unLike : いいね解除
-func (t *tweets) unLike() {
+// actionOnUser : ユーザの操作
+func (t *tweets) actionOnUser(a userActionType) {
 	c := t.getSelectTweet()
+
+	label := string(a)
+	id := c.Author.ID
+	summary := createUserSummary(c.Author)
+
 	f := func() {
-		if err := shared.api.UnLike(c.Tweet.ID); err != nil {
-			shared.SetErrorStatus("Unlike", c.Tweet.Text)
+		var err error
+
+		switch a {
+		case follow:
+			err = shared.api.Follow(id)
+		case unfollow:
+			err = shared.api.UnFollow(id)
+		case block:
+			err = shared.api.Block(id)
+		case unblock:
+			err = shared.api.UnBlock(id)
+		case mute:
+			err = shared.api.Mute(id)
+		case unmute:
+			err = shared.api.UnMute(id)
+		}
+
+		if err != nil {
+			shared.SetErrorStatus(label, err.Error())
 			return
 		}
 
-		shared.SetStatus("Unliked", createTweetSummary(c))
+		shared.SetStatus(label+"ed", summary)
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		"Are you sure you want to unlike this tweet?",
+		fmt.Sprintf(`Are you sure you want to %s "%s"?`, strings.ToLower(label), summary),
 		f,
 	})
 }
 
-// retweet : リツイート
-func (t *tweets) retweet() {
-	c := t.getSelectTweet()
-	f := func() {
-		if err := shared.api.Retweet(c.Tweet.ID); err != nil {
-			shared.SetErrorStatus("Retweet", err.Error())
-			return
-		}
-
-		shared.SetStatus("Retweeted", createTweetSummary(c))
-	}
-
-	shared.ReqestPopupModal(&ModalOpt{
-		"Are you sure you want to retweet this tweet?",
-		f,
-	})
-}
-
-// unRetweet : リツイート解除
-func (t *tweets) unRetweet() {
-	c := t.getSelectTweet()
-	f := func() {
-		if err := shared.api.UnRetweet(c.Tweet.ID); err != nil {
-			shared.SetErrorStatus("Unretweet", err.Error())
-			return
-		}
-
-		shared.SetStatus("Unretweeted", createTweetSummary(c))
-	}
-
-	shared.ReqestPopupModal(&ModalOpt{
-		"Are you sure you want to unretweet this tweet?",
-		f,
-	})
-}
-
-// follow : フォロー
-func (t *tweets) follow() {
-	c := t.getSelectTweet()
-	s := createUserSummary(c.Author)
-
-	f := func() {
-		if err := shared.api.Follow(c.Author.ID); err != nil {
-			shared.SetErrorStatus("Follow", err.Error())
-			return
-		}
-
-		shared.SetStatus("Followed", s)
-	}
-
-	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Are you sure you want to follow "%s"?`, s),
-		f,
-	})
-}
-
-// unfollow : フォロー解除
-func (t *tweets) unfollow() {
-	c := t.getSelectTweet()
-	s := createUserSummary(c.Author)
-
-	f := func() {
-		if err := shared.api.Follow(c.Author.ID); err != nil {
-			shared.SetErrorStatus("Unfollow", err.Error())
-			return
-		}
-
-		shared.SetStatus("Unfollowed", s)
-	}
-
-	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Are you sure you want to unfollow "%s"?`, s),
-		f,
-	})
-}
-
-// openBrower : ブラウザで表示
+// openBrower : ブラウザで開く
 func (t *tweets) openBrower() {
 	c := t.getSelectTweet()
 
