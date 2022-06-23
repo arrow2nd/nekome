@@ -8,6 +8,12 @@ import (
 	"github.com/rivo/tview"
 )
 
+// ModalOpt : モーダルの設定
+type ModalOpt struct {
+	title  string
+	onDone func()
+}
+
 type view struct {
 	pageView *tview.Pages
 	tabView  *tview.TextView
@@ -99,12 +105,12 @@ func (v *view) RemovePage(name string) {
 }
 
 // PopupModal : モーダルを表示
-func (v *view) PopupModal(s string, f func()) {
+func (v *view) PopupModal(o *ModalOpt) {
 	v.modal.
-		SetText(s).
+		SetText(o.title).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Yes" {
-				f()
+				o.onDone()
 			}
 			v.RemovePage("modal")
 		})

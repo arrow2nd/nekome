@@ -90,6 +90,9 @@ func (a *App) eventReciever() {
 		case indicator := <-shared.chIndicator:
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
+		case opt := <-shared.chPopupModal:
+			a.view.PopupModal(opt)
+			a.app.Draw()
 		}
 	}
 }
@@ -119,7 +122,10 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
-		a.view.PopupModal("Do you want to exit the app?", a.app.Stop)
+		a.view.PopupModal(&ModalOpt{
+			title:  "Do you want to exit the app?",
+			onDone: a.app.Stop,
+		})
 		return nil
 	}
 

@@ -6,18 +6,20 @@ import (
 )
 
 var shared = Shared{
-	api:         nil,
-	conf:        nil,
-	chStatus:    make(chan string, 1),
-	chIndicator: make(chan string, 1),
+	api:          nil,
+	conf:         nil,
+	chStatus:     make(chan string, 1),
+	chIndicator:  make(chan string, 1),
+	chPopupModal: make(chan *ModalOpt, 1),
 }
 
 // Shared : 全体共有
 type Shared struct {
-	api         *api.API
-	conf        *config.Config
-	chStatus    chan string
-	chIndicator chan string
+	api          *api.API
+	conf         *config.Config
+	chStatus     chan string
+	chIndicator  chan string
+	chPopupModal chan *ModalOpt
 }
 
 // SetStatus : ステータスメッセージを設定
@@ -36,5 +38,12 @@ func (s *Shared) SetErrorStatus(label, errStatus string) {
 func (s *Shared) SetIndicator(indicator string) {
 	go func() {
 		shared.chIndicator <- indicator
+	}()
+}
+
+// ReqestPopupModal : モーダルの表示をリクエスト
+func (s *Shared) ReqestPopupModal(o *ModalOpt) {
+	go func() {
+		shared.chPopupModal <- o
 	}()
 }
