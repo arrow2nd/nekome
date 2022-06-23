@@ -106,7 +106,7 @@ func (v *view) PopupModal(s string, f func()) {
 			if buttonLabel == "Yes" {
 				f()
 			}
-			v.pageView.RemovePage("modal")
+			v.RemovePage("modal")
 		})
 
 	v.pageView.AddPage("modal", v.modal, true, true)
