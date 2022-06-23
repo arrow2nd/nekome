@@ -42,7 +42,8 @@ func newView() *view {
 	v.modal.
 		AddButtons([]string{"No", "Yes"}).
 		SetTextColor(tcell.ColorDefault).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetBackgroundColor(tcell.ColorDefault).
+		SetInputCapture(v.handleModalKeyEvent)
 
 	return v
 }
@@ -156,4 +157,21 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ページを切り替え
 	v.pageView.SwitchToPage(added[0])
 	v.pages[added[0]].OnVisible()
+}
+
+// handleModalKeyEvent : モーダルのキーイベントハンドラ
+func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+	keyRune := event.Rune()
+
+	// 左キーの入力イベントに置換
+	if keyRune == 'h' || keyRune == 'j' {
+		return tcell.NewEventKey(tcell.KeyLeft, keyRune, tcell.ModNone)
+	}
+
+	// 右キーの入力イベントに置換
+	if keyRune == 'l' || keyRune == 'k' {
+		return tcell.NewEventKey(tcell.KeyRight, keyRune, tcell.ModNone)
+	}
+
+	return event
 }
