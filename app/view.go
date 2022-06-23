@@ -14,12 +14,18 @@ type ModalOpt struct {
 	onDone func()
 }
 
+type tab struct {
+	id   string
+	name string
+}
+
 type view struct {
 	pageView *tview.Pages
 	tabView  *tview.TextView
 	modal    *tview.Modal
 	pages    map[string]page
-	tabs     []string
+	tabs     []*tab
+	tabIndex int
 	mu       sync.Mutex
 }
 
@@ -29,7 +35,8 @@ func newView() *view {
 		tabView:  tview.NewTextView(),
 		modal:    tview.NewModal(),
 		pages:    map[string]page{},
-		tabs:     []string{},
+		tabs:     []*tab{},
+		tabIndex: 0,
 	}
 
 	v.tabView.
@@ -57,8 +64,8 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
-	for i, name := range v.tabs {
-		fmt.Fprintf(v.tabView, `["%s"] %s [""]`, createPageTag(i), name)
+	for i, tab := range v.tabs {
+		fmt.Fprintf(v.tabView, `["%s"] %s [""]`, tab.id, tab.name)
 
 		if i < len(v.tabs)-1 {
 			fmt.Fprint(v.tabView, "|")
@@ -83,26 +90,65 @@ func (v *view) AddPage(p page, focus bool) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
+	newTab := &tab{
+		id:   getMD5(p.GetName()),
+		name: p.GetName(),
+	}
+
 	// タブを追加
-	v.tabs = append(v.tabs, p.GetName())
+	v.tabs = append(v.tabs, newTab)
+
 	v.drawTab()
 
-	pageID := createPageTag(len(v.tabs) - 1)
-
 	// ページを追加
-	v.pages[pageID] = p
-	v.pageView.AddPage(pageID, p.GetPrimivite(), true, focus)
+	v.pages[newTab.id] = p
+	v.pageView.AddPage(newTab.id, p.GetPrimivite(), true, focus)
 
 	if focus {
-		v.tabView.Highlight(pageID)
+		v.tabView.Highlight(newTab.id)
 	}
+
+	v.tabIndex++
 
 	go p.Load()
 }
 
-// RemovePage : ページを削除
-func (v *view) RemovePage(name string) {
-	v.pageView.RemovePage(name)
+// RemoveCurrentPage : 現在のページを削除
+func (v *view) RemoveCurrentPage() {
+	// ページが1つのみなら削除しない
+	if v.pageView.GetPageCount() == 1 {
+		shared.SetErrorStatus("App", "last page cannot be deleted")
+		return
+	}
+
+	id, _ := v.pageView.GetFrontPage()
+	name := v.pages[id].GetName()
+
+	// タブを削除
+	newTabs := []*tab{}
+
+	for _, tab := range v.tabs {
+		if tab.name != name {
+			newTabs = append(newTabs, tab)
+		}
+	}
+
+	v.tabs = newTabs
+
+	// 再描画して反映
+	v.drawTab()
+
+	// ページを削除
+	v.pageView.RemovePage(id)
+	delete(v.pages, id)
+
+	// 1つ前のタブを選択
+	v.tabIndex--
+	if v.tabIndex < 0 {
+		v.tabIndex = 0
+	}
+
+	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
 // PopupModal : モーダルを表示
@@ -113,7 +159,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 			if buttonLabel == "Yes" {
 				o.onDone()
 			}
-			v.RemovePage("modal")
+			v.pageView.RemovePage("modal")
 		})
 
 	v.pageView.AddPage("modal", v.modal, true, true)
@@ -121,32 +167,22 @@ func (v *view) PopupModal(o *ModalOpt) {
 
 // selectPrevTab : 前のタブを選択
 func (v *view) selectPrevTab() {
-	index := getHighlightId(v.tabView.GetHighlights())
-	if index == -1 {
-		return
-	}
-
 	pageCount := v.pageView.GetPageCount()
 
-	if index--; index < 0 {
-		index = pageCount - 1
+	if v.tabIndex--; v.tabIndex < 0 {
+		v.tabIndex = pageCount - 1
 	}
 
-	v.tabView.Highlight(createPageTag(index))
+	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
 // selectNextTab : 次のタブを選択
 func (v *view) selectNextTab() {
-	index := getHighlightId(v.tabView.GetHighlights())
-	if index == -1 {
-		return
-	}
-
 	pageCount := v.pageView.GetPageCount()
 
-	index = (index + 1) % pageCount
+	v.tabIndex = (v.tabIndex + 1) % pageCount
 
-	v.tabView.Highlight(createPageTag(index))
+	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
 // handleTabHighlight : タブがハイライトされたときのコールバック

@@ -161,5 +161,11 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	// ページを削除
+	if key == tcell.KeyCtrlW {
+		a.view.RemoveCurrentPage()
+		return nil
+	}
+
 	return event
 }
