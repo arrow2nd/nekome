@@ -24,8 +24,8 @@ const (
 	unmute    userActionType  = "Unmute"
 )
 
-// actionOnTweet : ツイートに対しての操作
-func (t *tweets) actionOnTweet(a tweetActionType) {
+// actionForTweet : ツイートに対しての操作
+func (t *tweets) actionForTweet(a tweetActionType) {
 	c := t.getSelectTweet()
 
 	label := string(a)
@@ -60,8 +60,8 @@ func (t *tweets) actionOnTweet(a tweetActionType) {
 	})
 }
 
-// actionOnUser : ユーザの操作
-func (t *tweets) actionOnUser(a userActionType) {
+// actionForUser : ユーザに対しての操作
+func (t *tweets) actionForUser(a userActionType) {
 	c := t.getSelectTweet()
 
 	label := string(a)
