@@ -14,7 +14,6 @@ type App struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *tview.InputField
-	modal       *tview.Modal
 }
 
 // New : 生成
@@ -24,7 +23,6 @@ func New() *App {
 		view:        newView(),
 		statusBar:   newStatusBar(),
 		commandLine: tview.NewInputField(),
-		modal:       tview.NewModal(),
 	}
 }
 
@@ -54,16 +52,13 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	a.view.AddPage(list, false)
 	a.view.AddPage(search, false)
 
-	a.view.pagesView.SetInputCapture(a.handlePageKeyEvent)
+	a.view.SetInputCapture(a.handlePageKeyEvent)
 
 	// ステータスバー
 	a.statusBar.DrawAccountInfo()
 
 	// コマンドライン
 	a.initCommandLine()
-
-	// モーダル
-	a.initModal()
 
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
@@ -73,7 +68,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 		AddItem(a.view.tabView, 0, 0, 1, 1, 0, 0, false).
 		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
 		AddItem(a.commandLine, 3, 0, 1, 1, 0, 0, false).
-		AddItem(a.view.pagesView, 1, 0, 1, 1, 0, 0, true)
+		AddItem(a.view.pageView, 1, 0, 1, 1, 0, 0, true)
 
 	a.app.
 		SetRoot(layout, true).
@@ -104,18 +99,18 @@ func (a *App) redraw() {
 	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
 	// https://github.com/rivo/tview/issues/693
 
-	pageId, _ := a.view.pagesView.GetFrontPage()
+	pageId, _ := a.view.pageView.GetFrontPage()
 	if pageId == "" {
 		shared.SetErrorStatus("App", "no page to redraw")
 		return
 	}
 
 	// 一度非表示にして画面をクリア
-	a.view.pagesView.HidePage(pageId)
+	a.view.pageView.HidePage(pageId)
 
 	// 強制的に再描画して画面を再表示
 	a.app.ForceDraw()
-	a.view.pagesView.ShowPage(pageId)
+	a.view.pageView.ShowPage(pageId)
 }
 
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
@@ -124,7 +119,7 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
-		a.popupModal("Do you want to exit the app?", a.app.Stop)
+		a.view.PopupModal("Do you want to exit the app?", a.app.Stop)
 		return nil
 	}
 
@@ -135,11 +130,6 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
-
-	// モーダル表示中は操作を受け付けない
-	if a.modal.HasFocus() {
-		return event
-	}
 
 	// 左のタブを選択
 	if key == tcell.KeyLeft || keyRune == 'h' {

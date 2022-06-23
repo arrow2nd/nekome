@@ -15,7 +15,7 @@ func (a *App) initCommandLine() {
 	a.commandLine.
 		SetChangedFunc(func(text string) {
 			if text == "" {
-				a.app.SetFocus(a.view.pagesView)
+				a.app.SetFocus(a.view.pageView)
 			}
 		}).
 		SetFocusFunc(func() {
@@ -48,7 +48,7 @@ func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey 
 	// フォーカスをページへ移す
 	if key == tcell.KeyEsc {
 		a.commandLine.SetText("")
-		a.app.SetFocus(a.view.pagesView)
+		a.app.SetFocus(a.view.pageView)
 		return nil
 
 	}

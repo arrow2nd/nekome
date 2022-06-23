@@ -9,19 +9,21 @@ import (
 )
 
 type view struct {
-	pagesView *tview.Pages
-	tabView   *tview.TextView
-	pages     map[string]page
-	tabNames  []string
-	mu        sync.Mutex
+	pageView *tview.Pages
+	tabView  *tview.TextView
+	modal    *tview.Modal
+	pages    map[string]page
+	tabs     []string
+	mu       sync.Mutex
 }
 
 func newView() *view {
 	v := &view{
-		pagesView: tview.NewPages(),
-		tabView:   tview.NewTextView(),
-		pages:     map[string]page{},
-		tabNames:  []string{},
+		pageView: tview.NewPages(),
+		tabView:  tview.NewTextView(),
+		modal:    tview.NewModal(),
+		pages:    map[string]page{},
+		tabs:     []string{},
 	}
 
 	v.tabView.
@@ -29,6 +31,11 @@ func newView() *view {
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
 		SetHighlightedFunc(v.handleTabHighlight).
+		SetBackgroundColor(tcell.ColorDefault)
+
+	v.modal.
+		AddButtons([]string{"No", "Yes"}).
+		SetTextColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault)
 
 	return v
@@ -43,9 +50,25 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
-	for i, name := range v.tabNames {
-		fmt.Fprintf(v.tabView, `["%s"] %s `, createPageTag(i), name)
+	for i, name := range v.tabs {
+		fmt.Fprintf(v.tabView, `["%s"] %s [""]`, createPageTag(i), name)
+
+		if i < len(v.tabs)-1 {
+			fmt.Fprint(v.tabView, "|")
+		}
 	}
+}
+
+// SetInputCapture : キーイベントハンドラを設定
+func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
+	v.pageView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		// モーダル表示中は操作を受け付けない
+		if v.modal.HasFocus() {
+			return event
+		}
+
+		return f(event)
+	})
 }
 
 // AddPage : ページを追加
@@ -54,20 +77,39 @@ func (v *view) AddPage(p page, focus bool) {
 	defer v.mu.Unlock()
 
 	// タブを追加
-	v.tabNames = append(v.tabNames, p.GetName())
+	v.tabs = append(v.tabs, p.GetName())
 	v.drawTab()
 
-	pageID := createPageTag(len(v.tabNames) - 1)
+	pageID := createPageTag(len(v.tabs) - 1)
 
 	// ページを追加
 	v.pages[pageID] = p
-	v.pagesView.AddPage(pageID, p.GetPrimivite(), true, focus)
+	v.pageView.AddPage(pageID, p.GetPrimivite(), true, focus)
 
 	if focus {
 		v.tabView.Highlight(pageID)
 	}
 
 	go p.Load()
+}
+
+// RemovePage : ページを削除
+func (v *view) RemovePage(name string) {
+	v.pageView.RemovePage(name)
+}
+
+// PopupModal : モーダルを表示
+func (v *view) PopupModal(s string, f func()) {
+	v.modal.
+		SetText(s).
+		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+			if buttonLabel == "Yes" {
+				f()
+			}
+			v.pageView.RemovePage("modal")
+		})
+
+	v.pageView.AddPage("modal", v.modal, true, true)
 }
 
 // selectPrevTab : 前のタブを選択
@@ -77,7 +119,7 @@ func (v *view) selectPrevTab() {
 		return
 	}
 
-	pageCount := v.pagesView.GetPageCount()
+	pageCount := v.pageView.GetPageCount()
 
 	if index--; index < 0 {
 		index = pageCount - 1
@@ -93,7 +135,7 @@ func (v *view) selectNextTab() {
 		return
 	}
 
-	pageCount := v.pagesView.GetPageCount()
+	pageCount := v.pageView.GetPageCount()
 
 	index = (index + 1) % pageCount
 
@@ -106,6 +148,6 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	v.tabView.ScrollToHighlight()
 
 	// ページを切り替え
-	v.pagesView.SwitchToPage(added[0])
+	v.pageView.SwitchToPage(added[0])
 	v.pages[added[0]].OnVisible()
 }
