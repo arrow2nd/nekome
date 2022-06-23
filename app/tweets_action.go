@@ -51,7 +51,11 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 			return
 		}
 
-		shared.SetStatus(label+"ed", summary)
+		if !strings.HasSuffix(label, "e") {
+			label += "e"
+		}
+
+		shared.SetStatus(label+"d", summary)
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
@@ -91,7 +95,11 @@ func (t *tweets) actionForUser(a userActionType) {
 			return
 		}
 
-		shared.SetStatus(label+"ed", summary)
+		if !strings.HasSuffix(label, "e") {
+			label += "e"
+		}
+
+		shared.SetStatus(label+"d", summary)
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
