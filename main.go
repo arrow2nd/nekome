@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/arrow2nd/nekome/api"
@@ -31,9 +30,6 @@ func main() {
 	}
 
 	login()
-
-	// NOTE: テスト用
-	fmt.Printf("Name: %s / UserName: %s / UserID: %s\n", client.CurrentUser.UserName, client.CurrentUser.UserName, client.CurrentUser.ID)
 
 	// アプリ初期化
 	app := app.New()
