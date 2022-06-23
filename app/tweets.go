@@ -202,12 +202,12 @@ func (t *tweets) cursorDown() {
 	t.scrollToTweet(idx)
 }
 
-// handleKeyEvents : ツイートビューのキーハンドラ
+// handleKeyEvents : ツイートビューのキーイベントハンドラ
 func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
 
-	// 1行スクロール
+	// 1行ずつスクロール
 	if key == tcell.KeyCtrlK {
 		r, c := t.view.GetScrollOffset()
 		t.view.ScrollTo(r-1, c)
@@ -263,6 +263,18 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	// リツイート解除
 	if keyRune == 'T' {
 		t.unRetweet()
+		return nil
+	}
+
+	// フォロー
+	if keyRune == 'w' {
+		t.follow()
+		return nil
+	}
+
+	// フォロー解除
+	if keyRune == 'W' {
+		t.unfollow()
 		return nil
 	}
 

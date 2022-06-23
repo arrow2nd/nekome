@@ -1,6 +1,8 @@
 package app
 
 import (
+	"fmt"
+
 	"github.com/atotto/clipboard"
 	"github.com/pkg/browser"
 )
@@ -73,6 +75,46 @@ func (t *tweets) unRetweet() {
 
 	shared.ReqestPopupModal(&ModalOpt{
 		"Are you sure you want to unretweet this tweet?",
+		f,
+	})
+}
+
+// follow : フォロー
+func (t *tweets) follow() {
+	c := t.getSelectTweet()
+	s := createUserSummary(c.Author)
+
+	f := func() {
+		if err := shared.api.Follow(c.Author.ID); err != nil {
+			shared.SetErrorStatus("Follow", err.Error())
+			return
+		}
+
+		shared.SetStatus("Followed", s)
+	}
+
+	shared.ReqestPopupModal(&ModalOpt{
+		fmt.Sprintf(`Are you sure you want to follow "%s"?`, s),
+		f,
+	})
+}
+
+// unfollow : フォロー解除
+func (t *tweets) unfollow() {
+	c := t.getSelectTweet()
+	s := createUserSummary(c.Author)
+
+	f := func() {
+		if err := shared.api.Follow(c.Author.ID); err != nil {
+			shared.SetErrorStatus("Unfollow", err.Error())
+			return
+		}
+
+		shared.SetStatus("Unfollowed", s)
+	}
+
+	shared.ReqestPopupModal(&ModalOpt{
+		fmt.Sprintf(`Are you sure you want to unfollow "%s"?`, s),
 		f,
 	})
 }

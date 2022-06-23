@@ -103,9 +103,14 @@ func createMetricsString(unit, color string, count int, reverse bool) string {
 	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
 }
 
+// createUserSummary : ユーザの要約文を作成
+func createUserSummary(u *twitter.UserObj) string {
+	return fmt.Sprintf("%s @%s", u.Name, u.UserName)
+}
+
 // createTweetSummary : ツイートの要約文を作成
 func createTweetSummary(t *twitter.TweetDictionary) string {
-	return fmt.Sprintf("%s @%s | %s", t.Author.Name, t.Author.UserName, t.Tweet.Text)
+	return fmt.Sprintf("%s | %s", createUserSummary(t.Author), t.Tweet.Text)
 }
 
 // createTweetURL : ツイートのURLを作成
