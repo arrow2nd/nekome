@@ -9,6 +9,11 @@ import (
 // initCommandLine : コマンドラインを初期化
 func (a *App) initCommandLine() {
 	a.commandLine.
+		SetAutocompleteStyles(
+			tcell.NewHexColor(0x3e4359),
+			tcell.StyleDefault,
+			tcell.StyleDefault.Background(tcell.NewHexColor(0x5c6586)),
+		).
 		SetPlaceholderStyle(tcell.StyleDefault).
 		SetFieldBackgroundColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault)
@@ -80,8 +85,6 @@ func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey 
 
 // handleCommandLineAutocomplete : コマンドの入力補完ハンドラ
 func (a *App) handleCommandLineAutocomplete(currentText string) (entries []string) {
-	currentText = strings.Replace(currentText, ":", "", 1)
-
 	if currentText == "" {
 		return nil
 	}
