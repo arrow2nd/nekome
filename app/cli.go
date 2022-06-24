@@ -24,11 +24,13 @@ func (a *App) getCommands() []string {
 
 // ExecCmd : コマンドを実行
 func (a *App) ExecCmd(args []string) error {
+	var unfocus bool
+
 	// フラグを設定
 	f := flag.NewFlagSet("nekome", flag.ContinueOnError)
-	tweetFlag := flag.NewFlagSet("tweet", flag.ContinueOnError)
+	f.BoolVarP(&unfocus, "unfocus", "u", false, "")
 
-	f.BoolP("unfocus", "u", false, "")
+	tweetFlag := flag.NewFlagSet("tweet", flag.ContinueOnError)
 	tweetFlag.BoolP("quote", "q", false, "Specify the ID of the tweet to quote")
 	tweetFlag.BoolP("reply", "r", false, "Specify the ID of the tweet to which you are replying")
 
@@ -41,8 +43,6 @@ func (a *App) ExecCmd(args []string) error {
 		return errors.New("command not found")
 	}
 
-	unfocus, _ := f.GetBool("unfocus")
-
 	// コマンドを解析
 	switch f.Arg(0) {
 	case "home", "h":
@@ -51,6 +51,8 @@ func (a *App) ExecCmd(args []string) error {
 		return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
 	case "user", "u":
 		return a.openUserPage(f.Arg(1), !unfocus)
+	case "search", "s":
+		return a.openSearchPage(f.Arg(1), !unfocus)
 	case "quit", "q":
 		a.quitApp()
 		return nil
@@ -70,6 +72,16 @@ func (a *App) openUserPage(userName string, focus bool) error {
 	userName = strings.ReplaceAll(userName, "@", "")
 
 	return a.view.AddPage(newUserPage(userName), focus)
+}
+
+// openSearchPage : 検索ページを開く
+func (a *App) openSearchPage(query string, focus bool) error {
+	// 検索ワードが無い
+	if query == "" {
+		return errors.New("please specify search keywords")
+	}
+
+	return a.view.AddPage(newSearchPage(query), focus)
 }
 
 // quitApp : アプリを終了
