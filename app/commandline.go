@@ -20,6 +20,7 @@ func (a *App) initCommandLine() {
 
 	a.commandLine.
 		SetAutocompleteFunc(a.handleCommandLineAutocomplete).
+		SetDoneFunc(a.handleCommandLineDone).
 		SetChangedFunc(func(text string) {
 			if text == "" {
 				a.commandLine.SetLabel("")
@@ -32,7 +33,7 @@ func (a *App) initCommandLine() {
 				SetPlaceholder("").
 				SetLabel(":")
 		}).
-		SetInputCapture(a.handleCommandLineKeyEvents)
+		SetInputCapture(a.handleCommandLineKeyEvent)
 }
 
 // updateStatusMessage : ステータスメッセージを更新
@@ -56,9 +57,21 @@ func (a *App) blurCommandLine() {
 	a.commandLine.SetText("")
 }
 
-// handleCommandLineKeyEvents : コマンドラインのキーイベントハンドラ
-func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+// handleCommandLineKeyEvent : コマンドラインのキーイベントハンドラ
+func (a *App) handleCommandLineKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
+
+	// フォーカスをページへ移す
+	if key == tcell.KeyEsc {
+		a.blurCommandLine()
+		return nil
+	}
+
+	return event
+}
+
+// handleCommandLineDone : 入力確定時のイベントハンドラ
+func (a *App) handleCommandLineDone(key tcell.Key) {
 	text := a.commandLine.GetText()
 
 	// コマンドを実行
@@ -70,17 +83,7 @@ func (a *App) handleCommandLineKeyEvents(event *tcell.EventKey) *tcell.EventKey 
 		}
 
 		a.blurCommandLine()
-
-		return nil
 	}
-
-	// フォーカスをページへ移す
-	if key == tcell.KeyEsc {
-		a.blurCommandLine()
-		return nil
-	}
-
-	return event
 }
 
 // handleCommandLineAutocomplete : コマンドの入力補完ハンドラ
