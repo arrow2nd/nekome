@@ -1,6 +1,8 @@
 package app
 
 import (
+	"strings"
+
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
@@ -39,15 +41,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
-	// ページ
-	home := newTimelinePage(homeTL)
-	mention := newTimelinePage(mentionTL)
-	user := newUserPage("arrow_2nd")
-
-	a.view.AddPage(home, true)
-	a.view.AddPage(mention, false)
-	a.view.AddPage(user, false)
-
+	// ページビュー
 	a.view.SetInputCapture(a.handlePageKeyEvent)
 
 	// ステータスバー
@@ -69,6 +63,19 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	a.app.
 		SetRoot(layout, true).
 		SetInputCapture(a.handleGlobalKeyEvents)
+
+	// 起動時に実行するコマンド
+	cmds := []string{
+		"home",
+		"mention --unfocus",
+		"user arrow_2nd --unfocus",
+	}
+
+	for _, c := range cmds {
+		if err := a.ExecCmd(strings.Split(c, " ")); err != nil {
+			shared.SetErrorStatus("Command", err.Error())
+		}
+	}
 }
 
 // Run : 実行
