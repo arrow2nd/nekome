@@ -16,7 +16,7 @@ func (a *App) getCommands() []string {
 		"list",
 		"search",
 		"switch",
-		"exit",
+		"quit",
 	}
 }
 
