@@ -118,11 +118,7 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
-		a.blurCommandLine()
-		a.view.PopupModal(&ModalOpt{
-			title:  "Do you want to exit the app?",
-			onDone: a.app.Stop,
-		})
+		a.quitApp()
 		return nil
 	}
 

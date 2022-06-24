@@ -47,14 +47,17 @@ func (a *App) ExecCmd(args []string) error {
 
 	switch f.Arg(0) {
 	case "user", "u":
-		return a.cmdOpenUserPage(f.Arg(1))
+		return a.openUserPage(f.Arg(1))
+	case "quit", "q":
+		a.quitApp()
+		return nil
 	}
 
 	return fmt.Errorf(`"%s" is not a command`, f.Arg(0))
 }
 
-// cmdOpenUserPage : ユーザページを開く
-func (a *App) cmdOpenUserPage(userName string) error {
+// openUserPage : ユーザページを開く
+func (a *App) openUserPage(userName string) error {
 	// ユーザの指定がないなら自分を指定
 	if userName == "" {
 		userName = shared.api.CurrentUser.UserName
@@ -64,4 +67,15 @@ func (a *App) cmdOpenUserPage(userName string) error {
 	userName = strings.ReplaceAll(userName, "@", "")
 
 	return a.view.AddPage(newUserPage(userName), true)
+}
+
+// quitApp : アプリを終了
+func (a *App) quitApp() {
+	a.blurCommandLine()
+
+	a.view.PopupModal(&ModalOpt{
+		title:  "Do you want to quit the app?",
+		onDone: a.app.Stop,
+	})
+
 }
