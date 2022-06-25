@@ -111,6 +111,14 @@ func (t *tweets) actionForUser(a userActionType) {
 	})
 }
 
+// openUserPage : ユーザページを開く
+func (t *tweets) openUserPage() {
+	c := t.getSelectTweet()
+
+	cmd := fmt.Sprintf("user %s", c.Author.UserName)
+	shared.RequestExecCommand(cmd)
+}
+
 // openBrower : ブラウザで開く
 func (t *tweets) openBrower() {
 	c := t.getSelectTweet()

@@ -308,6 +308,12 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	// ユーザページを開く
+	if keyRune == 'i' {
+		t.openUserPage()
+		return nil
+	}
+
 	// ブラウザで開く
 	if keyRune == 'o' {
 		t.openBrower()
