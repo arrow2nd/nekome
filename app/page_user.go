@@ -2,14 +2,13 @@ package app
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/arrow2nd/nekome/api"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
-
-const userProfilePaddingX = 4
 
 type userPage struct {
 	*basePage
@@ -23,8 +22,11 @@ type userPage struct {
 }
 
 func newUserPage(userName string) *userPage {
+	tabName := shared.conf.Settings.Texts.TabUser
+	tabName = strings.Replace(tabName, "{name}", userName, 1)
+
 	p := &userPage{
-		basePage:         newBasePage("@" + userName),
+		basePage:         newBasePage(tabName),
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
 		tweetMetrics:     createMetricsView(0xa094c7),
@@ -34,10 +36,12 @@ func newUserPage(userName string) *userPage {
 		userDic:          nil,
 	}
 
+	padding := shared.conf.Settings.Apperance.UserProfilePaddingX
+
 	p.profile.SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignCenter).
-		SetBorderPadding(0, 1, userProfilePaddingX, userProfilePaddingX)
+		SetBorderPadding(0, 1, padding, padding)
 
 	p.tweets.view.SetBorderPadding(1, 0, 0, 0)
 
@@ -74,7 +78,10 @@ func createMetricsView(color int32) *tview.TextView {
 
 // Load : ユーザタイムライン読み込み
 func (u *userPage) Load() {
-	shared.SetStatus(u.name, "Loading...")
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	shared.SetStatus(u.name, shared.conf.Settings.Texts.Loading)
 
 	// ユーザの情報を取得
 	if u.userDic == nil {
@@ -86,8 +93,9 @@ func (u *userPage) Load() {
 	}
 
 	// ユーザのツイートを取得
+	count := shared.conf.Settings.Feature.LoadTweetsCount
 	sinceID := u.tweets.GetSinceID()
-	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, 25)
+	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, count)
 	if err != nil {
 		u.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(u.name, err.Error())

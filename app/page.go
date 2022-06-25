@@ -40,7 +40,7 @@ type basePage struct {
 
 func newBasePage(name string) *basePage {
 	return &basePage{
-		name:      truncate(name, 15),
+		name:      truncate(name, shared.conf.Settings.Apperance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
 		tweets:    newTweets(),
@@ -77,7 +77,7 @@ func (b *basePage) updateIndicator(s string, r *twitter.RateLimit) {
 
 // updateLoadedStatus : ステータスメッセージを更新
 func (b *basePage) updateLoadedStatus(count int) {
-	text := "no new tweets"
+	text := shared.conf.Settings.Texts.NoTweets
 
 	if count > 0 {
 		text = fmt.Sprintf("%d tweets loaded", count)

@@ -49,7 +49,3 @@ func (c *Cred) Delete(userName string) {
 	c.users = tmp
 }
 
-// SaveCred : 認証情報を保存
-func (c *Config) SaveCred() error {
-	return c.save(credFileName, c.Cred.users)
-}

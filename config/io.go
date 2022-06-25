@@ -15,30 +15,57 @@ const (
 	setingsFileName = "settings.yml"
 )
 
+// getConfigDir : Configディレクトリを取得
 func getConfigDir() (string, error) {
 	path, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("failed to get config directory")
 	}
 
-	return filepath.Join(path, ".nekome"), nil
+	path = filepath.Join(path, ".nekome")
+
+	// ディレクトリが無いなら作成
+	if _, err := os.Stat(path); err != nil {
+		if err := os.Mkdir(path, 0777); err != nil {
+			return "", fmt.Errorf("failed to create configuration directory: %v", err)
+		}
+	}
+
+	return path, nil
 }
 
-// LoadAll : 一括読込み
-func (c *Config) LoadAll() (bool, error) {
-	if ok, err := c.hasAllFileExists(); !ok {
-		return false, err
+// LoadCred : 認証情報を読込む
+func (c *Config) LoadCred() (bool, error) {
+	if !c.hasFileExists(credFileName) {
+		return false, nil
 	}
 
 	if err := c.load(credFileName, &c.Cred.users); err != nil {
 		return false, err
 	}
 
-	if err := c.load(setingsFileName, c.Settings); err != nil {
-		return false, err
+	return true, nil
+}
+
+// LoadSettings : 設定を読込む
+func (c *Config) LoadSettings() error {
+	if !c.hasFileExists(setingsFileName) {
+		if err := c.SaveSettings(); err != nil {
+			return err
+		}
 	}
 
-	return true, nil
+	return c.load(setingsFileName, c.Settings)
+}
+
+// SaveCred : 認証情報を保存
+func (c *Config) SaveCred() error {
+	return c.save(credFileName, c.Cred.users)
+}
+
+// SaveSettings : 設定を保存
+func (c *Config) SaveSettings() error {
+	return c.save(setingsFileName, c.Settings)
 }
 
 // SaveAll : 一括保存
@@ -54,56 +81,42 @@ func (c *Config) SaveAll() error {
 	return nil
 }
 
-func (c *Config) hasAllFileExists() (bool, error) {
-	// configディレクトリの存在チェック
-	if _, err := os.Stat(c.dirPath); err != nil {
-		if err := os.Mkdir(c.dirPath, 0777); err != nil {
-			return false, fmt.Errorf("failed to create configuration directory: %v", err)
-		}
-
-		return false, nil
+// hasFileExists : ファイルが存在するか
+func (c *Config) hasFileExists(file string) bool {
+	if _, err := os.Stat(filepath.Join(c.dirPath, file)); err != nil {
+		return false
 	}
 
-	files := []string{
-		credFileName,
-		setingsFileName,
-	}
-
-	// ファイルの存在チェック
-	for _, path := range files {
-		if _, err := os.Stat(filepath.Join(c.dirPath, path)); err != nil {
-			return false, nil
-		}
-	}
-
-	return true, nil
+	return true
 }
 
+// save : 保存
 func (c *Config) save(fileName string, in interface{}) error {
 	buf, err := yaml.Marshal(in)
 	if err != nil {
-		return fmt.Errorf("failed to marshal (%s): %v", fileName, err)
+		return fmt.Errorf("failed to marshal (%s): %w", fileName, err)
 	}
 
 	path := filepath.Join(c.dirPath, fileName)
 
 	if err := ioutil.WriteFile(path, buf, os.ModePerm); err != nil {
-		return fmt.Errorf("failed to save (%s): %v", path, err)
+		return fmt.Errorf("failed to save (%s): %w", path, err)
 	}
 
 	return nil
 }
 
+// load : 読み込み
 func (c *Config) load(fileName string, out interface{}) error {
 	path := filepath.Join(c.dirPath, fileName)
 
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to load (%s): %v", path, err)
+		return fmt.Errorf("failed to load (%s): %w", path, err)
 	}
 
 	if err := yaml.Unmarshal(buf, out); err != nil {
-		return fmt.Errorf("failed to unmarshal (%s): %v", path, err)
+		return fmt.Errorf("failed to unmarshal (%s): %w", path, err)
 	}
 
 	return nil

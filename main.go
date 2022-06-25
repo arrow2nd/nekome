@@ -18,14 +18,16 @@ func init() {
 }
 
 func main() {
-	// 設定ファイル読み込み
-	ok, err := conf.LoadAll()
-	if err != nil {
+	// 設定を読込む
+	if err := conf.LoadSettings(); err != nil {
 		log.Fatal(err)
 	}
 
-	// 設定ファイルが無い場合,新規作成
-	if !ok {
+	// 認証情報を読込む
+	ok, err := conf.LoadCred()
+	if err != nil {
+		log.Fatal(err)
+	} else if !ok {
 		createNewCred()
 	}
 
@@ -47,7 +49,7 @@ func createNewCred() {
 	}
 
 	conf.Cred.Write(authUser)
-	conf.Settings.MainUser = authUser.UserName
+	conf.Settings.Feature.MainUser = authUser.UserName
 
 	if err := conf.SaveAll(); err != nil {
 		log.Fatal(err)
@@ -56,7 +58,7 @@ func createNewCred() {
 
 func login() error {
 	// ログインするユーザを取得
-	userName := conf.Settings.MainUser
+	userName := conf.Settings.Feature.MainUser
 	user, err := conf.Cred.Get(userName)
 	if err != nil {
 		return err

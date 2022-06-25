@@ -69,7 +69,7 @@ func (v *view) drawTab() {
 		fmt.Fprintf(v.tabView, `["%s"] %s [""]`, tab.id, tab.name)
 
 		if i < len(v.tabs)-1 {
-			fmt.Fprint(v.tabView, "|")
+			fmt.Fprint(v.tabView, shared.conf.Settings.Apperance.TabSeparate)
 		}
 	}
 }

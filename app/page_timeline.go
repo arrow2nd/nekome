@@ -18,9 +18,15 @@ type timelinePage struct {
 	tlType timelineType
 }
 
+// newTimelinePage : タイムラインページを作成
 func newTimelinePage(tt timelineType) *timelinePage {
+	tabName := shared.conf.Settings.Texts.TabHome
+	if tt == mentionTL {
+		tabName = shared.conf.Settings.Texts.TabMention
+	}
+
 	page := &timelinePage{
-		basePage: newBasePage(string(tt)),
+		basePage: newBasePage(tabName),
 		tlType:   tt,
 	}
 
@@ -41,15 +47,17 @@ func (t *timelinePage) Load() {
 		err       error
 	)
 
-	shared.SetStatus(t.name, "Loading...")
+	shared.SetStatus(t.name, shared.conf.Settings.Texts.Loading)
 
+	// タイムラインを取得
+	id := shared.api.CurrentUser.ID
+	count := shared.conf.Settings.Feature.LoadTweetsCount
 	sinceID := t.tweets.GetSinceID()
 
-	switch t.tlType {
-	case homeTL:
-		tweets, rateLimit, err = shared.api.FetchHomeTileline(shared.api.CurrentUser.ID, sinceID, 25)
-	case mentionTL:
-		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(shared.api.CurrentUser.ID, sinceID, 25)
+	if t.tlType == homeTL {
+		tweets, rateLimit, err = shared.api.FetchHomeTileline(id, sinceID, count)
+	} else {
+		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(id, sinceID, count)
 	}
 
 	if err != nil {

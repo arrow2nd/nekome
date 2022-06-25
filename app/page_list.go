@@ -1,15 +1,23 @@
 package app
 
-import "github.com/gdamore/tcell/v2"
+import (
+	"strings"
+
+	"github.com/gdamore/tcell/v2"
+)
 
 type listPage struct {
 	*basePage
 	listID string
 }
 
+// newListPage : リストページを作成
 func newListPage(listID, listName string) *listPage {
+	tabName := shared.conf.Settings.Texts.TabList
+	tabName = strings.Replace(tabName, "{name}", listName, 1)
+
 	p := &listPage{
-		basePage: newBasePage(listName),
+		basePage: newBasePage(tabName),
 		listID:   listID,
 	}
 
@@ -24,9 +32,11 @@ func (l *listPage) Load() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	shared.SetStatus(l.name, "Loading...")
+	shared.SetStatus(l.name, shared.conf.Settings.Texts.Loading)
 
-	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, 25)
+	// リスト内のツイートを取得
+	count := shared.conf.Settings.Feature.LoadTweetsCount
+	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, count)
 	if err != nil {
 		l.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(l.name, err.Error())

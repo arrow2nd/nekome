@@ -109,7 +109,7 @@ func (t *tweets) Draw() {
 
 	// 表示するツイートが無いなら描画を中断
 	if t.GetTweetsCount() == 0 {
-		t.DrawMessage("No tweets")
+		t.DrawMessage(shared.conf.Settings.Texts.NoTweets)
 		return
 	}
 
@@ -138,7 +138,8 @@ func (t *tweets) Draw() {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			fmt.Fprintln(t.view, "[gray:-:-]\uf435 Pinned Tweet[-:-:-]")
+			icon := shared.conf.Settings.Icon.Pinned
+			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", icon)
 		}
 
 		// 表示部分を作成
@@ -148,8 +149,7 @@ func (t *tweets) Draw() {
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
 			fmt.Fprintln(t.view, createSeparator("-", width))
-			layout := createTweetLayout(quotedTweet, -1, width)
-			fmt.Fprintln(t.view, layout)
+			fmt.Fprintln(t.view, createTweetLayout(quotedTweet, -1, width))
 		}
 
 		// 末尾のツイートでないならセパレータを挿入
@@ -164,9 +164,7 @@ func (t *tweets) Draw() {
 
 // DrawMessage : ビューにメッセージを表示
 func (t *tweets) DrawMessage(s string) {
-	t.view.Clear()
-
-	t.view.
+	t.view.Clear().
 		SetTextAlign(tview.AlignCenter).
 		SetText(s)
 }

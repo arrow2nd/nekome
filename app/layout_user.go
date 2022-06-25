@@ -7,12 +7,12 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-const userBioRowMax = 3
-
 // createUserBioLayout : レイアウト済みのBIO文字列を作成し、その表示行数を返す
 func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
-	desc = truncate(desc, w*userBioRowMax)
+
+	maxRow := shared.conf.Settings.Apperance.UserBIOMaxRow
+	desc = truncate(desc, w*maxRow)
 
 	return desc, getStringDisplayRow(desc, w)
 }
@@ -22,11 +22,13 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
-		texts = append(texts, "\uf276 "+u.Location)
+		icon := shared.conf.Settings.Icon.Geo
+		texts = append(texts, icon+" "+u.Location)
 	}
 
 	if u.URL != "" {
-		texts = append(texts, "\uf838 "+u.URL)
+		icon := shared.conf.Settings.Icon.Link
+		texts = append(texts, icon+" "+u.URL)
 	}
 
 	return "[gray:-:-]" + strings.Join(texts, " | ")
@@ -34,7 +36,8 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 
 // createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示行数を返す
 func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
-	width := w - userProfilePaddingX*2
+	padding := shared.conf.Settings.Apperance.UserProfilePaddingX
+	width := w - padding*2
 
 	desc, row := createUserBioLayout(u.Description, width)
 

@@ -33,14 +33,14 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 
 	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]%s[-:-:-]`, name, userName)
 
-	// 認証済み
+	// 認証済みアカウント
 	if u.Verified {
-		header += "[blue] \uf4a1[-:-:-]"
+		header += fmt.Sprintf("[blue] %s[-:-:-]", shared.conf.Settings.Icon.Verified)
 	}
 
-	// 鍵付き
+	// 非公開アカウント
 	if u.Protected {
-		header += "[gray] \uf83d[-:-:-]"
+		header += fmt.Sprintf("[gray] %s[-:-:-]", shared.conf.Settings.Icon.Private)
 	}
 
 	return header + "\n"
@@ -54,7 +54,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 
 	// グラフの表示幅を計算
 	windowWidth := float64(getWindowWidth())
-	graphMaxWidth := float64(30)
+	graphMaxWidth := float64(shared.conf.Settings.Apperance.GraphMaxWidth)
 
 	if graphMaxWidth > windowWidth {
 		graphMaxWidth = windowWidth
@@ -69,14 +69,14 @@ func createPollLayout(p []*twitter.PollObj) string {
 	// グラフを作成
 	text := "\n"
 	for _, o := range p[0].Options {
+		text += fmt.Sprintln(o.Label)
+
 		per := float64(0)
 		if allVotes > 0 {
 			per = float64(o.Votes) / float64(allVotes)
 		}
 
-		graph := strings.Repeat("▇", int(math.Floor(per*graphMaxWidth)))
-
-		text += fmt.Sprintln(o.Label)
+		graph := strings.Repeat(shared.conf.Settings.Apperance.GraphChar, int(math.Floor(per*graphMaxWidth)))
 		text += fmt.Sprintf("[blue]%s[-:-:-] %.1f%% (%d)\n", graph, per*100, o.Votes)
 	}
 
@@ -93,21 +93,22 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 
 	likes := tw.PublicMetrics.Likes
 	if likes != 0 {
-		metrics += createMetricsString("Like", "pink", likes, false)
+		unit := shared.conf.Settings.Texts.Like
+		metrics += createMetricsString(unit, "pink", likes, false)
 	}
 
 	rts := tw.PublicMetrics.Retweets
 	if rts != 0 {
-		metrics += createMetricsString("RT", "green", rts, false)
+		unit := shared.conf.Settings.Texts.Retweet
+		metrics += createMetricsString(unit, "green", rts, false)
 	}
 
 	if metrics != "" {
 		metrics = "\n" + metrics
 	}
 
-	createAt := convertDateString(tw.CreatedAt)
-
-	return fmt.Sprintf("[gray]%s | via %s[-:-:-]%s", createAt, tw.Source, metrics)
+	date := convertDateString(tw.CreatedAt)
+	return fmt.Sprintf("[gray]%s | via %s[-:-:-]%s", date, tw.Source, metrics)
 }
 
 // createTweetTextLayout : レイアウト済みのツイート文字列を作成

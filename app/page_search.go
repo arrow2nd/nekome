@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -11,9 +12,13 @@ type searchPage struct {
 	query string
 }
 
+// newSearchPage : 検索ページを作成
 func newSearchPage(query string) *searchPage {
+	tabName := shared.conf.Settings.Texts.TabSearch
+	tabName = strings.Replace(tabName, "{query}", query, 1)
+
 	p := &searchPage{
-		basePage: newBasePage("Search: " + query),
+		basePage: newBasePage(tabName),
 		query:    query,
 	}
 
@@ -28,11 +33,13 @@ func (s *searchPage) Load() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	shared.SetStatus(s.name, "Loading...")
+	shared.SetStatus(s.name, shared.conf.Settings.Texts.Loading)
 
+	// ツイートを検索（RTは除外）
+	count := shared.conf.Settings.Feature.LoadTweetsCount
 	sinceID := s.tweets.GetSinceID()
 	query := s.query + " -is:retweet"
-	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, 25)
+	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, count)
 
 	if err != nil {
 		s.tweets.DrawMessage(err.Error())

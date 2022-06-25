@@ -87,9 +87,13 @@ func convertDateString(createAt string) string {
 
 	// 今日の日付なら時刻のみを表示
 	if isSameDate(t) {
-		format = shared.conf.Settings.TimeFormat
+		format = shared.conf.Settings.Apperance.TimeFormat
 	} else {
-		format = fmt.Sprintf("%s %s", shared.conf.Settings.DateFormat, shared.conf.Settings.TimeFormat)
+		format = fmt.Sprintf(
+			"%s %s",
+			shared.conf.Settings.Apperance.DateFormat,
+			shared.conf.Settings.Apperance.TimeFormat,
+		)
 	}
 
 	return t.Local().Format(format)
