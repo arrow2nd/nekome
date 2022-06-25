@@ -102,7 +102,7 @@ func defaultSettings() *Settings {
 				"Unfollow":  true,
 				"Block":     true,
 				"Unblock":   true,
-				"Mute:":     true,
+				"Mute":      true,
 				"Unmute":    true,
 				"Quit":      true,
 			},

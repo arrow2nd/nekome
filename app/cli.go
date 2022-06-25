@@ -88,9 +88,14 @@ func (a *App) openSearchPage(query string, focus bool) error {
 func (a *App) quitApp() {
 	a.blurCommandLine()
 
+	// 確認画面が不要
+	if !shared.conf.Settings.Feature.Confirm["Quit"] {
+		a.app.Stop()
+		return
+	}
+
 	a.view.PopupModal(&ModalOpt{
 		title:  "Do you want to quit the app?",
 		onDone: a.app.Stop,
 	})
-
 }

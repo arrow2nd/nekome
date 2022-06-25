@@ -61,6 +61,12 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		shared.SetStatus(label+"d", summary)
 	}
 
+	// 確認画面が不要
+	if !shared.conf.Settings.Feature.Confirm[label] {
+		f()
+		return
+	}
+
 	shared.ReqestPopupModal(&ModalOpt{
 		fmt.Sprintf("Are you sure you want to %s this tweet?", strings.ToLower(label)),
 		f,
@@ -103,6 +109,12 @@ func (t *tweets) actionForUser(a userActionType) {
 		}
 
 		shared.SetStatus(label+"d", summary)
+	}
+
+	// 確認画面が不要
+	if !shared.conf.Settings.Feature.Confirm[label] {
+		f()
+		return
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
