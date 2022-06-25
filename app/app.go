@@ -96,6 +96,10 @@ func (a *App) eventReciever() {
 		case opt := <-shared.chPopupModal:
 			a.view.PopupModal(opt)
 			a.app.Draw()
+		case cmd := <-shared.chExecCommand:
+			if err := a.ExecCmd(strings.Split(cmd, " ")); err != nil {
+				shared.SetErrorStatus("Command", err.Error())
+			}
 		}
 	}
 }

@@ -6,26 +6,28 @@ import (
 )
 
 var shared = Shared{
-	api:          nil,
-	conf:         nil,
-	chStatus:     make(chan string, 1),
-	chIndicator:  make(chan string, 1),
-	chPopupModal: make(chan *ModalOpt, 1),
+	api:           nil,
+	conf:          nil,
+	chStatus:      make(chan string, 1),
+	chIndicator:   make(chan string, 1),
+	chPopupModal:  make(chan *ModalOpt, 1),
+	chExecCommand: make(chan string, 1),
 }
 
 // Shared : 全体共有
 type Shared struct {
-	api          *api.API
-	conf         *config.Config
-	chStatus     chan string
-	chIndicator  chan string
-	chPopupModal chan *ModalOpt
+	api           *api.API
+	conf          *config.Config
+	chStatus      chan string
+	chIndicator   chan string
+	chPopupModal  chan *ModalOpt
+	chExecCommand chan string
 }
 
 // SetStatus : ステータスメッセージを設定
 func (s *Shared) SetStatus(label, status string) {
 	go func() {
-		shared.chStatus <- createStatusMessage(label, status)
+		s.chStatus <- createStatusMessage(label, status)
 	}()
 }
 
@@ -37,13 +39,20 @@ func (s *Shared) SetErrorStatus(label, errStatus string) {
 // SetIndicator : インジケータを設定
 func (s *Shared) SetIndicator(indicator string) {
 	go func() {
-		shared.chIndicator <- indicator
+		s.chIndicator <- indicator
 	}()
 }
 
 // ReqestPopupModal : モーダルの表示をリクエスト
 func (s *Shared) ReqestPopupModal(o *ModalOpt) {
 	go func() {
-		shared.chPopupModal <- o
+		s.chPopupModal <- o
+	}()
+}
+
+// RequestExecCommand : コマンドの実行をリクエスト
+func (s *Shared) RequestExecCommand(c string) {
+	go func() {
+		s.chExecCommand <- c
 	}()
 }
