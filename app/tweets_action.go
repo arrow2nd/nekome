@@ -12,16 +12,17 @@ type tweetActionType string
 type userActionType string
 
 const (
-	like      tweetActionType = "Like"
-	unlike    tweetActionType = "Unlike"
-	retweet   tweetActionType = "Retweet"
-	unretweet tweetActionType = "Unretweet"
-	follow    userActionType  = "Follow"
-	unfollow  userActionType  = "UnFollow"
-	block     userActionType  = "Block"
-	unblock   userActionType  = "Unblock"
-	mute      userActionType  = "Mute"
-	unmute    userActionType  = "Unmute"
+	tweetLike      tweetActionType = "Like"
+	tweetUnlike    tweetActionType = "Unlike"
+	tweetRetweet   tweetActionType = "Retweet"
+	tweetUnretweet tweetActionType = "Unretweet"
+	tweetDelete    tweetActionType = "Delete"
+	userFollow     userActionType  = "Follow"
+	userUnfollow   userActionType  = "UnFollow"
+	userBlock      userActionType  = "Block"
+	userUnblock    userActionType  = "Unblock"
+	userMute       userActionType  = "Mute"
+	userUnmute     userActionType  = "Unmute"
 )
 
 // actionForTweet : ツイートに対しての操作
@@ -36,14 +37,16 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		var err error
 
 		switch a {
-		case like:
+		case tweetLike:
 			err = shared.api.Like(id)
-		case unlike:
+		case tweetUnlike:
 			err = shared.api.UnLike(id)
-		case retweet:
+		case tweetRetweet:
 			err = shared.api.Retweet(id)
-		case unretweet:
+		case tweetUnretweet:
 			err = shared.api.UnRetweet(id)
+		case tweetDelete:
+			err = shared.api.DeleteTweet(id)
 		}
 
 		if err != nil {
@@ -76,17 +79,17 @@ func (t *tweets) actionForUser(a userActionType) {
 		var err error
 
 		switch a {
-		case follow:
+		case userFollow:
 			err = shared.api.Follow(id)
-		case unfollow:
+		case userUnfollow:
 			err = shared.api.UnFollow(id)
-		case block:
+		case userBlock:
 			err = shared.api.Block(id)
-		case unblock:
+		case userUnblock:
 			err = shared.api.UnBlock(id)
-		case mute:
+		case userMute:
 			err = shared.api.Mute(id)
-		case unmute:
+		case userUnmute:
 			err = shared.api.UnMute(id)
 		}
 

@@ -244,61 +244,67 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// いいね
 	if keyRune == 'f' {
-		t.actionForTweet(like)
+		t.actionForTweet(tweetLike)
 		return nil
 	}
 
 	// いいね解除
 	if keyRune == 'F' {
-		t.actionForTweet(unlike)
+		t.actionForTweet(tweetUnlike)
 		return nil
 	}
 
 	// リツイート
 	if keyRune == 't' {
-		t.actionForTweet(retweet)
+		t.actionForTweet(tweetRetweet)
 		return nil
 	}
 
 	// リツイート解除
 	if keyRune == 'T' {
-		t.actionForTweet(unretweet)
+		t.actionForTweet(tweetUnretweet)
+		return nil
+	}
+
+	// ツイートを削除
+	if keyRune == 'D' {
+		t.actionForTweet(tweetDelete)
 		return nil
 	}
 
 	// フォロー
 	if keyRune == 'w' {
-		t.actionForUser(follow)
+		t.actionForUser(userFollow)
 		return nil
 	}
 
 	// フォロー解除
 	if keyRune == 'W' {
-		t.actionForUser(unfollow)
+		t.actionForUser(userUnfollow)
 		return nil
 	}
 
 	// ブロック
 	if keyRune == 'x' {
-		t.actionForUser(block)
+		t.actionForUser(userBlock)
 		return nil
 	}
 
 	// ブロック解除
 	if keyRune == 'X' {
-		t.actionForUser(unblock)
+		t.actionForUser(userUnblock)
 		return nil
 	}
 
 	// ミュート
 	if keyRune == 'u' {
-		t.actionForUser(mute)
+		t.actionForUser(userMute)
 		return nil
 	}
 
 	// ミュート解除
 	if keyRune == 'U' {
-		t.actionForUser(unmute)
+		t.actionForUser(userUnmute)
 		return nil
 	}
 
