@@ -48,4 +48,3 @@ func (c *Cred) Delete(userName string) {
 
 	c.users = tmp
 }
-
