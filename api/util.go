@@ -5,17 +5,22 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// getClientToken : クライアントトークンを取得
-func getClientToken(t *oauth1.Token) *oauth1.Token {
-	token := "mYt6BHZC7gFIgHWLAcFKLKAca"
-	secret := "uUkUPybUlc88IkJWUsd2PCNuW4I8HtSqbRfWNEabX8hqUtUrJg"
+var (
+	consumerToken  = ""
+	consumerSecret = ""
+)
 
-	if t.Token != "" {
-		token = t.Token
+// getConsumerToken : クライアントトークンを取得
+func getConsumerToken(ct *oauth1.Token) *oauth1.Token {
+	token := consumerToken
+	secret := consumerSecret
+
+	if ct.Token != "" {
+		token = ct.Token
 	}
 
-	if t.TokenSecret != "" {
-		secret = t.TokenSecret
+	if ct.TokenSecret != "" {
+		secret = ct.TokenSecret
 	}
 
 	return &oauth1.Token{

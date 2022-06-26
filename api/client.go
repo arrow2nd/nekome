@@ -35,7 +35,7 @@ func New(client *oauth1.Token, user *User) *API {
 }
 
 func newClient(ct, ut *oauth1.Token) *twitter.Client {
-	ct = getClientToken(ct)
+	ct = getConsumerToken(ct)
 	config := oauth1.NewConfig(ct.Token, ct.TokenSecret)
 	httpClient := config.Client(oauth1.NoContext, ut)
 

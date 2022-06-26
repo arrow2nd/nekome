@@ -11,7 +11,7 @@ import (
 
 // Auth : アプリケーション認証を行う
 func (a *API) Auth(client *oauth1.Token) (*User, error) {
-	ct := getClientToken(client)
+	ct := getConsumerToken(client)
 	config := oauth1.Config{
 		ConsumerKey:    ct.Token,
 		ConsumerSecret: ct.TokenSecret,
