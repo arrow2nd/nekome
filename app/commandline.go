@@ -1,7 +1,9 @@
 package app
 
 import (
+	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -9,13 +11,16 @@ import (
 
 type commandLine struct {
 	inputField        *tview.InputField
-	listComplateItems map[string]string
+	autoComplateItems []string
+	backspaceCount    int
+	mu                sync.Mutex
 }
 
 func newCommandLine() *commandLine {
 	c := &commandLine{
 		inputField:        tview.NewInputField(),
-		listComplateItems: map[string]string{},
+		backspaceCount:    0,
+		autoComplateItems: []string{},
 	}
 
 	c.inputField.
@@ -31,15 +36,44 @@ func newCommandLine() *commandLine {
 	c.inputField.
 		SetAutocompleteFunc(c.handleAutocomplete).
 		SetDoneFunc(c.handleDone).
-		SetChangedFunc(c.handleChanged).
 		SetFocusFunc(c.handleFocus).
 		SetInputCapture(c.handleKeyEvent)
 
 	return c
 }
 
-// updateStatusMessage : ステータスメッセージを更新
-func (c *commandLine) updateStatusMessage(s string) {
+// SetListCompleteItems : リストの補完要素を設定
+func (c *commandLine) SetListCompleteItems() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.autoComplateItems = []string{
+		"tweet",
+		"home",
+		"mention",
+		"user",
+		"list",
+		"search",
+		"switch",
+		"quit",
+	}
+
+	// ユーザが所有しているリストを取得
+	lists, err := shared.api.FetchOwnedLists(shared.api.CurrentUser.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, l := range lists {
+		cmd := fmt.Sprintf("list %s", l.Name)
+		c.autoComplateItems = append(c.autoComplateItems, cmd)
+	}
+
+	return nil
+}
+
+// UpdateStatusMessage : ステータスメッセージを更新
+func (c *commandLine) UpdateStatusMessage(s string) {
 	color := tcell.ColorDefault
 
 	// エラーステータスなら文字色を赤に
@@ -52,52 +86,41 @@ func (c *commandLine) updateStatusMessage(s string) {
 		SetPlaceholder(s)
 }
 
-// blurCommandLine : コマンドラインからフォーカスを外す
-func (c *commandLine) blurCommandLine() {
-	c.inputField.SetText("")
+// Blur : コマンドラインからフォーカスを外す
+func (c *commandLine) Blur() {
+	c.inputField.
+		SetLabel("").
+		SetText("")
+
+	shared.RequestFocusPageView()
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
-func (c *commandLine) handleAutocomplete(currentText string) (entries []string) {
+func (c *commandLine) handleAutocomplete(currentText string) []string {
+	var entries []string = nil
+
 	if currentText == "" {
 		return nil
 	}
 
-	for _, cmd := range getCommands() {
-		if strings.HasPrefix(strings.ToLower(":"+cmd), strings.ToLower(currentText)) {
+	for _, cmd := range c.autoComplateItems {
+		if strings.HasPrefix(strings.ToLower(cmd), strings.ToLower(currentText)) {
 			entries = append(entries, cmd)
 		}
 	}
 
-	if len(entries) == 0 {
-		entries = nil
-	}
-
-	return
+	return entries
 }
 
 // handleDone : 入力確定時のイベントハンドラ
 func (c *commandLine) handleDone(key tcell.Key) {
-	// コマンドを実行
 	if key == tcell.KeyEnter {
-		text := strings.Replace(c.inputField.GetText(), ":", "", 1)
-		shared.RequestExecCommand(text)
+		// コマンドを実行
+		if text := c.inputField.GetText(); text != "" {
+			shared.RequestExecCommand(text)
+		}
 
-		c.blurCommandLine()
-	}
-}
-
-// handleChanged : フィールド変更時のイベントハンドラ
-func (c *commandLine) handleChanged(text string) {
-	// フィールドが空ならフォーカスを外す
-	if text == "" {
-		shared.RequestFocusPageView()
-		return
-	}
-
-	// 先頭に ":" が無ければ追加
-	if !strings.HasPrefix(text, ":") {
-		c.inputField.SetText(":" + text)
+		c.Blur()
 	}
 }
 
@@ -105,17 +128,27 @@ func (c *commandLine) handleChanged(text string) {
 func (c *commandLine) handleFocus() {
 	c.inputField.
 		SetLabelColor(tcell.ColorDefault).
-		// SetPlaceholder("").
-		SetText(":")
+		SetLabel(":").
+		SetPlaceholder("")
 }
 
 // handleKeyEvent : キーイベントハンドラ
 func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
+	text := c.inputField.GetText()
 
-	// フォーカスをページへ移す
+	// フィールドが空かつ、BSが押されたらフォーカスを外す
+	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2) {
+		c.backspaceCount++
+		if c.backspaceCount >= 2 {
+			c.Blur()
+		}
+		return nil
+	}
+
+	// フォーカスを外す
 	if key == tcell.KeyEsc {
-		c.blurCommandLine()
+		c.Blur()
 		return nil
 	}
 

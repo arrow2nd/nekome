@@ -8,20 +8,6 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-// getCommands : コマンドリストを取得
-func getCommands() []string {
-	return []string{
-		"tweet",
-		"home",
-		"mention",
-		"user",
-		"list",
-		"search",
-		"switch",
-		"quit",
-	}
-}
-
 // ExecCmd : コマンドを実行
 func (a *App) ExecCmd(args []string) error {
 	var unfocus bool
@@ -86,8 +72,6 @@ func (a *App) openSearchPage(query string, focus bool) error {
 
 // quitApp : アプリを終了
 func (a *App) quitApp() {
-	// a.blurCommandLine()
-
 	// 確認画面が不要ならそのまま終了
 	if !shared.conf.Settings.Feature.Confirm["Quit"] {
 		a.app.Stop()

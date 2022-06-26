@@ -47,6 +47,13 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// ステータスバー
 	a.statusBar.DrawAccountInfo()
 
+	// コマンドライン
+	go func() {
+		if err := a.commandLine.SetListCompleteItems(); err != nil {
+			shared.SetErrorStatus("Init", err.Error())
+		}
+	}()
+
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
 	layout := tview.NewGrid().
@@ -85,7 +92,7 @@ func (a *App) eventReciever() {
 	for {
 		select {
 		case status := <-shared.chStatus:
-			a.commandLine.updateStatusMessage(status)
+			a.commandLine.UpdateStatusMessage(status)
 			a.app.Draw()
 		case indicator := <-shared.chIndicator:
 			a.statusBar.DrawPageIndicator(indicator)
@@ -129,6 +136,7 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
+		a.commandLine.Blur()
 		a.quitApp()
 		return nil
 	}
