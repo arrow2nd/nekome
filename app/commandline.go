@@ -64,7 +64,7 @@ func (c *commandLine) handleAutocomplete(currentText string) (entries []string) 
 	}
 
 	for _, cmd := range getCommands() {
-		if strings.HasPrefix(strings.ToLower(cmd), strings.ToLower(currentText)) {
+		if strings.HasPrefix(strings.ToLower(":"+cmd), strings.ToLower(currentText)) {
 			entries = append(entries, cmd)
 		}
 	}
@@ -80,8 +80,9 @@ func (c *commandLine) handleAutocomplete(currentText string) (entries []string) 
 func (c *commandLine) handleDone(key tcell.Key) {
 	// コマンドを実行
 	if key == tcell.KeyEnter {
-		text := c.inputField.GetText()
+		text := strings.Replace(c.inputField.GetText(), ":", "", 1)
 		shared.RequestExecCommand(text)
+
 		c.blurCommandLine()
 	}
 }
@@ -90,8 +91,13 @@ func (c *commandLine) handleDone(key tcell.Key) {
 func (c *commandLine) handleChanged(text string) {
 	// フィールドが空ならフォーカスを外す
 	if text == "" {
-		c.inputField.SetLabel("")
 		shared.RequestFocusPageView()
+		return
+	}
+
+	// 先頭に ":" が無ければ追加
+	if !strings.HasPrefix(text, ":") {
+		c.inputField.SetText(":" + text)
 	}
 }
 
@@ -99,8 +105,8 @@ func (c *commandLine) handleChanged(text string) {
 func (c *commandLine) handleFocus() {
 	c.inputField.
 		SetLabelColor(tcell.ColorDefault).
-		SetPlaceholder("").
-		SetLabel(":")
+		// SetPlaceholder("").
+		SetText(":")
 }
 
 // handleKeyEvent : キーイベントハンドラ
