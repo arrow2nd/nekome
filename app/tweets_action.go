@@ -61,7 +61,7 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		shared.SetStatus(label+"d", summary)
 	}
 
-	// 確認画面が不要
+	// 確認画面が不要ならそのまま実行
 	if !shared.conf.Settings.Feature.Confirm[label] {
 		f()
 		return
@@ -111,7 +111,7 @@ func (t *tweets) actionForUser(a userActionType) {
 		shared.SetStatus(label+"d", summary)
 	}
 
-	// 確認画面が不要
+	// 確認画面が不要ならそのまま実行
 	if !shared.conf.Settings.Feature.Confirm[label] {
 		f()
 		return

@@ -88,7 +88,7 @@ func (a *App) openSearchPage(query string, focus bool) error {
 func (a *App) quitApp() {
 	a.blurCommandLine()
 
-	// 確認画面が不要
+	// 確認画面が不要ならそのまま終了
 	if !shared.conf.Settings.Feature.Confirm["Quit"] {
 		a.app.Stop()
 		return
