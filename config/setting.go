@@ -3,8 +3,8 @@ package config
 import "github.com/dghubble/oauth1"
 
 type feature struct {
-	// Client : クライアントトークン
-	Client oauth1.Token
+	// Consumer : コンシューマトークン
+	Consumer oauth1.Token
 	// MainUser : メインで使用するユーザ
 	MainUser string
 	// LoadTweetsCount : 1度に読み込むツイート数
@@ -85,7 +85,7 @@ type Settings struct {
 func defaultSettings() *Settings {
 	return &Settings{
 		Feature: feature{
-			Client: oauth1.Token{
+			Consumer: oauth1.Token{
 				Token:       "",
 				TokenSecret: "",
 			},
