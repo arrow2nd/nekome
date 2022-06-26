@@ -50,7 +50,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// コマンドライン
 	go func() {
 		if err := a.commandLine.SetListCompleteItems(); err != nil {
-			shared.SetErrorStatus("Init", err.Error())
+			shared.SetErrorStatus("Init - CommandLine", err.Error())
 		}
 	}()
 

@@ -10,11 +10,17 @@ import (
 
 // ExecCmd : コマンドを実行
 func (a *App) ExecCmd(args []string) error {
-	var unfocus bool
+	var (
+		unfocus bool
+		name    string
+		id      string
+	)
 
 	// フラグを設定
 	f := flag.NewFlagSet("nekome", flag.ContinueOnError)
 	f.BoolVarP(&unfocus, "unfocus", "u", false, "")
+	f.StringVarP(&name, "name", "n", "unknown", "")
+	f.StringVarP(&id, "id", "i", "none", "")
 
 	tweetFlag := flag.NewFlagSet("tweet", flag.ContinueOnError)
 	tweetFlag.BoolP("quote", "q", false, "Specify the ID of the tweet to quote")
@@ -35,6 +41,8 @@ func (a *App) ExecCmd(args []string) error {
 		return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
 	case "mention", "m":
 		return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
+	case "list", "l":
+		return a.view.AddPage(newListPage(id, name), !unfocus)
 	case "user", "u":
 		return a.openUserPage(f.Arg(1), !unfocus)
 	case "search", "s":
