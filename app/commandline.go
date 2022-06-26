@@ -4,11 +4,21 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
-// initCommandLine : コマンドラインを初期化
-func (a *App) initCommandLine() {
-	a.commandLine.
+type commandLine struct {
+	inputField        *tview.InputField
+	listComplateItems map[string]string
+}
+
+func newCommandLine() *commandLine {
+	c := &commandLine{
+		inputField:        tview.NewInputField(),
+		listComplateItems: map[string]string{},
+	}
+
+	c.inputField.
 		SetAutocompleteStyles(
 			tcell.NewHexColor(0x3e4359),
 			tcell.StyleDefault,
@@ -18,26 +28,18 @@ func (a *App) initCommandLine() {
 		SetFieldBackgroundColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault)
 
-	a.commandLine.
-		SetAutocompleteFunc(a.handleCommandLineAutocomplete).
-		SetDoneFunc(a.handleCommandLineDone).
-		SetChangedFunc(func(text string) {
-			if text == "" {
-				a.commandLine.SetLabel("")
-				a.app.SetFocus(a.view.pageView)
-			}
-		}).
-		SetFocusFunc(func() {
-			a.commandLine.
-				SetLabelColor(tcell.ColorDefault).
-				SetPlaceholder("").
-				SetLabel(":")
-		}).
-		SetInputCapture(a.handleCommandLineKeyEvent)
+	c.inputField.
+		SetAutocompleteFunc(c.handleAutocomplete).
+		SetDoneFunc(c.handleDone).
+		SetChangedFunc(c.handleChanged).
+		SetFocusFunc(c.handleFocus).
+		SetInputCapture(c.handleKeyEvent)
+
+	return c
 }
 
 // updateStatusMessage : ステータスメッセージを更新
-func (a *App) updateStatusMessage(s string) {
+func (c *commandLine) updateStatusMessage(s string) {
 	color := tcell.ColorDefault
 
 	// エラーステータスなら文字色を赤に
@@ -45,54 +47,23 @@ func (a *App) updateStatusMessage(s string) {
 		color = tcell.ColorRed
 	}
 
-	a.commandLine.
+	c.inputField.
 		SetPlaceholderTextColor(color).
 		SetPlaceholder(s)
-
-	a.app.Draw()
 }
 
 // blurCommandLine : コマンドラインからフォーカスを外す
-func (a *App) blurCommandLine() {
-	a.commandLine.SetText("")
+func (c *commandLine) blurCommandLine() {
+	c.inputField.SetText("")
 }
 
-// handleCommandLineKeyEvent : コマンドラインのキーイベントハンドラ
-func (a *App) handleCommandLineKeyEvent(event *tcell.EventKey) *tcell.EventKey {
-	key := event.Key()
-
-	// フォーカスをページへ移す
-	if key == tcell.KeyEsc {
-		a.blurCommandLine()
-		return nil
-	}
-
-	return event
-}
-
-// handleCommandLineDone : 入力確定時のイベントハンドラ
-func (a *App) handleCommandLineDone(key tcell.Key) {
-	text := a.commandLine.GetText()
-
-	// コマンドを実行
-	if key == tcell.KeyEnter {
-		args := strings.Split(text, " ")
-
-		if err := a.ExecCmd(args); err != nil {
-			shared.SetErrorStatus("Command", err.Error())
-		}
-
-		a.blurCommandLine()
-	}
-}
-
-// handleCommandLineAutocomplete : コマンドの入力補完ハンドラ
-func (a *App) handleCommandLineAutocomplete(currentText string) (entries []string) {
+// handleAutocomplete : コマンドの入力補完ハンドラ
+func (c *commandLine) handleAutocomplete(currentText string) (entries []string) {
 	if currentText == "" {
 		return nil
 	}
 
-	for _, cmd := range a.getCommands() {
+	for _, cmd := range getCommands() {
 		if strings.HasPrefix(strings.ToLower(cmd), strings.ToLower(currentText)) {
 			entries = append(entries, cmd)
 		}
@@ -103,4 +74,44 @@ func (a *App) handleCommandLineAutocomplete(currentText string) (entries []strin
 	}
 
 	return
+}
+
+// handleDone : 入力確定時のイベントハンドラ
+func (c *commandLine) handleDone(key tcell.Key) {
+	// コマンドを実行
+	if key == tcell.KeyEnter {
+		text := c.inputField.GetText()
+		shared.RequestExecCommand(text)
+		c.blurCommandLine()
+	}
+}
+
+// handleChanged : フィールド変更時のイベントハンドラ
+func (c *commandLine) handleChanged(text string) {
+	// フィールドが空ならフォーカスを外す
+	if text == "" {
+		c.inputField.SetLabel("")
+		shared.RequestFocusPageView()
+	}
+}
+
+// handleFocus : フォーカス時のイベントハンドラ
+func (c *commandLine) handleFocus() {
+	c.inputField.
+		SetLabelColor(tcell.ColorDefault).
+		SetPlaceholder("").
+		SetLabel(":")
+}
+
+// handleKeyEvent : キーイベントハンドラ
+func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+	key := event.Key()
+
+	// フォーカスをページへ移す
+	if key == tcell.KeyEsc {
+		c.blurCommandLine()
+		return nil
+	}
+
+	return event
 }

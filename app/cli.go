@@ -9,7 +9,7 @@ import (
 )
 
 // getCommands : コマンドリストを取得
-func (a *App) getCommands() []string {
+func getCommands() []string {
 	return []string{
 		"tweet",
 		"home",
@@ -86,7 +86,7 @@ func (a *App) openSearchPage(query string, focus bool) error {
 
 // quitApp : アプリを終了
 func (a *App) quitApp() {
-	a.blurCommandLine()
+	// a.blurCommandLine()
 
 	// 確認画面が不要ならそのまま終了
 	if !shared.conf.Settings.Feature.Confirm["Quit"] {

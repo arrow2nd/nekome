@@ -15,7 +15,7 @@ type App struct {
 	app         *tview.Application
 	view        *view
 	statusBar   *statusBar
-	commandLine *tview.InputField
+	commandLine *commandLine
 }
 
 // New : 生成
@@ -24,7 +24,7 @@ func New() *App {
 		app:         tview.NewApplication(),
 		view:        newView(),
 		statusBar:   newStatusBar(),
-		commandLine: tview.NewInputField(),
+		commandLine: newCommandLine(),
 	}
 }
 
@@ -47,9 +47,6 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// ステータスバー
 	a.statusBar.DrawAccountInfo()
 
-	// コマンドライン
-	a.initCommandLine()
-
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
 	layout := tview.NewGrid().
@@ -57,11 +54,10 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 		SetBorders(false).
 		AddItem(a.view.tabView, 0, 0, 1, 1, 0, 0, false).
 		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
-		AddItem(a.commandLine, 3, 0, 1, 1, 0, 0, false).
+		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
 		AddItem(a.view.pageView, 1, 0, 1, 1, 0, 0, true)
 
-	a.app.
-		SetRoot(layout, true).
+	a.app.SetRoot(layout, true).
 		SetInputCapture(a.handleGlobalKeyEvents)
 
 	// 起動時に実行するコマンド
@@ -89,7 +85,8 @@ func (a *App) eventReciever() {
 	for {
 		select {
 		case status := <-shared.chStatus:
-			a.updateStatusMessage(status)
+			a.commandLine.updateStatusMessage(status)
+			a.app.Draw()
 		case indicator := <-shared.chIndicator:
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
@@ -100,6 +97,9 @@ func (a *App) eventReciever() {
 			if err := a.ExecCmd(strings.Split(cmd, " ")); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
+		case <-shared.chFocusPagaView:
+			a.app.SetFocus(a.view.pageView)
+			a.app.Draw()
 		}
 	}
 }
@@ -161,7 +161,7 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// コマンドラインへフォーカスを移動
 	if keyRune == ':' {
-		a.app.SetFocus(a.commandLine)
+		a.app.SetFocus(a.commandLine.inputField)
 		return nil
 	}
 
