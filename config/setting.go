@@ -13,6 +13,8 @@ type feature struct {
 	TweetMaxAccumulationNum int
 	// Confirm : 確認ウィンドウの表示
 	Confirm map[string]bool
+	// RunCommands : 起動時に実行するコマンド
+	RunCommands []string
 }
 
 type appearance struct {
@@ -85,26 +87,14 @@ type Settings struct {
 func defaultSettings() *Settings {
 	return &Settings{
 		Feature: feature{
-			Consumer: oauth1.Token{
-				Token:       "",
-				TokenSecret: "",
-			},
+			Consumer:                oauth1.Token{Token: "", TokenSecret: ""},
 			MainUser:                "",
 			LoadTweetsCount:         25,
 			TweetMaxAccumulationNum: 250,
-			Confirm: map[string]bool{
-				"Like":      true,
-				"Unlike":    true,
-				"Retweet":   true,
-				"Unretweet": true,
-				"Delete":    true,
-				"Follow":    true,
-				"Unfollow":  true,
-				"Block":     true,
-				"Unblock":   true,
-				"Mute":      true,
-				"Unmute":    true,
-				"Quit":      true,
+			Confirm:                 map[string]bool{"Like": true, "Unlike": true, "Retweet": true, "Unretweet": true, "Delete": true, "Follow": true, "Unfollow": true, "Block": true, "Unblock": true, "Mute": true, "Unmute": true, "Quit": true},
+			RunCommands: []string{
+				"home",
+				"mention --unfocus",
 			},
 		},
 		Apperance: appearance{

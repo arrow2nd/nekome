@@ -67,14 +67,8 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	a.app.SetRoot(layout, true).
 		SetInputCapture(a.handleGlobalKeyEvents)
 
-	// 起動時に実行するコマンド
-	cmds := []string{
-		"home",
-		"mention --unfocus",
-		"user arrow_2nd --unfocus",
-	}
-
-	for _, c := range cmds {
+	// コマンドを実行
+	for _, c := range shared.conf.Settings.Feature.RunCommands {
 		if err := a.ExecCmd(strings.Split(c, " ")); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
