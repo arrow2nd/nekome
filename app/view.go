@@ -205,13 +205,13 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
-	// 左キーの入力イベントに置換
+	// hjを左キーの入力イベントに置換
 	if keyRune == 'h' || keyRune == 'j' {
 		return tcell.NewEventKey(tcell.KeyLeft, keyRune, tcell.ModNone)
 	}
 
-	// 右キーの入力イベントに置換
-	if keyRune == 'l' || keyRune == 'k' {
+	// klを右キーの入力イベントに置換
+	if keyRune == 'k' || keyRune == 'l' {
 		return tcell.NewEventKey(tcell.KeyRight, keyRune, tcell.ModNone)
 	}
 
