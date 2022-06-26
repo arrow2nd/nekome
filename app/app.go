@@ -69,7 +69,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 
 	// コマンドを実行
 	for _, c := range shared.conf.Settings.Feature.RunCommands {
-		if err := a.ExecCmd(strings.Split(c, " ")); err != nil {
+		if err := a.ExecCommand(strings.Split(c, " ")); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
 	}
@@ -95,10 +95,10 @@ func (a *App) eventReciever() {
 			a.view.PopupModal(opt)
 			a.app.Draw()
 		case cmd := <-shared.chExecCommand:
-			if err := a.ExecCmd(strings.Split(cmd, " ")); err != nil {
+			if err := a.ExecCommand(strings.Split(cmd, " ")); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
-		case <-shared.chFocusPagaView:
+		case <-shared.chFocusPageView:
 			a.app.SetFocus(a.view.pageView)
 			a.app.Draw()
 		}

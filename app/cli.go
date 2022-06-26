@@ -8,8 +8,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-// ExecCmd : コマンドを実行
-func (a *App) ExecCmd(args []string) error {
+// ExecCommand : コマンドを実行
+func (a *App) ExecCommand(args []string) error {
 	var (
 		unfocus bool
 		name    string
