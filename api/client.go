@@ -27,16 +27,17 @@ type API struct {
 }
 
 // New : 作成
-func New(user *User) *API {
+func New(client *oauth1.Token, user *User) *API {
 	return &API{
 		CurrentUser: user,
-		client:      newClient(user.Token),
+		client:      newClient(client, user.Token),
 	}
 }
 
-func newClient(token *oauth1.Token) *twitter.Client {
-	config := oauth1.NewConfig(consumerKey, consumerSecret)
-	httpClient := config.Client(oauth1.NoContext, token)
+func newClient(ct, ut *oauth1.Token) *twitter.Client {
+	ct = getClientToken(ct)
+	config := oauth1.NewConfig(ct.Token, ct.TokenSecret)
+	httpClient := config.Client(oauth1.NoContext, ut)
 
 	return &twitter.Client{
 		Authorizer: &authorizer{},

@@ -9,16 +9,12 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-var (
-	consumerKey    = "mYt6BHZC7gFIgHWLAcFKLKAca"
-	consumerSecret = "uUkUPybUlc88IkJWUsd2PCNuW4I8HtSqbRfWNEabX8hqUtUrJg"
-)
-
 // Auth : アプリケーション認証を行う
-func (a *API) Auth() (*User, error) {
+func (a *API) Auth(client *oauth1.Token) (*User, error) {
+	ct := getClientToken(client)
 	config := oauth1.Config{
-		ConsumerKey:    consumerKey,
-		ConsumerSecret: consumerSecret,
+		ConsumerKey:    ct.Token,
+		ConsumerSecret: ct.TokenSecret,
 		CallbackURL:    "oob",
 		Endpoint:       twauth.AuthorizeEndpoint,
 	}
@@ -52,7 +48,7 @@ func (a *API) Auth() (*User, error) {
 
 	newToken := oauth1.NewToken(accessToken, accessSecret)
 
-	user, err := a.authUserLookup(newToken)
+	user, err := a.authUserLookup(client, newToken)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +61,8 @@ func (a *API) Auth() (*User, error) {
 }
 
 // authUserLookup : トークンに紐づいたユーザの情報を取得
-func (a *API) authUserLookup(token *oauth1.Token) (*twitter.UserObj, error) {
-	client := newClient(token)
+func (a *API) authUserLookup(ct, ut *oauth1.Token) (*twitter.UserObj, error) {
+	client := newClient(ct, ut)
 
 	opts := twitter.UserLookupOpts{}
 	res, err := client.AuthUserLookup(context.Background(), opts)

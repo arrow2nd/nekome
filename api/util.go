@@ -1,6 +1,28 @@
 package api
 
-import "github.com/g8rswimmer/go-twitter/v2"
+import (
+	"github.com/dghubble/oauth1"
+	"github.com/g8rswimmer/go-twitter/v2"
+)
+
+// getClientToken : クライアントトークンを取得
+func getClientToken(t *oauth1.Token) *oauth1.Token {
+	token := "mYt6BHZC7gFIgHWLAcFKLKAca"
+	secret := "uUkUPybUlc88IkJWUsd2PCNuW4I8HtSqbRfWNEabX8hqUtUrJg"
+
+	if t.Token != "" {
+		token = t.Token
+	}
+
+	if t.TokenSecret != "" {
+		secret = t.TokenSecret
+	}
+
+	return &oauth1.Token{
+		Token:       token,
+		TokenSecret: secret,
+	}
+}
 
 func createTweetDictionarySlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
 	// データがあるかチェック

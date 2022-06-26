@@ -43,7 +43,7 @@ func main() {
 }
 
 func createNewCred() {
-	authUser, err := client.Auth()
+	authUser, err := client.Auth(&conf.Settings.Feature.Client)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func login() error {
 		return err
 	}
 
-	client = api.New(user)
+	client = api.New(&conf.Settings.Feature.Client, user)
 
 	return nil
 }
