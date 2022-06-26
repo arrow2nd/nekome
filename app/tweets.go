@@ -90,7 +90,16 @@ func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	t.contents = append(tweets, t.contents...)
+	size := len(t.contents)
+	allSize := size + len(tweets)
+	maxSize := shared.conf.Settings.Feature.TweetMaxAccumulationNum
+
+	// 最大蓄積数を超えていたら古いものから削除
+	if allSize > maxSize {
+		size -= allSize - maxSize
+	}
+
+	t.contents = append(tweets, t.contents[:size]...)
 }
 
 // RegisterPinned : ピン留めツイートを登録
