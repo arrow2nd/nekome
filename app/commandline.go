@@ -155,7 +155,7 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	// Tabキーを上キーの入力に変換
 	// NOTE: デフォルトだとTabキーで補完候補の選択ができない
 	if key == tcell.KeyTAB {
-		return tcell.NewEventKey(tcell.KeyDown, ' ', tcell.ModNone)
+		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
 	}
 
 	return event

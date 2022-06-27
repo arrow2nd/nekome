@@ -207,12 +207,12 @@ func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// hjを左キーの入力イベントに置換
 	if keyRune == 'h' || keyRune == 'j' {
-		return tcell.NewEventKey(tcell.KeyLeft, keyRune, tcell.ModNone)
+		return tcell.NewEventKey(tcell.KeyLeft, 0, tcell.ModNone)
 	}
 
 	// klを右キーの入力イベントに置換
 	if keyRune == 'k' || keyRune == 'l' {
-		return tcell.NewEventKey(tcell.KeyRight, keyRune, tcell.ModNone)
+		return tcell.NewEventKey(tcell.KeyRight, 0, tcell.ModNone)
 	}
 
 	return event
