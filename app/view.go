@@ -160,6 +160,7 @@ func (v *view) RemoveCurrentPage() {
 // PopupModal : モーダルを表示
 func (v *view) PopupModal(o *ModalOpt) {
 	v.modal.
+		SetFocus(0).
 		SetText(o.title).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Yes" {
