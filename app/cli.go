@@ -18,10 +18,6 @@ func (a *App) ExecCommand(args []string) error {
 	f := flag.NewFlagSet("nekome", flag.ContinueOnError)
 	f.BoolVarP(&unfocus, "unfocus", "u", false, "")
 
-	tweetFlag := flag.NewFlagSet("tweet", flag.ContinueOnError)
-	tweetFlag.BoolP("quote", "q", false, "Specify the ID of the tweet to quote")
-	tweetFlag.BoolP("reply", "r", false, "Specify the ID of the tweet to which you are replying")
-
 	// 引数をパース
 	if err := f.Parse(args); err != nil {
 		return err
@@ -44,7 +40,7 @@ func (a *App) ExecCommand(args []string) error {
 	case "search", "s":
 		return a.openSearchPage(f.Arg(1), !unfocus)
 	case "tweet", "t":
-		// return a.tweet(f)
+		return a.postTweet(args)
 	case "quit", "q":
 		a.quitApp()
 		return nil
@@ -82,12 +78,55 @@ func (a *App) openUserPage(userName string, focus bool) error {
 
 // openSearchPage : 検索ページを開く
 func (a *App) openSearchPage(query string, focus bool) error {
-	// 検索ワードが無い
 	if query == "" {
 		return errors.New("please specify search keywords")
 	}
 
 	return a.view.AddPage(newSearchPage(query), focus)
+}
+
+// postTweet : ツイートを投稿
+func (a *App) postTweet(args []string) error {
+	quote := ""
+	reply := ""
+
+	f := flag.NewFlagSet("tweet", flag.ContinueOnError)
+	f.StringVarP(&quote, "quote", "q", "", "Specify the ID of the tweet to quote")
+	f.StringVarP(&reply, "reply", "r", "", "Specify the ID of the tweet to which you are replying")
+
+	if err := f.Parse(args); err != nil {
+		return err
+	}
+
+	text := f.Arg(1)
+
+	if text == "" {
+		// TODO: エディタを起動して、一時ファイルに内容を書き込む
+		// その後、一時ファイルを読み込んで内容を返す
+	}
+
+	// 投稿
+	post := func() {
+		if err := shared.api.PostTweet(text); err != nil {
+			shared.SetErrorStatus("Tweet", err.Error())
+			return
+		}
+
+		shared.SetStatus("Tweeted", text)
+	}
+
+	// 確認画面が不要
+	if !shared.conf.Settings.Feature.Confirm["Tweet"] {
+		post()
+		return nil
+	}
+
+	shared.ReqestPopupModal(&ModalOpt{
+		title:  fmt.Sprintf("Do you want to tweet?\n\n\"%s\"", text),
+		onDone: post,
+	})
+
+	return nil
 }
 
 // quitApp : アプリを終了
