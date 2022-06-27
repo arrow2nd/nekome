@@ -12,15 +12,11 @@ import (
 func (a *App) ExecCommand(args []string) error {
 	var (
 		unfocus bool
-		name    string
-		id      string
 	)
 
 	// フラグを設定
 	f := flag.NewFlagSet("nekome", flag.ContinueOnError)
 	f.BoolVarP(&unfocus, "unfocus", "u", false, "")
-	f.StringVarP(&name, "name", "n", "unknown", "")
-	f.StringVarP(&id, "id", "i", "none", "")
 
 	tweetFlag := flag.NewFlagSet("tweet", flag.ContinueOnError)
 	tweetFlag.BoolP("quote", "q", false, "Specify the ID of the tweet to quote")
@@ -42,17 +38,33 @@ func (a *App) ExecCommand(args []string) error {
 	case "mention", "m":
 		return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
 	case "list", "l":
-		return a.view.AddPage(newListPage(id, name), !unfocus)
+		return a.openListPage(f.Arg(1), f.Arg(2), !unfocus)
 	case "user", "u":
 		return a.openUserPage(f.Arg(1), !unfocus)
 	case "search", "s":
 		return a.openSearchPage(f.Arg(1), !unfocus)
+	case "tweet", "t":
+		// return a.tweet(f)
 	case "quit", "q":
 		a.quitApp()
 		return nil
 	}
 
 	return fmt.Errorf(`"%s" is not a command`, f.Arg(0))
+}
+
+// openListPage : リストページを開く
+func (a *App) openListPage(name, id string, focus bool) error {
+	if name == "" {
+		return errors.New("please specify list name")
+	}
+
+	if id == "" {
+		return errors.New("please specify list id")
+	}
+
+	return a.view.AddPage(newListPage(name, id), focus)
+
 }
 
 // openUserPage : ユーザページを開く

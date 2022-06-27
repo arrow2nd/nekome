@@ -12,13 +12,13 @@ type listPage struct {
 }
 
 // newListPage : リストページを作成
-func newListPage(listID, listName string) *listPage {
+func newListPage(name, id string) *listPage {
 	tabName := shared.conf.Settings.Texts.TabList
-	tabName = strings.Replace(tabName, "{name}", listName, 1)
+	tabName = strings.Replace(tabName, "{name}", name, 1)
 
 	p := &listPage{
 		basePage: newBasePage(tabName),
-		listID:   listID,
+		listID:   id,
 	}
 
 	p.SetFrame(p.tweets.view)

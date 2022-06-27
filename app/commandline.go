@@ -65,7 +65,7 @@ func (c *commandLine) SetListCompleteItems() error {
 	}
 
 	for _, l := range lists {
-		cmd := fmt.Sprintf("list -n %s -i %s", l.Name, l.ID)
+		cmd := fmt.Sprintf("list %s %s", l.Name, l.ID)
 		c.autoComplateItems = append(c.autoComplateItems, cmd)
 	}
 
