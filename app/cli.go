@@ -3,6 +3,7 @@ package app
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	flag "github.com/spf13/pflag"
@@ -90,11 +91,13 @@ func (a *App) openSearchPage(query string, focus bool) error {
 func (a *App) postTweet(args []string) error {
 	quote := ""
 	reply := ""
+	editor := ""
 
 	// フラグを設定
 	f := flag.NewFlagSet("tweet", flag.ContinueOnError)
 	f.StringVarP(&quote, "quote", "q", "", "Specify the ID of the tweet to quote")
 	f.StringVarP(&reply, "reply", "r", "", "Specify the ID of the tweet to which you are replying")
+	f.StringVarP(&editor, "editor", "e", os.Getenv("EDITOR"), "Specify the editor to start (Default is $EDITOR)")
 
 	if err := f.Parse(args); err != nil {
 		return err
@@ -102,9 +105,23 @@ func (a *App) postTweet(args []string) error {
 
 	text := f.Arg(1)
 
+	// エディタを起動して編集
 	if text == "" {
-		// TODO: エディタを起動して、一時ファイルに内容を書き込む
-		// その後、一時ファイルを読み込んで内容を返す
+		t, err := editTextInEditor(editor)
+		if err != nil {
+			return err
+		}
+
+		text = t
+
+		// 画面が鬼のように崩れるので再描画
+		a.app.Sync()
+	}
+
+	// ツイート末尾の改行を削除
+	text = strings.TrimRight(text, "\n")
+	if strings.HasSuffix(text, "\r") {
+		text = strings.TrimRight(text, "\r")
 	}
 
 	// 投稿

@@ -5,14 +5,17 @@ import (
 	"encoding/hex"
 	"fmt"
 	"html"
+	"io/ioutil"
 	"log"
 	"math"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/arrow2nd/nekome/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
@@ -138,4 +141,36 @@ func createTweetURL(t *twitter.TweetDictionary) string {
 func createStatusMessage(label, status string) string {
 	width := getWindowWidth()
 	return truncate(fmt.Sprintf("[%s] %s", label, status), width)
+}
+
+// editTextInEditor テキストをエディタで編集
+func editTextInEditor(editor string) (string, error) {
+	dirPath, err := config.GetConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	tmpFilePath := path.Join(dirPath, ".tmp")
+
+	cmd := exec.Command(editor, tmpFilePath)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+
+	// エディタを起動
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("failed to start editor (%s) : %w", editor, err)
+	}
+
+	// 一時ファイル読み込み
+	bytes, err := ioutil.ReadFile(tmpFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	// 一時ファイル削除
+	if err := os.Remove(tmpFilePath); err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
 }

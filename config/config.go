@@ -15,7 +15,7 @@ type Config struct {
 
 // New : 生成
 func New() *Config {
-	path, err := getConfigDir()
+	path, err := GetConfigDir()
 	if err != nil {
 		log.Fatal(err)
 	}

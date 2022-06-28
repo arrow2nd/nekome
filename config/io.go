@@ -15,8 +15,8 @@ const (
 	setingsFileName = "settings.yml"
 )
 
-// getConfigDir : Configディレクトリを取得
-func getConfigDir() (string, error) {
+// GetConfigDir : Configディレクトリを取得
+func GetConfigDir() (string, error) {
 	path, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("failed to get config directory")
