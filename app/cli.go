@@ -3,9 +3,13 @@ package app
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"os/exec"
+	"path"
 	"strings"
 
+	"github.com/arrow2nd/nekome/config"
 	flag "github.com/spf13/pflag"
 )
 
@@ -107,10 +111,7 @@ func (a *App) postTweet(args []string) error {
 
 	// エディタを起動して編集
 	if text == "" {
-		// 画面が鬼のように崩れるので再描画
-		defer a.app.Sync()
-
-		t, err := editTextInEditor(editor)
+		t, err := a.editTweet(editor)
 		if err != nil {
 			return err
 		}
@@ -165,4 +166,45 @@ func (a *App) quitApp() {
 		title:  "Do you want to quit the app?",
 		onDone: a.app.Stop,
 	})
+}
+
+// editTweet ツイートをエディタで編集
+func (a *App) editTweet(editor string) (string, error) {
+	dir, err := config.GetConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	tmpFile := path.Join(dir, ".tmp")
+	if _, err := os.Create(tmpFile); err != nil {
+		return "", err
+	}
+
+	// エディタを起動
+	cmd := exec.Command(editor, tmpFile)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	a.app.Suspend(func() {
+		err = cmd.Run()
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("failed to open editor (%s) : %w", editor, err)
+	}
+
+	// 一時ファイル読み込み
+	bytes, err := ioutil.ReadFile(tmpFile)
+	if err != nil {
+		return "", err
+	}
+
+	// 一時ファイル削除
+	if err := os.Remove(tmpFile); err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
 }
