@@ -12,6 +12,7 @@ var shared = Shared{
 	chIndicator:     make(chan string, 1),
 	chPopupModal:    make(chan *ModalOpt, 1),
 	chExecCommand:   make(chan string, 1),
+	chInputCommand:  make(chan string, 1),
 	chFocusPageView: make(chan bool, 1),
 }
 
@@ -23,6 +24,7 @@ type Shared struct {
 	chIndicator     chan string
 	chPopupModal    chan *ModalOpt
 	chExecCommand   chan string
+	chInputCommand  chan string
 	chFocusPageView chan bool
 }
 
@@ -56,6 +58,13 @@ func (s *Shared) ReqestPopupModal(o *ModalOpt) {
 func (s *Shared) RequestExecCommand(c string) {
 	go func() {
 		s.chExecCommand <- c
+	}()
+}
+
+// RequestInputCommand : コマンドの入力をリクエスト
+func (s *Shared) RequestInputCommand(c string) {
+	go func() {
+		s.chInputCommand <- c
 	}()
 }
 

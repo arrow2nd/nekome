@@ -98,6 +98,10 @@ func (a *App) eventReciever() {
 			if err := a.ExecCommand(strings.Split(cmd, " ")); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
+		case cmd := <-shared.chInputCommand:
+			a.app.SetFocus(a.commandLine.inputField)
+			a.commandLine.SetText(cmd)
+			a.app.Draw()
 		case <-shared.chFocusPageView:
 			a.app.SetFocus(a.view.pageView)
 			a.app.Draw()

@@ -42,6 +42,11 @@ func newCommandLine() *commandLine {
 	return c
 }
 
+// SetText : テキストを設定
+func (c *commandLine) SetText(s string) {
+	c.inputField.SetText(s)
+}
+
 // SetListCompleteItems : リストの補完要素を設定
 func (c *commandLine) SetListCompleteItems() error {
 	c.mu.Lock()
