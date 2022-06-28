@@ -109,25 +109,6 @@ func (a *App) eventReciever() {
 	}
 }
 
-// redraw : アプリ全体を再描画
-func (a *App) redraw() {
-	// NOTE: 絵文字の表示幅問題で表示が崩れてしまう問題への暫定的な対応
-	// https://github.com/rivo/tview/issues/693
-
-	pageId, _ := a.view.pageView.GetFrontPage()
-	if pageId == "" {
-		shared.SetErrorStatus("App", "no page to redraw")
-		return
-	}
-
-	// 一度非表示にして画面をクリア
-	a.view.pageView.HidePage(pageId)
-
-	// 強制的に再描画して画面を再表示
-	a.app.ForceDraw()
-	a.view.pageView.ShowPage(pageId)
-}
-
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
 func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
@@ -161,7 +142,7 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// 再描画
 	if key == tcell.KeyCtrlL {
-		a.redraw()
+		a.app.Sync()
 		return nil
 	}
 
