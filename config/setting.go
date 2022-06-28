@@ -11,6 +11,8 @@ type feature struct {
 	LoadTweetsCount int
 	// TweetMaxAccumulationNum : ツイートの最大蓄積数
 	TweetMaxAccumulationNum int
+	// IsLocaleCJK : ロケールがCJKか
+	IsLocaleCJK bool
 	// Confirm : 確認ウィンドウの表示
 	Confirm map[string]bool
 	// RunCommands : 起動時に実行するコマンド
@@ -91,6 +93,7 @@ func defaultSettings() *Settings {
 			MainUser:                "",
 			LoadTweetsCount:         25,
 			TweetMaxAccumulationNum: 250,
+			IsLocaleCJK:             true,
 			Confirm: map[string]bool{
 				"Like":      true,
 				"Unlike":    true,

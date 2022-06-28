@@ -30,12 +30,13 @@ func New() *App {
 
 // Init : 初期化
 func (a *App) Init(app *api.API, conf *config.Config) {
-	// 日本語環境等での罫線の乱れ対策
-	runewidth.DefaultCondition.EastAsianWidth = false
-
 	// 全体共有
 	shared.api = app
 	shared.conf = conf
+
+	// 日本語環境等での罫線の乱れ対策
+	// https://github.com/mattn/go-runewidth/issues/14
+	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Settings.Feature.IsLocaleCJK
 
 	// 配色設定
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
