@@ -10,24 +10,30 @@ import (
 
 // ExecCommand : コマンドを実行
 func (a *App) ExecCommand(args []string) error {
-	var (
-		unfocus bool
-	)
+	if len(args) == 0 {
+		return errors.New("command not found")
+	}
+
+	// フラグが無い・独自のフラグがあるコマンド
+	switch args[0] {
+	case "tweet", "t":
+		return a.postTweet(args)
+	case "quit", "q":
+		a.quitApp()
+		return nil
+	}
 
 	// フラグを設定
+	var unfocus bool
 	f := flag.NewFlagSet("nekome", flag.ContinueOnError)
 	f.BoolVarP(&unfocus, "unfocus", "u", false, "")
 
-	// 引数をパース
+	// フラグをパース
 	if err := f.Parse(args); err != nil {
 		return err
 	}
 
-	if f.NArg() == 0 {
-		return errors.New("command not found")
-	}
-
-	// コマンドを解析
+	// ページ系のコマンド
 	switch f.Arg(0) {
 	case "home", "h":
 		return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
@@ -39,11 +45,6 @@ func (a *App) ExecCommand(args []string) error {
 		return a.openUserPage(f.Arg(1), !unfocus)
 	case "search", "s":
 		return a.openSearchPage(f.Arg(1), !unfocus)
-	case "tweet", "t":
-		return a.postTweet(args)
-	case "quit", "q":
-		a.quitApp()
-		return nil
 	}
 
 	return fmt.Errorf(`"%s" is not a command`, f.Arg(0))
@@ -90,6 +91,7 @@ func (a *App) postTweet(args []string) error {
 	quote := ""
 	reply := ""
 
+	// フラグを設定
 	f := flag.NewFlagSet("tweet", flag.ContinueOnError)
 	f.StringVarP(&quote, "quote", "q", "", "Specify the ID of the tweet to quote")
 	f.StringVarP(&reply, "reply", "r", "", "Specify the ID of the tweet to which you are replying")
@@ -107,7 +109,7 @@ func (a *App) postTweet(args []string) error {
 
 	// 投稿
 	post := func() {
-		if err := shared.api.PostTweet(text); err != nil {
+		if err := shared.api.PostTweet(text, quote, reply); err != nil {
 			shared.SetErrorStatus("Tweet", err.Error())
 			return
 		}

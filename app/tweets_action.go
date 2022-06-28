@@ -131,6 +131,20 @@ func (t *tweets) openUserPage() {
 	shared.RequestExecCommand(cmd)
 }
 
+func (t *tweets) postQuoteTweet() {
+	c := t.getSelectTweet()
+
+	cmd := fmt.Sprintf("tweet --quote %s ", c.Tweet.ID)
+	shared.RequestInputCommand(cmd)
+}
+
+func (t *tweets) postReply() {
+	c := t.getSelectTweet()
+
+	cmd := fmt.Sprintf("tweet --reply %s ", c.Tweet.ID)
+	shared.RequestInputCommand(cmd)
+}
+
 // openBrower : ブラウザで開く
 func (t *tweets) openBrower() {
 	c := t.getSelectTweet()

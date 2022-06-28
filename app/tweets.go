@@ -321,6 +321,16 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	if keyRune == 'q' {
+		t.postQuoteTweet()
+		return nil
+	}
+
+	if keyRune == 'r' {
+		t.postReply()
+		return nil
+	}
+
 	// ブラウザで開く
 	if keyRune == 'o' {
 		t.openBrower()

@@ -7,9 +7,20 @@ import (
 )
 
 // PostTweet : ツイートを投稿
-func (a *API) PostTweet(text string) error {
+func (a *API) PostTweet(text, quoteId, replyId string) error {
 	req := twitter.CreateTweetRequest{
 		Text: text,
+		// Media:                 &twitter.CreateTweetMedia{},
+	}
+
+	if quoteId != "" {
+		req.QuoteTweetID = quoteId
+	}
+
+	if replyId != "" {
+		req.Reply = &twitter.CreateTweetReply{
+			InReplyToTweetID: replyId,
+		}
 	}
 
 	_, err := a.client.CreateTweet(context.Background(), req)
