@@ -69,6 +69,7 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 
 	shared.ReqestPopupModal(&ModalOpt{
 		fmt.Sprintf("Are you sure you want to %s this tweet?", strings.ToLower(label)),
+		"",
 		f,
 	})
 }
@@ -118,7 +119,8 @@ func (t *tweets) actionForUser(a userActionType) {
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Are you sure you want to %s "%s"?`, strings.ToLower(label), summary),
+		fmt.Sprintf(`Are you sure you want to %s?`, strings.ToLower(label)),
+		summary,
 		f,
 	})
 }

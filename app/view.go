@@ -12,6 +12,7 @@ import (
 // ModalOpt : モーダルの設定
 type ModalOpt struct {
 	title  string
+	text   string
 	onDone func()
 }
 
@@ -159,9 +160,16 @@ func (v *view) RemoveCurrentPage() {
 
 // PopupModal : モーダルを表示
 func (v *view) PopupModal(o *ModalOpt) {
+	message := o.title
+
+	if o.text != "" {
+		hr := createSeparator("-", 4)
+		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
+	}
+
 	v.modal.
 		SetFocus(0).
-		SetText(o.title).
+		SetText(message).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Yes" {
 				o.onDone()

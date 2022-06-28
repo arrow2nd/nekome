@@ -145,7 +145,8 @@ func (a *App) postTweet(args []string) error {
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		title:  fmt.Sprintf("Do you want to tweet?\n\n\"%s\"", text),
+		title:  "Do you want to tweet?",
+		text:   text,
 		onDone: post,
 	})
 
