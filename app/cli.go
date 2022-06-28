@@ -107,15 +107,19 @@ func (a *App) postTweet(args []string) error {
 
 	// エディタを起動して編集
 	if text == "" {
+		// 画面が鬼のように崩れるので再描画
+		defer a.app.Sync()
+
 		t, err := editTextInEditor(editor)
 		if err != nil {
 			return err
 		}
 
-		text = t
+		if t == "" {
+			return nil
+		}
 
-		// 画面が鬼のように崩れるので再描画
-		a.app.Sync()
+		text = t
 	}
 
 	// ツイート末尾の改行を削除
