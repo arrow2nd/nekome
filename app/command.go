@@ -3,13 +3,8 @@ package app
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"path"
 	"strings"
 
-	"github.com/arrow2nd/nekome/config"
 	flag "github.com/spf13/pflag"
 )
 
@@ -91,69 +86,6 @@ func (a *App) openSearchPage(query string, focus bool) error {
 	return a.view.AddPage(newSearchPage(query), focus)
 }
 
-// postTweet : ツイートを投稿
-func (a *App) postTweet(args []string) error {
-	quote := ""
-	reply := ""
-	editor := ""
-
-	// フラグを設定
-	f := flag.NewFlagSet("tweet", flag.ContinueOnError)
-	f.StringVarP(&quote, "quote", "q", "", "Specify the ID of the tweet to quote")
-	f.StringVarP(&reply, "reply", "r", "", "Specify the ID of the tweet to which you are replying")
-	f.StringVarP(&editor, "editor", "e", os.Getenv("EDITOR"), "Specify the editor to start (Default is $EDITOR)")
-
-	if err := f.Parse(args); err != nil {
-		return err
-	}
-
-	text := f.Arg(1)
-
-	// エディタを起動して編集
-	if text == "" {
-		t, err := a.editTweet(editor)
-		if err != nil {
-			return err
-		}
-
-		if t == "" {
-			return nil
-		}
-
-		text = t
-	}
-
-	// ツイート末尾の改行を削除
-	text = strings.TrimRight(text, "\n")
-	if strings.HasSuffix(text, "\r") {
-		text = strings.TrimRight(text, "\r")
-	}
-
-	// 投稿
-	post := func() {
-		if err := shared.api.PostTweet(text, quote, reply); err != nil {
-			shared.SetErrorStatus("Tweet", err.Error())
-			return
-		}
-
-		shared.SetStatus("Tweeted", text)
-	}
-
-	// 確認画面が不要
-	if !shared.conf.Settings.Feature.Confirm["Tweet"] {
-		post()
-		return nil
-	}
-
-	shared.ReqestPopupModal(&ModalOpt{
-		title:  "Do you want to tweet?",
-		text:   text,
-		onDone: post,
-	})
-
-	return nil
-}
-
 // quitApp : アプリを終了
 func (a *App) quitApp() {
 	// 確認画面が不要ならそのまま終了
@@ -166,45 +98,4 @@ func (a *App) quitApp() {
 		title:  "Do you want to quit the app?",
 		onDone: a.app.Stop,
 	})
-}
-
-// editTweet ツイートをエディタで編集
-func (a *App) editTweet(editor string) (string, error) {
-	dir, err := config.GetConfigDir()
-	if err != nil {
-		return "", err
-	}
-
-	tmpFile := path.Join(dir, ".tmp")
-	if _, err := os.Create(tmpFile); err != nil {
-		return "", err
-	}
-
-	// エディタを起動
-	cmd := exec.Command(editor, tmpFile)
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	a.app.Suspend(func() {
-		err = cmd.Run()
-	})
-
-	if err != nil {
-		return "", fmt.Errorf("failed to open editor (%s) : %w", editor, err)
-	}
-
-	// 一時ファイル読み込み
-	bytes, err := ioutil.ReadFile(tmpFile)
-	if err != nil {
-		return "", err
-	}
-
-	// 一時ファイル削除
-	if err := os.Remove(tmpFile); err != nil {
-		return "", err
-	}
-
-	return string(bytes), nil
 }

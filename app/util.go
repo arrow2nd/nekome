@@ -63,9 +63,31 @@ func getHighlightId(ids []string) int {
 	return id
 }
 
+// find : スライス内に任意の条件を満たす値があるか
+func find[T any](s []T, f func(T) bool) bool {
+	for _, v := range s {
+		if f(v) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // truncate : 文字列を指定幅で丸める
 func truncate(s string, w int) string {
 	return runewidth.Truncate(s, w, "…")
+}
+
+// trimEndNewline : 末尾の改行を削除
+func trimEndNewline(s string) string {
+	s = strings.TrimRight(s, "\n")
+
+	if strings.HasSuffix(s, "\r") {
+		s = strings.TrimRight(s, "\r")
+	}
+
+	return s
 }
 
 // isSameDate : 同じ日付かどうか
