@@ -7,10 +7,9 @@ import (
 )
 
 // PostTweet : ツイートを投稿
-func (a *API) PostTweet(text, quoteId, replyId string) error {
+func (a *API) PostTweet(text, quoteId, replyId string, mediaIDs []string) error {
 	req := twitter.CreateTweetRequest{
 		Text: text,
-		// Media:                 &twitter.CreateTweetMedia{},
 	}
 
 	if quoteId != "" {
@@ -20,6 +19,12 @@ func (a *API) PostTweet(text, quoteId, replyId string) error {
 	if replyId != "" {
 		req.Reply = &twitter.CreateTweetReply{
 			InReplyToTweetID: replyId,
+		}
+	}
+
+	if mediaIDs != nil {
+		req.Media = &twitter.CreateTweetMedia{
+			IDs: mediaIDs,
 		}
 	}
 

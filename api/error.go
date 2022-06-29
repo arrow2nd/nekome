@@ -12,7 +12,7 @@ func checkError(err error) error {
 	// HTTPエラー
 	httpErr := &twitter.HTTPError{}
 	if errors.As(err, &httpErr) {
-		return fmt.Errorf("http error: %d %s", httpErr.StatusCode, httpErr.Status)
+		return fmt.Errorf("http error: %s", httpErr.Status)
 	}
 
 	// calloutエラーではないならそのまま返す
