@@ -8,11 +8,13 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
+	"github.com/spf13/cobra"
 )
 
 // App : アプリケーション
 type App struct {
 	app         *tview.Application
+	cmd         *cobra.Command
 	view        *view
 	statusBar   *statusBar
 	commandLine *commandLine
@@ -22,6 +24,7 @@ type App struct {
 func New() *App {
 	return &App{
 		app:         tview.NewApplication(),
+		cmd:         newCmd(),
 		view:        newView(),
 		statusBar:   newStatusBar(),
 		commandLine: newCommandLine(),
@@ -33,6 +36,9 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// 全体共有
 	shared.api = app
 	shared.conf = conf
+
+	// コマンド
+	a.initCmd()
 
 	// 日本語環境等での罫線の乱れ対策
 	// https://github.com/mattn/go-runewidth/issues/14
@@ -80,6 +86,26 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 func (a *App) Run() error {
 	go a.eventReciever()
 	return a.app.Run()
+}
+
+// ExecCommand : コマンドを実行
+func (a *App) ExecCommand(args []string) error {
+	a.cmd.SetArgs(args)
+	return a.cmd.Execute()
+}
+
+// quitApp : アプリを終了
+func (a *App) quitApp() {
+	// 確認画面が不要ならそのまま終了
+	if !shared.conf.Settings.Feature.Confirm["Quit"] {
+		a.app.Stop()
+		return
+	}
+
+	a.view.PopupModal(&ModalOpt{
+		title:  "Do you want to quit the app?",
+		onDone: a.app.Stop,
+	})
 }
 
 // eventReciever : イベントレシーバ
