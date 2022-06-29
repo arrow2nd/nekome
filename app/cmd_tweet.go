@@ -12,40 +12,43 @@ import (
 	"strings"
 
 	"github.com/arrow2nd/nekome/config"
-	flag "github.com/spf13/pflag"
+	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
 
-// postTweet : ツイートを投稿
-func (a *App) postTweet(args []string) error {
-	var (
-		quote  string
-		reply  string
-		editor string
-		images []string
-	)
-
-	// フラグを設定
-	f := flag.NewFlagSet("tweet", flag.ContinueOnError)
-	f.StringVarP(&quote, "quote", "q", "", "Specify the ID of the tweet to quote")
-	f.StringVarP(&reply, "reply", "r", "", "Specify the ID of the tweet to which you are replying")
-	f.StringVarP(&editor, "editor", "e", os.Getenv("EDITOR"), "Specify the editor to start (Default is $EDITOR)")
-	f.StringSliceVarP(&images, "image", "i", nil, "Image to be attached")
-
-	if err := f.Parse(args); err != nil {
-		return err
+func (a *App) newTweetCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "tweet",
+		Long:    "Post a tweet",
+		Example: "tweet [text] [--quote <tweet id>] [--reply <tweet id>] [--editor <editor>] [--image <path...>]",
+		RunE:    a.execTweetCmd,
 	}
 
-	text := f.Arg(1)
+	flags := cmd.Flags()
+	flags.StringP("quote", "q", "", "Specify the ID of the tweet to quote")
+	flags.StringP("reply", "r", "", "Specify the ID of the tweet to which you are replying")
+	flags.StringP("editor", "e", os.Getenv("EDITOR"), "Specify the editor to start (Default is $EDITOR)")
+	flags.StringSliceP("image", "i", nil, "Image to be attached")
 
-	// エディタを起動
-	if text == "" {
+	return cmd
+}
+
+func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
+	flags := cmd.Flags()
+	text := ""
+
+	if len(args) == 0 {
+		editor, _ := flags.GetString("editor")
+
+		// エディタを起動
 		t, err := a.editTweet(editor)
 		if err != nil {
 			return err
 		}
 
 		text = t
+	} else {
+		text = args[0]
 	}
 
 	text = trimEndNewline(text)
@@ -53,8 +56,12 @@ func (a *App) postTweet(args []string) error {
 		return nil
 	}
 
+	quote, _ := flags.GetString("quote")
+	reply, _ := flags.GetString("reply")
+	images, _ := flags.GetStringSlice("image")
+
 	post := func() {
-		var mediaIDs []string = nil
+		var mediaIDs []string
 
 		// 画像をアップロード
 		if images != nil {
@@ -158,7 +165,6 @@ func (a *App) uploadImages(images []string) ([]string, error) {
 	return mediaIds, nil
 }
 
-// editTweet ツイートをエディタで編集
 func (a *App) editTweet(editor string) (string, error) {
 	dir, err := config.GetConfigDir()
 	if err != nil {

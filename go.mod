@@ -8,13 +8,15 @@ require (
 	github.com/g8rswimmer/go-twitter/v2 v2.1.0
 	github.com/goccy/go-yaml v1.9.5
 	github.com/mattn/go-runewidth v0.0.13
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/cobra v1.5.0
 )
 
 require (
 	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )

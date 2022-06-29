@@ -22,7 +22,7 @@ func (a *API) PostTweet(text, quoteId, replyId string, mediaIDs []string) error 
 		}
 	}
 
-	if mediaIDs != nil {
+	if len(mediaIDs) > 0 {
 		req.Media = &twitter.CreateTweetMedia{
 			IDs: mediaIDs,
 		}
