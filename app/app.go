@@ -58,7 +58,8 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 
 	// コマンドライン
 	go func() {
-		if err := a.commandLine.SetListCompleteItems(); err != nil {
+		cmds := a.cmd.Commands()
+		if err := a.commandLine.SetListCompleteItems(cmds); err != nil {
 			shared.SetErrorStatus("Init - CommandLine", err.Error())
 		}
 	}()

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/spf13/cobra"
 )
 
 type commandLine struct {
@@ -48,19 +49,15 @@ func (c *commandLine) SetText(s string) {
 }
 
 // SetListCompleteItems : リストの補完要素を設定
-func (c *commandLine) SetListCompleteItems() error {
+func (c *commandLine) SetListCompleteItems(cmds []*cobra.Command) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.autoComplateItems = []string{
-		"tweet",
-		"home",
-		"mention",
-		"user",
-		"list",
-		"search",
-		"switch",
-		"quit",
+	c.autoComplateItems = []string{}
+
+	// 基本のコマンドを追加
+	for _, cmd := range cmds {
+		c.autoComplateItems = append(c.autoComplateItems, cmd.Name())
 	}
 
 	// ユーザが所有しているリストを取得
@@ -69,6 +66,7 @@ func (c *commandLine) SetListCompleteItems() error {
 		return err
 	}
 
+	// フラグ指定済みのリストコマンドを追加
 	for _, l := range lists {
 		cmd := fmt.Sprintf("list %s %s", l.Name, l.ID)
 		c.autoComplateItems = append(c.autoComplateItems, cmd)
