@@ -2,7 +2,7 @@ package app
 
 import "github.com/spf13/cobra"
 
-// newCmd : コマンドを生成
+// newCmd : コマンド生成
 func newCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "nekome",
@@ -11,9 +11,8 @@ func newCmd() *cobra.Command {
 	}
 }
 
-// initCmd : コマンドを初期化
+// initCmd : コマンド初期化
 func (a *App) initCmd() {
-	// TODO: コマンドラインからの実行の場合ここらへんの設定は変更する
 	a.cmd.SilenceUsage = true
 	a.cmd.SilenceErrors = true
 

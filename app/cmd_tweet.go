@@ -16,23 +16,26 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// newTweetCmd : tweetコマンド生成
 func (a *App) newTweetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "tweet",
-		Long:    "Post a tweet",
-		Example: "tweet [text] [--quote <tweet id>] [--reply <tweet id>] [--editor <editor>] [--image <path...>]",
+		Aliases: []string{"t"},
+		Short:   "Post a tweet",
+		Example: "tweet [text] [--quote <tweet id>] [--reply <tweet id>] [--editor <editor>] [--image <path,path...>]",
 		RunE:    a.execTweetCmd,
 	}
 
 	flags := cmd.Flags()
-	flags.StringP("quote", "q", "", "Specify the ID of the tweet to quote")
-	flags.StringP("reply", "r", "", "Specify the ID of the tweet to which you are replying")
-	flags.StringP("editor", "e", os.Getenv("EDITOR"), "Specify the editor to start (Default is $EDITOR)")
-	flags.StringSliceP("image", "i", nil, "Image to be attached")
+	flags.StringP("quote", "q", "", "specify the ID of the tweet to quote")
+	flags.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
+	flags.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
+	flags.StringSliceP("image", "i", nil, "image to be attached")
 
 	return cmd
 }
 
+// execTweetCmd : tweetコマンド処理
 func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 	flags := cmd.Flags()
 	text := ""
@@ -165,6 +168,7 @@ func (a *App) uploadImages(images []string) ([]string, error) {
 	return mediaIds, nil
 }
 
+// editTweet : エディタを起動してツイートを編集
 func (a *App) editTweet(editor string) (string, error) {
 	dir, err := config.GetConfigDir()
 	if err != nil {

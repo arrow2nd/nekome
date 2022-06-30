@@ -6,26 +6,28 @@ import (
 )
 
 var shared = Shared{
-	api:             nil,
-	conf:            nil,
-	chStatus:        make(chan string, 1),
-	chIndicator:     make(chan string, 1),
-	chPopupModal:    make(chan *ModalOpt, 1),
-	chExecCommand:   make(chan string, 1),
-	chInputCommand:  make(chan string, 1),
-	chFocusPageView: make(chan bool, 1),
+	isCommandLineMode: false,
+	api:               nil,
+	conf:              nil,
+	chStatus:          make(chan string, 1),
+	chIndicator:       make(chan string, 1),
+	chPopupModal:      make(chan *ModalOpt, 1),
+	chExecCommand:     make(chan string, 1),
+	chInputCommand:    make(chan string, 1),
+	chFocusPageView:   make(chan bool, 1),
 }
 
 // Shared : 全体共有
 type Shared struct {
-	api             *api.API
-	conf            *config.Config
-	chStatus        chan string
-	chIndicator     chan string
-	chPopupModal    chan *ModalOpt
-	chExecCommand   chan string
-	chInputCommand  chan string
-	chFocusPageView chan bool
+	isCommandLineMode bool
+	api               *api.API
+	conf              *config.Config
+	chStatus          chan string
+	chIndicator       chan string
+	chPopupModal      chan *ModalOpt
+	chExecCommand     chan string
+	chInputCommand    chan string
+	chFocusPageView   chan bool
 }
 
 // SetStatus : ステータスメッセージを設定

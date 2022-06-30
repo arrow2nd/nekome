@@ -1,6 +1,7 @@
 package app
 
 import (
+	"os"
 	"strings"
 
 	"github.com/arrow2nd/nekome/api"
@@ -34,6 +35,7 @@ func New() *App {
 // Init : 初期化
 func (a *App) Init(app *api.API, conf *config.Config) {
 	// 全体共有
+	shared.isCommandLineMode = len(os.Args[1:]) > 0
 	shared.api = app
 	shared.conf = conf
 
@@ -84,6 +86,11 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 
 // Run : 実行
 func (a *App) Run() error {
+	// コマンドラインモード
+	if shared.isCommandLineMode {
+		return a.ExecCommand(os.Args[1:])
+	}
+
 	go a.eventReciever()
 	return a.app.Run()
 }

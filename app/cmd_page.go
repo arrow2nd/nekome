@@ -7,14 +7,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// newHomeCmd : homeコマンド生成
 func (a *App) newHomeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "home",
-		Long: "Add Home Timeline Page",
-		Args: cobra.NoArgs,
+		Use:     "home",
+		Aliases: []string{"h"},
+		Short:   "add home timeline page",
+		Args:    cobra.NoArgs,
+		Hidden:  shared.isCommandLineMode,
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "No focus on page")
+	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		unfocus, _ := cmd.Flags().GetBool("unfocus")
@@ -24,14 +27,17 @@ func (a *App) newHomeCmd() *cobra.Command {
 	return cmd
 }
 
+// newMentionCmd : mentionコマンド生成
 func (a *App) newMentionCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "mention",
-		Long: "Add Mention Timeline Page",
-		Args: cobra.NoArgs,
+		Use:     "mention",
+		Aliases: []string{"m"},
+		Short:   "add mention timeline page",
+		Args:    cobra.NoArgs,
+		Hidden:  shared.isCommandLineMode,
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "No focus on page")
+	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		unfocus, _ := cmd.Flags().GetBool("unfocus")
@@ -41,15 +47,18 @@ func (a *App) newMentionCmd() *cobra.Command {
 	return cmd
 }
 
+// newListCmd : listコマンド生成
 func (a *App) newListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
-		Long:    "Add List Timeline Page",
+		Aliases: []string{"l"},
+		Short:   "add list timeline page",
 		Example: "list <list name> <list id>",
 		Args:    cobra.ExactValidArgs(2),
+		Hidden:  shared.isCommandLineMode,
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "No focus on page")
+	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		name := args[0]
@@ -69,15 +78,18 @@ func (a *App) newListCmd() *cobra.Command {
 	return cmd
 }
 
+// newUserCmd : userコマンド生成
 func (a *App) newUserCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "user",
-		Long:    "Add User Timeline Page",
+		Aliases: []string{"u"},
+		Short:   "add user timeline page",
 		Example: "user <user name>",
 		Args:    cobra.ExactValidArgs(1),
+		Hidden:  shared.isCommandLineMode,
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "No focus on page")
+	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		userName := args[0]
@@ -97,15 +109,18 @@ func (a *App) newUserCmd() *cobra.Command {
 	return cmd
 }
 
+// newSearchCmd : searchコマンド生成
 func (a *App) newSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "search",
-		Long:    "Add Seaech Result Page",
+		Aliases: []string{"s"},
+		Short:   "add seaech result page",
 		Example: "search <query>",
 		Args:    cobra.ExactValidArgs(1),
+		Hidden:  shared.isCommandLineMode,
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "No focus on page")
+	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		query := args[0]
