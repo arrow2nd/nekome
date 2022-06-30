@@ -18,19 +18,26 @@ import (
 
 // newTweetCmd : tweetコマンド生成
 func (a *App) newTweetCmd() *cobra.Command {
+	setFlags := func(cmd *cobra.Command, args []string) {
+		cmd.ResetFlags()
+
+		flags := cmd.Flags()
+		flags.StringP("quote", "q", "", "specify the ID of the tweet to quote")
+		flags.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
+		flags.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
+		flags.StringSliceP("image", "i", nil, "image to be attached")
+	}
+
 	cmd := &cobra.Command{
 		Use:     "tweet",
 		Aliases: []string{"t"},
 		Short:   "Post a tweet",
 		Example: "tweet [text] [--quote <tweet id>] [--reply <tweet id>] [--editor <editor>] [--image <path,path...>]",
+		PostRun: setFlags,
 		RunE:    a.execTweetCmd,
 	}
 
-	flags := cmd.Flags()
-	flags.StringP("quote", "q", "", "specify the ID of the tweet to quote")
-	flags.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
-	flags.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
-	flags.StringSliceP("image", "i", nil, "image to be attached")
+	setFlags(cmd, nil)
 
 	return cmd
 }

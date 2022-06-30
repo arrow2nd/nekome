@@ -7,6 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// setUnfocusFlagc : unfocusフラグを設定
+func setUnfocusFlag(c *cobra.Command, args []string) {
+	c.ResetFlags()
+
+	c.Flags().BoolP("unfocus", "u", false, "no focus on page")
+}
+
 // newHomeCmd : homeコマンド生成
 func (a *App) newHomeCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -15,14 +22,14 @@ func (a *App) newHomeCmd() *cobra.Command {
 		Short:   "add home timeline page",
 		Args:    cobra.NoArgs,
 		Hidden:  shared.isCommandLineMode,
+		PostRun: setUnfocusFlag,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
+		},
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
-
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		unfocus, _ := cmd.Flags().GetBool("unfocus")
-		return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
-	}
+	setUnfocusFlag(cmd, nil)
 
 	return cmd
 }
@@ -35,14 +42,14 @@ func (a *App) newMentionCmd() *cobra.Command {
 		Short:   "add mention timeline page",
 		Args:    cobra.NoArgs,
 		Hidden:  shared.isCommandLineMode,
+		PostRun: setUnfocusFlag,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
+		},
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
-
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		unfocus, _ := cmd.Flags().GetBool("unfocus")
-		return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
-	}
+	setUnfocusFlag(cmd, nil)
 
 	return cmd
 }
@@ -56,24 +63,24 @@ func (a *App) newListCmd() *cobra.Command {
 		Example: "list <list name> <list id>",
 		Args:    cobra.ExactValidArgs(2),
 		Hidden:  shared.isCommandLineMode,
+		PostRun: setUnfocusFlag,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+			if name == "" {
+				return errors.New("please specify list name")
+			}
+
+			id := args[1]
+			if id == "" {
+				return errors.New("please specify list id")
+			}
+
+			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			return a.view.AddPage(newListPage(name, id), !unfocus)
+		},
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
-
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		name := args[0]
-		if name == "" {
-			return errors.New("please specify list name")
-		}
-
-		id := args[1]
-		if id == "" {
-			return errors.New("please specify list id")
-		}
-
-		unfocus, _ := cmd.Flags().GetBool("unfocus")
-		return a.view.AddPage(newListPage(name, id), !unfocus)
-	}
+	setUnfocusFlag(cmd, nil)
 
 	return cmd
 }
@@ -87,24 +94,24 @@ func (a *App) newUserCmd() *cobra.Command {
 		Example: "user <user name>",
 		Args:    cobra.RangeArgs(0, 1),
 		Hidden:  shared.isCommandLineMode,
+		PostRun: setUnfocusFlag,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			userName := shared.api.CurrentUser.UserName
+
+			// ユーザの指定があるなら置き換え
+			if len(args) > 0 {
+				userName = args[0]
+			}
+
+			// @を除去
+			userName = strings.ReplaceAll(userName, "@", "")
+
+			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			return a.view.AddPage(newUserPage(userName), !unfocus)
+		},
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
-
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		userName := shared.api.CurrentUser.UserName
-
-		// ユーザの指定があるなら置き換え
-		if len(args) > 0 {
-			userName = args[0]
-		}
-
-		// @を除去
-		userName = strings.ReplaceAll(userName, "@", "")
-
-		unfocus, _ := cmd.Flags().GetBool("unfocus")
-		return a.view.AddPage(newUserPage(userName), !unfocus)
-	}
+	setUnfocusFlag(cmd, nil)
 
 	return cmd
 }
@@ -118,19 +125,19 @@ func (a *App) newSearchCmd() *cobra.Command {
 		Example: "search <query>",
 		Args:    cobra.ExactValidArgs(1),
 		Hidden:  shared.isCommandLineMode,
+		PostRun: setUnfocusFlag,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			query := args[0]
+			if query == "" {
+				return errors.New("please specify search keywords")
+			}
+
+			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			return a.view.AddPage(newSearchPage(query), !unfocus)
+		},
 	}
 
-	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
-
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		query := args[0]
-		if query == "" {
-			return errors.New("please specify search keywords")
-		}
-
-		unfocus, _ := cmd.Flags().GetBool("unfocus")
-		return a.view.AddPage(newSearchPage(query), !unfocus)
-	}
+	setUnfocusFlag(cmd, nil)
 
 	return cmd
 }
