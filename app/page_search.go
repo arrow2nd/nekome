@@ -8,7 +8,7 @@ import (
 )
 
 type searchPage struct {
-	*basePage
+	*tweetsBasePage
 	query string
 }
 
@@ -18,8 +18,8 @@ func newSearchPage(query string) *searchPage {
 	tabName = strings.Replace(tabName, "{query}", query, 1)
 
 	p := &searchPage{
-		basePage: newBasePage(tabName),
-		query:    query,
+		tweetsBasePage: newTweetsBasePage(tabName),
+		query:          query,
 	}
 
 	p.SetFrame(p.tweets.view)

@@ -11,7 +11,7 @@ import (
 )
 
 type userPage struct {
-	*basePage
+	*tweetsBasePage
 	flex             *tview.Flex
 	profile          *tview.TextView
 	tweetMetrics     *tview.TextView
@@ -26,7 +26,7 @@ func newUserPage(userName string) *userPage {
 	tabName = strings.Replace(tabName, "{name}", userName, 1)
 
 	p := &userPage{
-		basePage:         newBasePage(tabName),
+		tweetsBasePage:   newTweetsBasePage(tabName),
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
 		tweetMetrics:     createMetricsView(0xa094c7),

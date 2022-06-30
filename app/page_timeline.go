@@ -14,7 +14,7 @@ const (
 )
 
 type timelinePage struct {
-	*basePage
+	*tweetsBasePage
 	tlType timelineType
 }
 
@@ -26,8 +26,8 @@ func newTimelinePage(tt timelineType) *timelinePage {
 	}
 
 	page := &timelinePage{
-		basePage: newBasePage(tabName),
-		tlType:   tt,
+		tweetsBasePage: newTweetsBasePage(tabName),
+		tlType:         tt,
 	}
 
 	page.SetFrame(page.tweets.view)

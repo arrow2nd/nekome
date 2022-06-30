@@ -34,8 +34,6 @@ type basePage struct {
 	name      string
 	indicator string
 	frame     *tview.Frame
-	tweets    *tweets
-	mu        sync.Mutex
 }
 
 func newBasePage(name string) *basePage {
@@ -43,7 +41,6 @@ func newBasePage(name string) *basePage {
 		name:      truncate(name, shared.conf.Settings.Apperance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
-		tweets:    newTweets(),
 	}
 }
 
@@ -69,19 +66,32 @@ func (b *basePage) OnVisible() {
 	shared.SetIndicator(b.indicator)
 }
 
+type tweetsBasePage struct {
+	*basePage
+	tweets *tweets
+	mu     sync.Mutex
+}
+
+func newTweetsBasePage(name string) *tweetsBasePage {
+	return &tweetsBasePage{
+		basePage: newBasePage(name),
+		tweets:   newTweets(),
+	}
+}
+
 // updateIndicator : インジケータを更新
-func (b *basePage) updateIndicator(s string, r *twitter.RateLimit) {
-	b.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
-	shared.SetIndicator(b.indicator)
+func (t *tweetsBasePage) updateIndicator(s string, r *twitter.RateLimit) {
+	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
+	shared.SetIndicator(t.indicator)
 }
 
 // updateLoadedStatus : ステータスメッセージを更新
-func (b *basePage) updateLoadedStatus(count int) {
+func (t *tweetsBasePage) updateLoadedStatus(count int) {
 	text := shared.conf.Settings.Texts.NoTweets
 
 	if count > 0 {
 		text = fmt.Sprintf("%d tweets loaded", count)
 	}
 
-	shared.SetStatus(b.name, text)
+	shared.SetStatus(t.name, text)
 }

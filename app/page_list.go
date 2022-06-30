@@ -7,7 +7,7 @@ import (
 )
 
 type listPage struct {
-	*basePage
+	*tweetsBasePage
 	listID string
 }
 
@@ -17,8 +17,8 @@ func newListPage(name, id string) *listPage {
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
 	p := &listPage{
-		basePage: newBasePage(tabName),
-		listID:   id,
+		tweetsBasePage: newTweetsBasePage(tabName),
+		listID:         id,
 	}
 
 	p.SetFrame(p.tweets.view)
