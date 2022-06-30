@@ -1,6 +1,10 @@
 package app
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
 
 // newCmd : コマンド生成
 func newCmd() *cobra.Command {
@@ -25,4 +29,19 @@ func (a *App) initCmd() {
 		a.newTweetCmd(),
 		a.newQuitCmd(),
 	)
+
+	if shared.isCommandLineMode {
+		return
+	}
+
+	// ヘルプの出力を新規ページに割り当てる
+	a.cmd.SetHelpFunc(func(c *cobra.Command, s []string) {
+		help := c.Long
+		if help == "" {
+			help = c.Short
+		}
+
+		text := fmt.Sprintf("%s\n\n%s", help, c.UsageString())
+		a.view.AddPage(newHelpPage(c.Name(), text), true)
+	})
 }
