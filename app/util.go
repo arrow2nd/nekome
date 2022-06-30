@@ -44,7 +44,7 @@ func getStringDisplayRow(s string, w int) int {
 	return int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
 }
 
-// getHighlightId : ハイライト一覧からIDを取得
+// getHighlightId : ハイライト一覧からIDを取得（見つからない場合 -1 が返る）
 func getHighlightId(ids []string) int {
 	if ids == nil {
 		return -1

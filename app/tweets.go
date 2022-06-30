@@ -62,6 +62,10 @@ func (t *tweets) GetTweetsCount() int {
 // getSelectTweet : 選択中のツイートを取得
 func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 	id := getHighlightId(t.view.GetHighlights())
+	if id == -1 {
+		return nil
+	}
+
 	c := &twitter.TweetDictionary{}
 
 	if t.pinned == nil {

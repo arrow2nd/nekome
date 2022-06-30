@@ -28,6 +28,9 @@ const (
 // actionForTweet : ツイートに対しての操作
 func (t *tweets) actionForTweet(a tweetActionType) {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	label := string(a)
 	id := c.Tweet.ID
@@ -77,6 +80,9 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 // actionForUser : ユーザに対しての操作
 func (t *tweets) actionForUser(a userActionType) {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	label := string(a)
 	id := c.Author.ID
@@ -128,20 +134,31 @@ func (t *tweets) actionForUser(a userActionType) {
 // openUserPage : ユーザページを開く
 func (t *tweets) openUserPage() {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	cmd := fmt.Sprintf("user %s", c.Author.UserName)
 	shared.RequestExecCommand(cmd)
 }
 
+// postQuoteTweet : QTコマンドを挿入
 func (t *tweets) postQuoteTweet() {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	cmd := fmt.Sprintf("tweet --quote %s ", c.Tweet.ID)
 	shared.RequestInputCommand(cmd)
 }
 
+// postReply : リプライコマンドを挿入
 func (t *tweets) postReply() {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	cmd := fmt.Sprintf("tweet --reply %s ", c.Tweet.ID)
 	shared.RequestInputCommand(cmd)
@@ -150,6 +167,9 @@ func (t *tweets) postReply() {
 // openBrower : ブラウザで開く
 func (t *tweets) openBrower() {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	if err := browser.OpenURL(createTweetURL(c)); err != nil {
 		shared.SetErrorStatus("Open", err.Error())
@@ -162,6 +182,9 @@ func (t *tweets) openBrower() {
 // copyLinkToClipBoard : リンクをクリップボードへコピー
 func (t *tweets) copyLinkToClipBoard() {
 	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
 
 	if err := clipboard.WriteAll(createTweetURL(c)); err != nil {
 		shared.SetErrorStatus("Copy", err.Error())
