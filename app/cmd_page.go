@@ -85,18 +85,18 @@ func (a *App) newUserCmd() *cobra.Command {
 		Aliases: []string{"u"},
 		Short:   "add user timeline page",
 		Example: "user <user name>",
-		Args:    cobra.ExactValidArgs(1),
+		Args:    cobra.RangeArgs(0, 1),
 		Hidden:  shared.isCommandLineMode,
 	}
 
 	cmd.Flags().BoolP("unfocus", "u", false, "no focus on page")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		userName := args[0]
+		userName := shared.api.CurrentUser.UserName
 
-		// ユーザの指定がないなら自分を指定
-		if userName == "" {
-			userName = shared.api.CurrentUser.UserName
+		// ユーザの指定があるなら置き換え
+		if len(args) > 0 {
+			userName = args[0]
 		}
 
 		// @を除去
