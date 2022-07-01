@@ -23,7 +23,7 @@ func newStatusBar() *statusBar {
 
 // Init : 初期化
 func (s *statusBar) Init() {
-	bgColor := tcell.NewHexColor(shared.conf.Theme.Statusbar.BG)
+	bgColor := tcell.NewHexColor(shared.conf.Theme.StatusBar.BG)
 
 	s.accountInfo.
 		SetDynamicColors(true).
@@ -48,7 +48,7 @@ func (s *statusBar) DrawAccountInfo() {
 	fmt.Fprintf(
 		s.accountInfo,
 		" [%s]@%s[-:-:-]",
-		shared.conf.Theme.Statusbar.Text,
+		shared.conf.Theme.StatusBar.Text,
 		shared.api.CurrentUser.UserName,
 	)
 }
@@ -60,7 +60,7 @@ func (s *statusBar) DrawPageIndicator(d string) {
 	fmt.Fprintf(
 		s.pageIndicator,
 		"[%s]%s[-:-:-] ",
-		shared.conf.Theme.Statusbar.Text,
+		shared.conf.Theme.StatusBar.Text,
 		d,
 	)
 }

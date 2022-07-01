@@ -5,7 +5,7 @@ type appStyle struct {
 	Separator string
 }
 
-type statusbarStyle struct {
+type statusBarStyle struct {
 	Text string
 	BG   int32
 }
@@ -43,7 +43,7 @@ type userStyle struct {
 // Style : スタイル
 type Style struct {
 	App          appStyle
-	Statusbar    statusbarStyle
+	StatusBar    statusBarStyle
 	Autocomplete autocompleteStyle
 	Tweet        tweetStyle
 	User         userStyle
@@ -55,7 +55,7 @@ func defaultStyle() *Style {
 			Tab:       "-:-:-",
 			Separator: "gray:-:-",
 		},
-		Statusbar: statusbarStyle{
+		StatusBar: statusBarStyle{
 			Text: "black:-:-",
 			BG:   0xffffff,
 		},
