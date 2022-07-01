@@ -32,6 +32,9 @@ func (a *App) newTweetCmd() *cobra.Command {
 		Use:     "tweet",
 		Aliases: []string{"t"},
 		Short:   "Post a tweet",
+		Long: `Post a tweet.
+If you omit the tweet statement, the editor will be activated.
+You cannot tweet only images.`,
 		Example: "  tweet にゃーん --image cute_cat.png,very_cute_cat.png",
 		PostRun: setFlags,
 		RunE:    a.execTweetCmd,
