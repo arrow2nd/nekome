@@ -27,8 +27,8 @@ func newCommandLine() *commandLine {
 
 // Init : 初期化
 func (c *commandLine) Init() {
-	normalBG := tcell.NewHexColor(shared.conf.Style.Autocomplete.NormalBG)
-	selectBG := tcell.NewHexColor(shared.conf.Style.Autocomplete.SelectBG)
+	normalBG := shared.conf.Style.Autocomplete.NormalBG.ToColor()
+	selectBG := shared.conf.Style.Autocomplete.SelectBG.ToColor()
 
 	c.inputField.
 		SetAutocompleteStyles(

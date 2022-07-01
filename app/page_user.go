@@ -25,13 +25,17 @@ func newUserPage(userName string) *userPage {
 	tabName := shared.conf.Settings.Texts.TabUser
 	tabName = strings.Replace(tabName, "{name}", userName, 1)
 
+	tweetsColor := shared.conf.Style.User.TweetsMetricsBG.ToColor()
+	followingColor := shared.conf.Style.User.FollowingMetricsBG.ToColor()
+	followersColor := shared.conf.Style.User.FollowersMetricsBG.ToColor()
+
 	p := &userPage{
 		tweetsBasePage:   newTweetsBasePage(tabName),
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
-		tweetsMetrics:    createMetricsView(shared.conf.Style.User.TweetsMetricsBG),
-		followingMetrics: createMetricsView(shared.conf.Style.User.FollowingMetricsBG),
-		followersMetrics: createMetricsView(shared.conf.Style.User.FollowersMetricsBG),
+		tweetsMetrics:    createMetricsView(tweetsColor),
+		followingMetrics: createMetricsView(followingColor),
+		followersMetrics: createMetricsView(followersColor),
 		userName:         userName,
 		userDic:          nil,
 	}
@@ -66,12 +70,12 @@ func newUserPage(userName string) *userPage {
 }
 
 // createMetricsView : 各メトリクス表示用のTextViewを作成
-func createMetricsView(color int32) *tview.TextView {
+func createMetricsView(color tcell.Color) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignCenter)
 
-	t.SetBackgroundColor(tcell.NewHexColor(color))
+	t.SetBackgroundColor(color)
 
 	return t
 }

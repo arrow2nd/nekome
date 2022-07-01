@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -23,7 +22,7 @@ func newStatusBar() *statusBar {
 
 // Init : 初期化
 func (s *statusBar) Init() {
-	bgColor := tcell.NewHexColor(shared.conf.Style.StatusBar.BG)
+	bgColor := shared.conf.Style.StatusBar.BG.ToColor()
 
 	s.accountInfo.
 		SetDynamicColors(true).

@@ -1,5 +1,21 @@
 package config
 
+import (
+	"strconv"
+	"strings"
+
+	"github.com/gdamore/tcell/v2"
+)
+
+type hex string
+
+// ToColor : tcell.Colorに変換
+func (h hex) ToColor() tcell.Color {
+	s := strings.Replace(string(h), "#", "", 1)
+	i, _ := strconv.ParseInt(s, 16, 32)
+	return tcell.NewHexColor(int32(i))
+}
+
 type appStyle struct {
 	Tab       string
 	Separator string
@@ -7,12 +23,12 @@ type appStyle struct {
 
 type statusBarStyle struct {
 	Text string
-	BG   int32
+	BG   hex
 }
 
 type autocompleteStyle struct {
-	NormalBG int32
-	SelectBG int32
+	NormalBG hex
+	SelectBG hex
 }
 
 type tweetStyle struct {
@@ -33,11 +49,11 @@ type userStyle struct {
 	Private              string
 	Detail               string
 	TweetsMetricsText    string
-	TweetsMetricsBG      int32
+	TweetsMetricsBG      hex
 	FollowingMetricsText string
-	FollowingMetricsBG   int32
+	FollowingMetricsBG   hex
 	FollowersMetricsText string
-	FollowersMetricsBG   int32
+	FollowersMetricsBG   hex
 }
 
 // Style : スタイル
@@ -57,11 +73,11 @@ func defaultStyle() *Style {
 		},
 		StatusBar: statusBarStyle{
 			Text: "black:-:-",
-			BG:   0xffffff,
+			BG:   "#ffffff",
 		},
 		Autocomplete: autocompleteStyle{
-			NormalBG: 0x3e4359,
-			SelectBG: 0x5c6586,
+			NormalBG: "#3e4359",
+			SelectBG: "#5c6586",
 		},
 		Tweet: tweetStyle{
 			Annotation: "blue:-:-",
@@ -80,11 +96,11 @@ func defaultStyle() *Style {
 			Private:              "gray:-:-",
 			Detail:               "gray:-:-",
 			TweetsMetricsText:    "black:-:-",
-			TweetsMetricsBG:      0xa094c7,
+			TweetsMetricsBG:      "#a094c7",
 			FollowingMetricsText: "black:-:-",
-			FollowingMetricsBG:   0x84a0c6,
+			FollowingMetricsBG:   "#84a0c6",
 			FollowersMetricsText: "black:-:-",
-			FollowersMetricsBG:   0x89b8c2,
+			FollowersMetricsBG:   "#89b8c2",
 		},
 	}
 }
