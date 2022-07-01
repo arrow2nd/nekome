@@ -58,6 +58,19 @@ func (c *Config) LoadSettings() error {
 	return c.load(setingsFileName, c.Settings)
 }
 
+// LoadStyle : スタイルを読込む
+func (c *Config) LoadStyle() error {
+	fileName := c.Settings.Apperance.StyleFile
+
+	if !c.hasFileExists(fileName) {
+		if err := c.saveDefaultStyle(); err != nil {
+			return err
+		}
+	}
+
+	return c.load(fileName, c.Style)
+}
+
 // SaveCred : 認証情報を保存
 func (c *Config) SaveCred() error {
 	return c.save(credFileName, c.Cred.users)
@@ -66,6 +79,11 @@ func (c *Config) SaveCred() error {
 // SaveSettings : 設定を保存
 func (c *Config) SaveSettings() error {
 	return c.save(setingsFileName, c.Settings)
+}
+
+// saveDefaultStyle : デフォルトのスタイルを保存
+func (c *Config) saveDefaultStyle() error {
+	return c.save(c.Settings.Apperance.StyleFile, c.Style)
 }
 
 // SaveAll : 一括保存

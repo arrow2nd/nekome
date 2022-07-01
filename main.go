@@ -22,6 +22,11 @@ func main() {
 		log.ErrorExit(err.Error(), log.ExitCodeErrFileIO)
 	}
 
+	// スタイルを読込む
+	if err := conf.LoadStyle(); err != nil {
+		log.ErrorExit(err.Error(), log.ExitCodeErrFileIO)
+	}
+
 	// 認証情報を読込む
 	ok, err := conf.LoadCred()
 	if err != nil {

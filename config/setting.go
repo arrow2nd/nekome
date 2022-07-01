@@ -20,8 +20,8 @@ type feature struct {
 }
 
 type appearance struct {
-	// ThemePath : 配色テーマファイルのパス
-	ThemePath string
+	// StyleFile : 配色テーマファイルのパス
+	StyleFile string
 	// DateFormat : 日付のフォーマット
 	DateFormat string
 	// TimeFormat : 時刻のフォーマット
@@ -117,7 +117,7 @@ func defaultSettings() *Settings {
 			},
 		},
 		Apperance: appearance{
-			ThemePath:           "theme/default.yml",
+			StyleFile:           "default.yml",
 			DateFormat:          "2006/01/02",
 			TimeFormat:          "15:04:05",
 			UserBIOMaxRow:       3,
