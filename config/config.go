@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"github.com/arrow2nd/nekome/log"
 )
 
 // Config : 設定
@@ -17,7 +17,7 @@ type Config struct {
 func New() *Config {
 	path, err := GetConfigDir()
 	if err != nil {
-		log.Fatal(err)
+		log.ErrorExit(err.Error(), log.ExitCodeErrFileIO)
 	}
 
 	return &Config{
