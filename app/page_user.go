@@ -14,7 +14,7 @@ type userPage struct {
 	*tweetsBasePage
 	flex             *tview.Flex
 	profile          *tview.TextView
-	tweetMetrics     *tview.TextView
+	tweetsMetrics    *tview.TextView
 	followingMetrics *tview.TextView
 	followersMetrics *tview.TextView
 	userName         string
@@ -29,16 +29,17 @@ func newUserPage(userName string) *userPage {
 		tweetsBasePage:   newTweetsBasePage(tabName),
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
-		tweetMetrics:     createMetricsView(0xa094c7),
-		followingMetrics: createMetricsView(0x84a0c6),
-		followersMetrics: createMetricsView(0x89b8c2),
+		tweetsMetrics:    createMetricsView(shared.conf.Theme.User.TweetsMetricsBG),
+		followingMetrics: createMetricsView(shared.conf.Theme.User.FollowingMetricsBG),
+		followersMetrics: createMetricsView(shared.conf.Theme.User.FollowersMetricsBG),
 		userName:         userName,
 		userDic:          nil,
 	}
 
 	padding := shared.conf.Settings.Apperance.UserProfilePaddingX
 
-	p.profile.SetDynamicColors(true).
+	p.profile.
+		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignCenter).
 		SetBorderPadding(0, 1, padding, padding)
@@ -47,7 +48,7 @@ func newUserPage(userName string) *userPage {
 
 	metrics := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
-		AddItem(p.tweetMetrics, 0, 1, false).
+		AddItem(p.tweetsMetrics, 0, 1, false).
 		AddItem(p.followingMetrics, 0, 1, false).
 		AddItem(p.followersMetrics, 0, 1, false)
 
@@ -68,7 +69,6 @@ func newUserPage(userName string) *userPage {
 func createMetricsView(color int32) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
-		SetTextColor(tcell.ColorBlack).
 		SetTextAlign(tview.AlignCenter)
 
 	t.SetBackgroundColor(tcell.NewHexColor(color))
@@ -93,9 +93,12 @@ func (u *userPage) Load() {
 	}
 
 	// ユーザのツイートを取得
-	count := shared.conf.Settings.Feature.LoadTweetsCount
-	sinceID := u.tweets.GetSinceID()
-	tweets, rateLimit, err := shared.api.FetchUserTimeline(u.userDic.User.ID, sinceID, count)
+	tweets, rateLimit, err := shared.api.FetchUserTimeline(
+		u.userDic.User.ID,
+		u.tweets.GetSinceID(),
+		shared.conf.Settings.Feature.LoadTweetsCount,
+	)
+
 	if err != nil {
 		u.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(u.name, err.Error())
@@ -144,10 +147,29 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// プロフィールの行数に合わせて表示域をリサイズ（+1 は下辺の padding 分）
 	u.flex.ResizeItem(u.profile, row+1, 1)
 
-	// ツイート・フォロイー・フォロワー数
-	u.tweetMetrics.SetText(fmt.Sprintf("%d Tweets", ur.PublicMetrics.Tweets))
-	u.followingMetrics.SetText(fmt.Sprintf("%d Following", ur.PublicMetrics.Following))
-	u.followersMetrics.SetText(fmt.Sprintf("%d Followers", ur.PublicMetrics.Followers))
+	// ツイート数
+	tweets := fmt.Sprintf(
+		"[%s]%d Tweets[-:-:-]",
+		shared.conf.Theme.User.TweetsMetricsText,
+		ur.PublicMetrics.Tweets,
+	)
+	u.tweetsMetrics.SetText(tweets)
+
+	// フォロイー数
+	following := fmt.Sprintf(
+		"[%s]%d Following[-:-:-]",
+		shared.conf.Theme.User.FollowingMetricsText,
+		ur.PublicMetrics.Following,
+	)
+	u.followingMetrics.SetText(following)
+
+	// フォロワー数
+	followers := fmt.Sprintf(
+		"[%s]%d Followers[-:-:-]",
+		shared.conf.Theme.User.FollowersMetricsText,
+		ur.PublicMetrics.Followers,
+	)
+	u.followersMetrics.SetText(followers)
 }
 
 // handleKeyEvents : ユーザページのキーハンドラ

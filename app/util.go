@@ -123,22 +123,24 @@ func convertDateString(createAt string) string {
 
 // createSeparator : 指定幅のセパレータ文字列を作成
 func createSeparator(s string, width int) string {
-	return fmt.Sprintf("[gray:-:-]%s[-:-:-]", strings.Repeat(s, width))
+	style := shared.conf.Theme.App.Separator
+	return fmt.Sprintf("[%s]%s[-:-:-]", style, strings.Repeat(s, width))
 }
 
 // createMetricsString : ツイートのリアクション数文字列を作成
-func createMetricsString(unit, color string, count int, reverse bool) string {
+func createMetricsString(unit, style string, count int, reverse bool) string {
 	if count <= 0 {
 		return ""
 	} else if count > 1 {
 		unit += "s"
 	}
 
+	// TODO: 反転未実装
 	if reverse {
-		return fmt.Sprintf("[%s:-:r] %d%s [-:-:-]", color, count, unit)
+		return fmt.Sprintf("[%s] %d%s [-:-:-]", style, count, unit)
 	}
 
-	return fmt.Sprintf("[%s]%d%s[-:-:-] ", color, count, unit)
+	return fmt.Sprintf("[%s]%d%s[-:-:-] ", style, count, unit)
 }
 
 // createUserSummary : ユーザの要約文を作成

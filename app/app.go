@@ -42,6 +42,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// コマンド
 	a.initCmd()
 
+	// コマンドラインモードならUIの初期化をスキップ
 	if shared.isCommandLineMode {
 		return
 	}
@@ -50,7 +51,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// https://github.com/mattn/go-runewidth/issues/14
 	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Settings.Feature.IsLocaleCJK
 
-	// 配色設定
+	// 背景色
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
@@ -58,9 +59,11 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	a.view.SetInputCapture(a.handlePageKeyEvent)
 
 	// ステータスバー
+	a.statusBar.Init()
 	a.statusBar.DrawAccountInfo()
 
 	// コマンドライン
+	a.commandLine.Init()
 	go func() {
 		cmds := a.cmd.Commands()
 		if err := a.commandLine.SetListCompleteItems(cmds); err != nil {
@@ -78,7 +81,8 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
 		AddItem(a.view.pageView, 1, 0, 1, 1, 0, 0, true)
 
-	a.app.SetRoot(layout, true).
+	a.app.
+		SetRoot(layout, true).
 		SetInputCapture(a.handleGlobalKeyEvents)
 
 	// コマンドを実行

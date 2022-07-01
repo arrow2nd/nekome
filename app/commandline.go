@@ -18,17 +18,23 @@ type commandLine struct {
 }
 
 func newCommandLine() *commandLine {
-	c := &commandLine{
+	return &commandLine{
 		inputField:        tview.NewInputField(),
 		backspaceCount:    0,
 		autoComplateItems: []string{},
 	}
+}
+
+// Init : 初期化
+func (c *commandLine) Init() {
+	normalBG := tcell.NewHexColor(shared.conf.Theme.Autocomplete.NormalBG)
+	selectBG := tcell.NewHexColor(shared.conf.Theme.Autocomplete.SelectBG)
 
 	c.inputField.
 		SetAutocompleteStyles(
-			tcell.NewHexColor(0x3e4359),
+			normalBG,
 			tcell.StyleDefault,
-			tcell.StyleDefault.Background(tcell.NewHexColor(0x5c6586)),
+			tcell.StyleDefault.Background(selectBG),
 		).
 		SetPlaceholderStyle(tcell.StyleDefault).
 		SetFieldBackgroundColor(tcell.ColorDefault).
@@ -39,8 +45,6 @@ func newCommandLine() *commandLine {
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).
 		SetInputCapture(c.handleKeyEvent)
-
-	return c
 }
 
 // SetText : テキストを設定

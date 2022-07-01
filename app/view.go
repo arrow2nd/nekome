@@ -66,8 +66,10 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
+	t := shared.conf.Theme.App.Tab
+
 	for i, tab := range v.tabs {
-		fmt.Fprintf(v.tabView, `["%s"] %s [""]`, tab.id, tab.name)
+		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, t, tab.id, tab.name)
 
 		if i < len(v.tabs)-1 {
 			fmt.Fprint(v.tabView, shared.conf.Settings.Apperance.TabSeparate)

@@ -22,16 +22,18 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
-		icon := shared.conf.Settings.Icon.Geo
-		texts = append(texts, icon+" "+u.Location)
+		texts = append(texts, shared.conf.Settings.Icon.Geo+" "+u.Location)
 	}
 
 	if u.URL != "" {
-		icon := shared.conf.Settings.Icon.Link
-		texts = append(texts, icon+" "+u.URL)
+		texts = append(texts, shared.conf.Settings.Icon.Link+" "+u.URL)
 	}
 
-	return "[gray:-:-]" + strings.Join(texts, " | ")
+	return fmt.Sprintf(
+		"[%s]%s[-:-:-]",
+		shared.conf.Theme.User.Detail,
+		strings.Join(texts, " | "),
+	)
 }
 
 // createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示行数を返す
@@ -40,9 +42,9 @@ func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
 	width := w - padding*2
 
 	desc, row := createUserBioLayout(u.Description, width)
+	desc = fmt.Sprintf("%s\n", desc)
 
-	profile := createUserInfoLayout(u, -1, width) +
-		fmt.Sprintf("[white:-:-]%s\n", desc)
+	profile := createUserInfoLayout(u, -1, width) + desc
 
 	// 詳細情報が無い
 	if u.Location == "" && u.URL == "" {

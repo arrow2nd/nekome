@@ -14,37 +14,53 @@ type statusBar struct {
 }
 
 func newStatusBar() *statusBar {
-	s := &statusBar{
+	return &statusBar{
 		flex:          tview.NewFlex(),
 		accountInfo:   tview.NewTextView(),
 		pageIndicator: tview.NewTextView(),
 	}
+}
 
-	s.accountInfo.SetDynamicColors(true).
+// Init : 初期化
+func (s *statusBar) Init() {
+	bgColor := tcell.NewHexColor(shared.conf.Theme.Statusbar.BG)
+
+	s.accountInfo.
+		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft).
-		SetTextColor(tcell.ColorBlack).
-		SetBackgroundColor(tcell.ColorDarkGray)
+		SetBackgroundColor(bgColor)
 
-	s.pageIndicator.SetDynamicColors(true).
+	s.pageIndicator.
+		SetDynamicColors(true).
 		SetTextAlign(tview.AlignRight).
-		SetTextColor(tcell.ColorBlack).
-		SetBackgroundColor(tcell.ColorDarkGray)
+		SetBackgroundColor(bgColor)
 
-	s.flex.SetDirection(tview.FlexColumn).
+	s.flex.
+		SetDirection(tview.FlexColumn).
 		AddItem(s.accountInfo, 0, 1, false).
 		AddItem(s.pageIndicator, 0, 1, false)
-
-	return s
 }
 
 // DrawAccountInfo : ログイン中のアカウント情報を描画
 func (s *statusBar) DrawAccountInfo() {
 	s.accountInfo.Clear()
-	fmt.Fprintf(s.accountInfo, " @%s", shared.api.CurrentUser.UserName)
+
+	fmt.Fprintf(
+		s.accountInfo,
+		" [%s]@%s[-:-:-]",
+		shared.conf.Theme.Statusbar.Text,
+		shared.api.CurrentUser.UserName,
+	)
 }
 
 // DrawPageIndicator : 現在のページのインジケータを描画
 func (s *statusBar) DrawPageIndicator(d string) {
 	s.pageIndicator.Clear()
-	fmt.Fprintf(s.pageIndicator, "%s ", d)
+
+	fmt.Fprintf(
+		s.pageIndicator,
+		"[%s]%s[-:-:-] ",
+		shared.conf.Theme.Statusbar.Text,
+		d,
+	)
 }

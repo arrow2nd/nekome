@@ -10,7 +10,9 @@ type Config struct {
 	Cred *Cred
 	// Settings : 設定情報
 	Settings *Settings
-	dirPath  string
+	// Theme : 配色情報
+	Theme   *Style
+	dirPath string
 }
 
 // New : 生成
@@ -23,6 +25,7 @@ func New() *Config {
 	return &Config{
 		Cred:     &Cred{},
 		Settings: defaultSettings(),
+		Theme:    defaultStyle(),
 		dirPath:  path,
 	}
 }

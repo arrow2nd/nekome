@@ -18,7 +18,13 @@ func createTweetTag(id int) string {
 
 // createAnnotation : 「RT by」等のアノテーション文字列を作成
 func createAnnotation(s string, author *twitter.UserObj) string {
-	return fmt.Sprintf("[blue:-:-]%s %s [:-:i]@%s[-:-:-]", s, author.Name, author.UserName)
+	return fmt.Sprintf(
+		"[%s]%s %s [::i]@%s[-:-:-]",
+		shared.conf.Theme.Tweet.Annotation,
+		s,
+		author.Name,
+		author.UserName,
+	)
 }
 
 // createUserInfoLayout : レイアウト済みのユーザ情報文字列を作成
@@ -31,16 +37,31 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetTag(i), name)
 	}
 
-	header := fmt.Sprintf(`[lightgray:-:b]%s [gray::i]%s[-:-:-]`, name, userName)
+	// ニックネーム・ユーザ名
+	header := fmt.Sprintf(
+		`[%s]%s [%s]%s[-:-:-]`,
+		shared.conf.Theme.User.Name,
+		name,
+		shared.conf.Theme.User.UserName,
+		userName,
+	)
 
 	// 認証済みアカウント
 	if u.Verified {
-		header += fmt.Sprintf("[blue] %s[-:-:-]", shared.conf.Settings.Icon.Verified)
+		header += fmt.Sprintf(
+			"[%s] %s[-:-:-]",
+			shared.conf.Theme.User.Verified,
+			shared.conf.Settings.Icon.Verified,
+		)
 	}
 
 	// 非公開アカウント
 	if u.Protected {
-		header += fmt.Sprintf("[gray] %s[-:-:-]", shared.conf.Settings.Icon.Private)
+		header += fmt.Sprintf(
+			"[%s] %s[-:-:-]",
+			shared.conf.Theme.User.Private,
+			shared.conf.Settings.Icon.Private,
+		)
 	}
 
 	return header + "\n"
@@ -76,13 +97,29 @@ func createPollLayout(p []*twitter.PollObj) string {
 			per = float64(o.Votes) / float64(allVotes)
 		}
 
-		graph := strings.Repeat(shared.conf.Settings.Apperance.GraphChar, int(math.Floor(per*graphMaxWidth)))
-		text += fmt.Sprintf("[blue]%s[-:-:-] %.1f%% (%d)\n", graph, per*100, o.Votes)
+		graph := strings.Repeat(
+			shared.conf.Settings.Apperance.GraphChar,
+			int(math.Floor(per*graphMaxWidth)),
+		)
+
+		text += fmt.Sprintf(
+			"[%s]%s[-:-:-] %.1f%% (%d)\n",
+			shared.conf.Theme.Tweet.PollGraph,
+			graph,
+			per*100,
+			o.Votes,
+		)
 	}
 
 	// 投票の詳細情報
 	endDate := convertDateString(p[0].EndDateTime)
-	text += fmt.Sprintf("[gray]%s | %d votes | ends on %s[-:-:-]\n\n", p[0].VotingStatus, allVotes, endDate)
+	text += fmt.Sprintf(
+		"[%s]%s | %d votes | ends on %s[-:-:-]\n\n",
+		shared.conf.Theme.Tweet.PollDetail,
+		p[0].VotingStatus,
+		allVotes,
+		endDate,
+	)
 
 	return text
 }
@@ -91,24 +128,41 @@ func createPollLayout(p []*twitter.PollObj) string {
 func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	metrics := ""
 
+	// いいね数
 	likes := tw.PublicMetrics.Likes
 	if likes != 0 {
-		unit := shared.conf.Settings.Texts.Like
-		metrics += createMetricsString(unit, "pink", likes, false)
+		metrics += createMetricsString(
+			shared.conf.Settings.Texts.Like,
+			shared.conf.Theme.Tweet.Like,
+			likes,
+			false,
+		)
 	}
 
+	// リツイート数
 	rts := tw.PublicMetrics.Retweets
 	if rts != 0 {
-		unit := shared.conf.Settings.Texts.Retweet
-		metrics += createMetricsString(unit, "green", rts, false)
+		metrics += createMetricsString(
+			shared.conf.Settings.Texts.Retweet,
+			shared.conf.Theme.Tweet.RT,
+			rts,
+			false,
+		)
 	}
 
 	if metrics != "" {
 		metrics = "\n" + metrics
 	}
 
+	// 投稿日時・投稿元クライアント
 	date := convertDateString(tw.CreatedAt)
-	return fmt.Sprintf("[gray]%s | via %s[-:-:-]%s", date, tw.Source, metrics)
+	return fmt.Sprintf(
+		"[%s]%s | via %s[-:-:-]%s",
+		shared.conf.Theme.Tweet.Detail,
+		date,
+		tw.Source,
+		metrics,
+	)
 }
 
 // createTweetTextLayout : レイアウト済みのツイート文字列を作成
@@ -131,7 +185,8 @@ func createTweetTextLayout(tweet *twitter.TweetObj) string {
 	// メンションをハイライト
 	if len(tweet.Entities.Mentions) != 0 {
 		rep := regexp.MustCompile(`(^|[^\w@#$%&])@(\w+)`)
-		text = rep.ReplaceAllString(text, "$1[blue]@$2[-:-:-]")
+		highlight := fmt.Sprintf("$1[%s]@$2[-:-:-]", shared.conf.Theme.Tweet.Mention)
+		text = rep.ReplaceAllString(text, highlight)
 	}
 
 	return text
@@ -164,7 +219,12 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 		}
 
 		// 前方の文とハイライトされたハッシュタグを結合
-		result += fmt.Sprintf("%s[blue]%s[-:-:-]", string(runes[end:start]), hashtagText)
+		result += fmt.Sprintf(
+			"%s[%s]%s[-:-:-]",
+			string(runes[end:start]),
+			shared.conf.Theme.Tweet.HashTag,
+			hashtagText,
+		)
 
 		// ハッシュタグの終了位置
 		end = start + utf8.RuneCountInString(hashtagText)
