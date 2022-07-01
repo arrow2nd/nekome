@@ -31,7 +31,7 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 
 	return fmt.Sprintf(
 		"[%s]%s[-:-:-]",
-		shared.conf.Theme.User.Detail,
+		shared.conf.Style.User.Detail,
 		strings.Join(texts, " | "),
 	)
 }

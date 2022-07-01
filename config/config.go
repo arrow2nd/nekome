@@ -6,12 +6,12 @@ import (
 
 // Config : 設定
 type Config struct {
-	// Cred : 認証情報
+	// Cred : 認証
 	Cred *Cred
-	// Settings : 設定情報
+	// Settings : 設定
 	Settings *Settings
-	// Theme : 配色情報
-	Theme   *Style
+	// Style : スタイル
+	Style   *Style
 	dirPath string
 }
 
@@ -25,7 +25,7 @@ func New() *Config {
 	return &Config{
 		Cred:     &Cred{},
 		Settings: defaultSettings(),
-		Theme:    defaultStyle(),
+		Style:    defaultStyle(),
 		dirPath:  path,
 	}
 }

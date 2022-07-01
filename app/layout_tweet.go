@@ -20,7 +20,7 @@ func createTweetTag(id int) string {
 func createAnnotation(s string, author *twitter.UserObj) string {
 	return fmt.Sprintf(
 		"[%s]%s %s [::i]@%s[-:-:-]",
-		shared.conf.Theme.Tweet.Annotation,
+		shared.conf.Style.Tweet.Annotation,
 		s,
 		author.Name,
 		author.UserName,
@@ -40,9 +40,9 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	// ニックネーム・ユーザ名
 	header := fmt.Sprintf(
 		`[%s]%s [%s]%s[-:-:-]`,
-		shared.conf.Theme.User.Name,
+		shared.conf.Style.User.Name,
 		name,
-		shared.conf.Theme.User.UserName,
+		shared.conf.Style.User.UserName,
 		userName,
 	)
 
@@ -50,7 +50,7 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	if u.Verified {
 		header += fmt.Sprintf(
 			"[%s] %s[-:-:-]",
-			shared.conf.Theme.User.Verified,
+			shared.conf.Style.User.Verified,
 			shared.conf.Settings.Icon.Verified,
 		)
 	}
@@ -59,7 +59,7 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	if u.Protected {
 		header += fmt.Sprintf(
 			"[%s] %s[-:-:-]",
-			shared.conf.Theme.User.Private,
+			shared.conf.Style.User.Private,
 			shared.conf.Settings.Icon.Private,
 		)
 	}
@@ -104,7 +104,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 
 		text += fmt.Sprintf(
 			"[%s]%s[-:-:-] %.1f%% (%d)\n",
-			shared.conf.Theme.Tweet.PollGraph,
+			shared.conf.Style.Tweet.PollGraph,
 			graph,
 			per*100,
 			o.Votes,
@@ -115,7 +115,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 	endDate := convertDateString(p[0].EndDateTime)
 	text += fmt.Sprintf(
 		"[%s]%s | %d votes | ends on %s[-:-:-]\n\n",
-		shared.conf.Theme.Tweet.PollDetail,
+		shared.conf.Style.Tweet.PollDetail,
 		p[0].VotingStatus,
 		allVotes,
 		endDate,
@@ -133,7 +133,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	if likes != 0 {
 		metrics += createMetricsString(
 			shared.conf.Settings.Texts.Like,
-			shared.conf.Theme.Tweet.Like,
+			shared.conf.Style.Tweet.Like,
 			likes,
 			false,
 		)
@@ -144,7 +144,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	if rts != 0 {
 		metrics += createMetricsString(
 			shared.conf.Settings.Texts.Retweet,
-			shared.conf.Theme.Tweet.RT,
+			shared.conf.Style.Tweet.RT,
 			rts,
 			false,
 		)
@@ -158,7 +158,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	date := convertDateString(tw.CreatedAt)
 	return fmt.Sprintf(
 		"[%s]%s | via %s[-:-:-]%s",
-		shared.conf.Theme.Tweet.Detail,
+		shared.conf.Style.Tweet.Detail,
 		date,
 		tw.Source,
 		metrics,
@@ -185,7 +185,7 @@ func createTweetTextLayout(tweet *twitter.TweetObj) string {
 	// メンションをハイライト
 	if len(tweet.Entities.Mentions) != 0 {
 		rep := regexp.MustCompile(`(^|[^\w@#$%&])@(\w+)`)
-		highlight := fmt.Sprintf("$1[%s]@$2[-:-:-]", shared.conf.Theme.Tweet.Mention)
+		highlight := fmt.Sprintf("$1[%s]@$2[-:-:-]", shared.conf.Style.Tweet.Mention)
 		text = rep.ReplaceAllString(text, highlight)
 	}
 
@@ -222,7 +222,7 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 		result += fmt.Sprintf(
 			"%s[%s]%s[-:-:-]",
 			string(runes[end:start]),
-			shared.conf.Theme.Tweet.HashTag,
+			shared.conf.Style.Tweet.HashTag,
 			hashtagText,
 		)
 

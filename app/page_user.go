@@ -29,9 +29,9 @@ func newUserPage(userName string) *userPage {
 		tweetsBasePage:   newTweetsBasePage(tabName),
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
-		tweetsMetrics:    createMetricsView(shared.conf.Theme.User.TweetsMetricsBG),
-		followingMetrics: createMetricsView(shared.conf.Theme.User.FollowingMetricsBG),
-		followersMetrics: createMetricsView(shared.conf.Theme.User.FollowersMetricsBG),
+		tweetsMetrics:    createMetricsView(shared.conf.Style.User.TweetsMetricsBG),
+		followingMetrics: createMetricsView(shared.conf.Style.User.FollowingMetricsBG),
+		followersMetrics: createMetricsView(shared.conf.Style.User.FollowersMetricsBG),
 		userName:         userName,
 		userDic:          nil,
 	}
@@ -150,7 +150,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// ツイート数
 	tweets := fmt.Sprintf(
 		"[%s]%d Tweets[-:-:-]",
-		shared.conf.Theme.User.TweetsMetricsText,
+		shared.conf.Style.User.TweetsMetricsText,
 		ur.PublicMetrics.Tweets,
 	)
 	u.tweetsMetrics.SetText(tweets)
@@ -158,7 +158,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// フォロイー数
 	following := fmt.Sprintf(
 		"[%s]%d Following[-:-:-]",
-		shared.conf.Theme.User.FollowingMetricsText,
+		shared.conf.Style.User.FollowingMetricsText,
 		ur.PublicMetrics.Following,
 	)
 	u.followingMetrics.SetText(following)
@@ -166,7 +166,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// フォロワー数
 	followers := fmt.Sprintf(
 		"[%s]%d Followers[-:-:-]",
-		shared.conf.Theme.User.FollowersMetricsText,
+		shared.conf.Style.User.FollowersMetricsText,
 		ur.PublicMetrics.Followers,
 	)
 	u.followersMetrics.SetText(followers)

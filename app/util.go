@@ -123,7 +123,7 @@ func convertDateString(createAt string) string {
 
 // createSeparator : 指定幅のセパレータ文字列を作成
 func createSeparator(s string, width int) string {
-	style := shared.conf.Theme.App.Separator
+	style := shared.conf.Style.App.Separator
 	return fmt.Sprintf("[%s]%s[-:-:-]", style, strings.Repeat(s, width))
 }
 
