@@ -47,10 +47,10 @@ func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 	flags := cmd.Flags()
 	text := ""
 
+	// ツイート文が無いならエディタを起動
 	if len(args) == 0 {
 		editor, _ := flags.GetString("editor")
 
-		// エディタを起動
 		t, err := a.editTweet(editor)
 		if err != nil {
 			return err
@@ -61,6 +61,7 @@ func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 		text = args[0]
 	}
 
+	// 末尾の改行を削除
 	text = trimEndNewline(text)
 	if text == "" {
 		return nil
@@ -93,8 +94,8 @@ func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 		shared.SetStatus("Tweeted", text)
 	}
 
-	// 確認画面が不要ならそのままツイート
-	if !shared.conf.Settings.Feature.Confirm["Tweet"] {
+	// 確認画面不要 or コマンドラインモードならそのまま実行
+	if shared.isCommandLineMode || !shared.conf.Settings.Feature.Confirm["Tweet"] {
 		post()
 		return nil
 	}
@@ -194,9 +195,13 @@ func (a *App) editTweet(editor string) (string, error) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	a.app.Suspend(func() {
+	if shared.isCommandLineMode {
 		err = cmd.Run()
-	})
+	} else {
+		a.app.Suspend(func() {
+			err = cmd.Run()
+		})
+	}
 
 	if err != nil {
 		return "", fmt.Errorf("failed to open editor (%s) : %w", editor, err)

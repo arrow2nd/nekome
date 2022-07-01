@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/log"
 )
 
 var shared = Shared{
@@ -32,13 +33,23 @@ type Shared struct {
 
 // SetStatus : ステータスメッセージを設定
 func (s *Shared) SetStatus(label, status string) {
+	message := createStatusMessage(label, status)
+
+	if s.isCommandLineMode {
+		log.LogExit(message)
+	}
+
 	go func() {
-		s.chStatus <- createStatusMessage(label, status)
+		s.chStatus <- message
 	}()
 }
 
 // SetErrorStatus : エラーメッセージを設定
 func (s *Shared) SetErrorStatus(label, errStatus string) {
+	if s.isCommandLineMode {
+		log.ErrorExit(createStatusMessage(label, errStatus), log.ExitCodeErrApp)
+	}
+
 	s.SetStatus("ERR: "+label, errStatus)
 }
 

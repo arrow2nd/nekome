@@ -159,5 +159,7 @@ func createTweetURL(t *twitter.TweetDictionary) string {
 // createStatusMessage : ラベル付きステータスメッセージを作成
 func createStatusMessage(label, status string) string {
 	width := getWindowWidth()
+	status = strings.ReplaceAll(status, "\n", " ")
+
 	return truncate(fmt.Sprintf("[%s] %s", label, status), width)
 }

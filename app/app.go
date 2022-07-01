@@ -42,6 +42,10 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// コマンド
 	a.initCmd()
 
+	if shared.isCommandLineMode {
+		return
+	}
+
 	// 日本語環境等での罫線の乱れ対策
 	// https://github.com/mattn/go-runewidth/issues/14
 	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Settings.Feature.IsLocaleCJK
