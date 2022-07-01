@@ -1,11 +1,23 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 
 	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/app"
 	"github.com/arrow2nd/nekome/config"
+)
+
+type exitCode int
+
+const (
+	exitCodeOK exitCode = iota
+	exitCodeErrAuth
+	exitCodeErrConfig
+	exitCodeErrCred
+	exitCodeErrFileIO
+	exitCodeErrApp
 )
 
 var (
@@ -20,13 +32,13 @@ func init() {
 func main() {
 	// 設定を読込む
 	if err := conf.LoadSettings(); err != nil {
-		log.Fatal(err)
+		printErrorExit(err, exitCodeErrConfig)
 	}
 
 	// 認証情報を読込む
 	ok, err := conf.LoadCred()
 	if err != nil {
-		log.Fatal(err)
+		printErrorExit(err, exitCodeErrCred)
 	} else if !ok {
 		createNewCred()
 	}
@@ -38,21 +50,21 @@ func main() {
 	app.Init(client, conf)
 
 	if err := app.Run(); err != nil {
-		log.Fatal(err)
+		printErrorExit(err, exitCodeErrApp)
 	}
 }
 
 func createNewCred() {
 	authUser, err := client.Auth(&conf.Settings.Feature.Consumer)
 	if err != nil {
-		log.Fatal(err)
+		printErrorExit(err, exitCodeErrAuth)
 	}
 
 	conf.Cred.Write(authUser)
 	conf.Settings.Feature.MainUser = authUser.UserName
 
 	if err := conf.SaveAll(); err != nil {
-		log.Fatal(err)
+		printErrorExit(err, exitCodeErrFileIO)
 	}
 }
 
@@ -67,4 +79,10 @@ func login() error {
 	client = api.New(&conf.Settings.Feature.Consumer, user)
 
 	return nil
+}
+
+// printErrorExit : エラーを出力して終了
+func printErrorExit(e error, c exitCode) {
+	fmt.Fprintln(os.Stderr, e.Error())
+	os.Exit(int(c))
 }
