@@ -4,7 +4,7 @@ import "github.com/spf13/cobra"
 
 // newQuitCmd : quitコマンド生成
 func (a *App) newQuitCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:     "quit",
 		Aliases: []string{"q"},
 		Short:   "Quit the application",
@@ -14,6 +14,4 @@ func (a *App) newQuitCmd() *cobra.Command {
 			a.quitApp()
 		},
 	}
-
-	return cmd
 }

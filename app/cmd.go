@@ -28,6 +28,7 @@ func (a *App) initCmd() {
 		a.newSearchCmd(),
 		a.newTweetCmd(),
 		a.newQuitCmd(),
+		a.newHelpShortCuts(),
 	)
 
 	if shared.isCommandLineMode {

@@ -16,9 +16,14 @@ func newHelpPage(name, text string) *helpPage {
 	tabName := shared.conf.Settings.Texts.TabHelp
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
+	textView := tview.NewTextView().
+		SetDynamicColors(true).
+		SetWordWrap(true).
+		SetText(text)
+
 	p := &helpPage{
 		basePage: newBasePage(tabName),
-		textView: tview.NewTextView().SetText(text),
+		textView: textView,
 	}
 
 	p.SetFrame(p.textView)
