@@ -25,14 +25,14 @@ func (a *App) newTweetCmd() *cobra.Command {
 		flags.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 		flags.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
 		flags.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
-		flags.StringSliceP("image", "i", nil, "image to be attached")
+		flags.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
 	}
 
 	cmd := &cobra.Command{
 		Use:     "tweet",
 		Aliases: []string{"t"},
 		Short:   "Post a tweet",
-		Example: "tweet [text] [--quote <tweet id>] [--reply <tweet id>] [--editor <editor>] [--image <path,path...>]",
+		Example: "  tweet にゃーん --image cute_cat.png,very_cute_cat.png",
 		PostRun: setFlags,
 		RunE:    a.execTweetCmd,
 	}

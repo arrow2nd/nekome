@@ -19,6 +19,7 @@ func newCmd() *cobra.Command {
 func (a *App) initCmd() {
 	a.cmd.SilenceUsage = true
 	a.cmd.SilenceErrors = true
+	a.cmd.CompletionOptions.HiddenDefaultCmd = !shared.isCommandLineMode
 
 	a.cmd.AddCommand(
 		a.newHomeCmd(),

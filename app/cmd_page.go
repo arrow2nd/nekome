@@ -19,7 +19,7 @@ func (a *App) newHomeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "home",
 		Aliases: []string{"h"},
-		Short:   "add home timeline page",
+		Short:   "Add home timeline page",
 		Args:    cobra.NoArgs,
 		Hidden:  shared.isCommandLineMode,
 		PostRun: setUnfocusFlag,
@@ -39,7 +39,7 @@ func (a *App) newMentionCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "mention",
 		Aliases: []string{"m"},
-		Short:   "add mention timeline page",
+		Short:   "Add mention timeline page",
 		Args:    cobra.NoArgs,
 		Hidden:  shared.isCommandLineMode,
 		PostRun: setUnfocusFlag,
@@ -59,8 +59,8 @@ func (a *App) newListCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
-		Short:   "add list timeline page",
-		Example: "list <list name> <list id>",
+		Short:   "Add list timeline page",
+		Example: "  list cathouse 1234567890",
 		Args:    cobra.ExactValidArgs(2),
 		Hidden:  shared.isCommandLineMode,
 		PostRun: setUnfocusFlag,
@@ -90,8 +90,8 @@ func (a *App) newUserCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "user",
 		Aliases: []string{"u"},
-		Short:   "add user timeline page",
-		Example: "user <user name>",
+		Short:   "Add user timeline page",
+		Example: "  user github",
 		Args:    cobra.RangeArgs(0, 1),
 		Hidden:  shared.isCommandLineMode,
 		PostRun: setUnfocusFlag,
@@ -121,8 +121,8 @@ func (a *App) newSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "search",
 		Aliases: []string{"s"},
-		Short:   "add seaech result page",
-		Example: "search <query>",
+		Short:   "Add seaech result page",
+		Example: "  search golang",
 		Args:    cobra.ExactValidArgs(1),
 		Hidden:  shared.isCommandLineMode,
 		PostRun: setUnfocusFlag,
