@@ -96,7 +96,7 @@ func find(cmd *Command, args []string) (*Command, []string) {
 			continue
 		}
 
-		if c.children == nil {
+		if c.children == nil || len(args) <= 1 {
 			return c, args[1:]
 		}
 

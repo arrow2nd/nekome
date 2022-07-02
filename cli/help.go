@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// createHelpText : ヘルプ文を作成
-func (c *Command) createHelpText() string {
+// GenHelpText : ヘルプ文を作成
+func (c *Command) GenHelpText() string {
 	newLine := "\n\n"
 
 	// 詳細
@@ -62,7 +62,7 @@ func (c *Command) createHelpText() string {
 
 // help : ヘルプを表示
 func (c *Command) help(cmd *Command) {
-	text := cmd.createHelpText()
+	text := cmd.GenHelpText()
 
 	if c.Help != nil {
 		c.Help(cmd, text)
