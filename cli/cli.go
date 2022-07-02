@@ -65,12 +65,32 @@ func (c *Command) GetChildren() []*Command {
 	return ls
 }
 
+// getAllChidrenCombinations : 全てのサブコマンドの組み合わせ一覧を取得
+func getAllChidrenCombinations(prefix string, parent *Command) []string {
+	ls := []string{}
+
+	for _, c := range parent.GetChildren() {
+		p := prefix + " " + c.Name
+		ls = append(ls, p)
+
+		if c.children != nil {
+			ls = append(ls, getAllChidrenCombinations(p, c)...)
+		}
+	}
+
+	return ls
+}
+
 // GetChildrenNames : サブコマンド名の一覧を取得
-func (c *Command) GetChildrenNames() []string {
+func (c *Command) GetChildrenNames(all bool) []string {
 	ls := []string{}
 
 	for _, cmd := range c.GetChildren() {
 		ls = append(ls, cmd.Name)
+
+		if all {
+			ls = append(ls, getAllChidrenCombinations(cmd.Name, cmd)...)
+		}
 	}
 
 	return ls

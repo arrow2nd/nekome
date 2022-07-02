@@ -71,16 +71,37 @@ func TestGetChildrenNames(t *testing.T) {
 	// 正常
 	assert.Equal(
 		t,
-		r.GetChildrenNames(),
+		r.GetChildrenNames(false),
 		[]string{"a", "b"},
 		"サブコマンド名を取得できるか",
 	)
 
 	assert.NotEqual(
 		t,
-		r.GetChildrenNames(),
+		r.GetChildrenNames(false),
 		[]string{"a", "b", "c"},
 		"非表示のコマンドが除外されている",
+	)
+}
+
+func TestGetChildrenNamesAll(t *testing.T) {
+	b := newCmd("b")
+	b.AddCommand(newCmd("a"))
+
+	d := newCmd("d")
+	d.AddCommand(b)
+	d.AddCommand(newCmd("c"))
+
+	r := newCmd("root")
+	r.AddCommand(d)
+	r.AddCommand(newCmd("e"))
+
+	// 正常
+	assert.Equal(
+		t,
+		r.GetChildrenNames(true),
+		[]string{"d", "d b", "d b a", "d c", "e"},
+		"全てのサブコマンドの組み合わせを取得できるか",
 	)
 }
 
