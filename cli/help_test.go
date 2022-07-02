@@ -33,7 +33,7 @@ Example:
   example
 
 Commands:
-  testhelp	short desc
+  testhelp   short desc
 
 Flags:
   -h, --help   help for root

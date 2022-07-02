@@ -190,23 +190,44 @@ func TestExecute_Flag_Arg(t *testing.T) {
 	)
 }
 
-func TextExecute_SubCommand_Arg(t *testing.T) {
+func TestExecuteSubCommandArg(t *testing.T) {
 	b := newCmd("clone")
-
 	b.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		assert.Equal(t, f.Arg(0), "nekome", "サブコマンドの引数が取得できるか")
 		return nil
 	}
 
 	a := newCmd("repo")
+	a.SetFlag = func(f *pflag.FlagSet) {
+		f.Bool("test", false, "")
+	}
 	a.AddCommand(b)
 
 	r := newCmd("root")
 	r.AddCommand(a)
 
+	// 正常
 	assert.Nil(
 		t,
 		r.Execute([]string{"repo", "clone", "nekome"}),
 		"実行できるか",
+	)
+
+	assert.Nil(
+		t,
+		r.Execute([]string{"repo"}),
+		"サブコマンドを持つコマンドを実行できるか",
+	)
+
+	a.Run = func(c *cli.Command, f *pflag.FlagSet) error {
+		test, _ := f.GetBool("test")
+		assert.Equal(t, test, true, "フラグが取得できるか")
+		return nil
+	}
+
+	assert.Nil(
+		t,
+		r.Execute([]string{"repo", "--test"}),
+		"サブコマンドを持つコマンドのフラグをパースできるか",
 	)
 }

@@ -91,11 +91,17 @@ func (c *Command) newFlagSet() *pflag.FlagSet {
 
 // find : サブコマンドを再帰的に検索
 func find(cmd *Command, args []string) (*Command, []string) {
+	// 先頭がフラグなら検索終了
+	if strings.HasPrefix(args[0], "-") {
+		return cmd, args
+	}
+
 	for _, c := range cmd.GetChildren() {
 		if args[0] != c.Name && args[0] != c.Shorthand {
 			continue
 		}
 
+		// サブコマンドを持たない, 後ろにコマンドが無いなら検索終了
 		if c.children == nil || len(args) <= 1 {
 			return c, args[1:]
 		}
@@ -103,7 +109,7 @@ func find(cmd *Command, args []string) (*Command, []string) {
 		return find(c, args[1:])
 	}
 
-	return nil, nil
+	return nil, args
 }
 
 // Execute : 実行
@@ -119,7 +125,7 @@ func (c *Command) Execute(args []string) error {
 		fCmd, fArgs := find(cmd, args)
 
 		if fCmd == nil {
-			return fmt.Errorf("command not found: %s", args[0])
+			return fmt.Errorf("command not found: %s", fArgs[0])
 		}
 
 		cmd, args = fCmd, fArgs
@@ -133,17 +139,17 @@ func (c *Command) Execute(args []string) error {
 		return err
 	}
 
+	// ヘルプ
+	if help, _ := f.GetBool("help"); help {
+		c.help(cmd)
+		return nil
+	}
+
 	// 引数のバリデーション
 	if cmd.Validate != nil {
 		if err := cmd.Validate(cmd, f.Args()); err != nil {
 			return err
 		}
-	}
-
-	// ヘルプ
-	if help, _ := f.GetBool("help"); help {
-		c.help(cmd)
-		return nil
 	}
 
 	return cmd.Run(cmd, f)
