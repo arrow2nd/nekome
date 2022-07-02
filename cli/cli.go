@@ -106,17 +106,6 @@ func find(cmd *Command, args []string) (*Command, []string) {
 	return nil, nil
 }
 
-// getCommand : 引数から指定されたコマンドを取得
-func getCommand(cmd *Command, args []string) (*Command, []string, error) {
-	// コマンドを検索
-	fCmd, fArgs := find(cmd, args)
-	if fCmd == nil {
-		return nil, nil, fmt.Errorf("command not found: %s", args[0])
-	}
-
-	return fCmd, fArgs, nil
-}
-
 // Execute : 実行
 func (c *Command) Execute(args []string) error {
 	if len(args) == 0 {
@@ -125,13 +114,15 @@ func (c *Command) Execute(args []string) error {
 
 	cmd := c
 
-	// 先頭がフラグでない
+	// 先頭がフラグでないなら、該当するコマンドを検索
 	if !strings.HasPrefix(args[0], "-") {
-		var err error
-		cmd, args, err = getCommand(cmd, args)
-		if err != nil {
-			return err
+		fCmd, fArgs := find(cmd, args)
+
+		if fCmd == nil {
+			return fmt.Errorf("command not found: %s", args[0])
 		}
+
+		cmd, args = fCmd, fArgs
 	}
 
 	// フラグを初期化
@@ -142,6 +133,7 @@ func (c *Command) Execute(args []string) error {
 		return err
 	}
 
+	// 引数のバリデーション
 	if cmd.Validate != nil {
 		if err := cmd.Validate(cmd, f.Args()); err != nil {
 			return err
