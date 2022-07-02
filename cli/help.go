@@ -1,6 +1,9 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // createHelpText : ヘルプ文を作成
 func (c *Command) createHelpText() string {
@@ -35,9 +38,17 @@ func (c *Command) createHelpText() string {
 	// Commands
 	cmds := ""
 	if children := c.GetChildren(); len(children) != 0 {
+		maxLen := 0
+		for _, cmd := range children {
+			if l := len(cmd.Name); maxLen < l {
+				maxLen = l
+			}
+		}
+
 		cmds += "Commands:\n"
 		for _, cmd := range children {
-			cmds += fmt.Sprintf("  %s\t%s\n", cmd.Name, cmd.Short)
+			space := strings.Repeat(" ", maxLen-len(cmd.Name)+3)
+			cmds += fmt.Sprintf("  %s%s%s\n", cmd.Name, space, cmd.Short)
 		}
 		cmds += "\n"
 	}
