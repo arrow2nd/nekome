@@ -51,8 +51,8 @@ func (c *commandLine) SetText(s string) {
 	c.inputField.SetText(s)
 }
 
-// SetListCompleteItems : リストの補完要素を設定
-func (c *commandLine) SetListCompleteItems(cmds []string) error {
+// SetAutocompleteItems : 補完要素を設定
+func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
