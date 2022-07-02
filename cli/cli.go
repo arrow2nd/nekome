@@ -13,25 +13,25 @@ import (
 type Command struct {
 	// Name : コマンド名
 	Name string
-	// Alias : エイリアス
-	Alias string
+	// Shorthand : ショートハンド
+	Shorthand string
 	// Short : 短いヘルプ文
 	Short string
 	// Long : 長いヘルプ文
 	Long string
 	// Example : サンプル
 	Example string
-	// Hidden : 表示しない
+	// Hidden : コマンドを表示しない
 	Hidden bool
 
-	// ValidateFunc : 引数のバリデーション
-	ValidateFunc ValidateArgsFunc
-	// SetFlagFunc : フラグをセット
-	SetFlagFunc func(f *pflag.FlagSet)
-	// RunFunc : 実行する関数
-	RunFunc func(c *Command, f *pflag.FlagSet) error
-	// HelpFunc : ヘルプ関数
-	HelpFunc func(c *Command, h string)
+	// Validate : 引数のバリデーション関数
+	Validate ValidateArgsFunc
+	// SetFlag : フラグの設定
+	SetFlag func(f *pflag.FlagSet)
+	// Run : コマンドの処理
+	Run func(c *Command, f *pflag.FlagSet) error
+	// Help : ヘルプ関数（オーバーライド）
+	Help func(c *Command, h string)
 
 	// children : サブコマンド
 	children map[string]*Command
@@ -80,8 +80,8 @@ func (c *Command) GetChildrenNames() []string {
 func (c *Command) newFlagSet() *pflag.FlagSet {
 	f := pflag.NewFlagSet(c.Name, pflag.ContinueOnError)
 
-	if c.SetFlagFunc != nil {
-		c.SetFlagFunc(f)
+	if c.SetFlag != nil {
+		c.SetFlag(f)
 	}
 
 	f.BoolP("help", "h", false, fmt.Sprintf("help for %s", c.Name))
@@ -92,7 +92,7 @@ func (c *Command) newFlagSet() *pflag.FlagSet {
 // find : サブコマンドを再帰的に検索
 func find(cmd *Command, args []string) (*Command, []string) {
 	for _, c := range cmd.GetChildren() {
-		if args[0] != c.Name && args[0] != c.Alias {
+		if args[0] != c.Name && args[0] != c.Shorthand {
 			continue
 		}
 
@@ -142,8 +142,8 @@ func (c *Command) Execute(args []string) error {
 		return err
 	}
 
-	if cmd.ValidateFunc != nil {
-		if err := cmd.ValidateFunc(cmd, f.Args()); err != nil {
+	if cmd.Validate != nil {
+		if err := cmd.Validate(cmd, f.Args()); err != nil {
 			return err
 		}
 	}
@@ -154,5 +154,5 @@ func (c *Command) Execute(args []string) error {
 		return nil
 	}
 
-	return cmd.RunFunc(cmd, f)
+	return cmd.Run(cmd, f)
 }

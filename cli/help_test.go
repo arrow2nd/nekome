@@ -11,22 +11,22 @@ import (
 func TestHelp(t *testing.T) {
 	a := newCmd("testhelp")
 	a.Short = "short desc"
-	a.SetFlagFunc = func(f *pflag.FlagSet) {
+	a.SetFlag = func(f *pflag.FlagSet) {
 		f.Bool("bool", false, "bool usage")
 		f.StringP("string", "s", "", "string usage")
 	}
 
 	r := newCmd("root")
-	r.Alias = "r"
+	r.Shorthand = "r"
 	r.Short = "root command"
 	r.Example = "example"
-	r.HelpFunc = func(c *cli.Command, h string) {
+	r.Help = func(c *cli.Command, h string) {
 		assert.Equal(t, h, `root command
 
 Usage:
   root [command] [flags]
 
-Alias:
+Shorthand:
   r
 
 Example:

@@ -9,7 +9,7 @@ import (
 
 func newValidateCmd(f cli.ValidateArgsFunc) *cli.Command {
 	a := newCmd("test")
-	a.ValidateFunc = f
+	a.Validate = f
 
 	r := newCmd("root")
 	r.AddCommand(a)

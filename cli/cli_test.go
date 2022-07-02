@@ -11,7 +11,7 @@ import (
 func newCmd(n string) *cli.Command {
 	return &cli.Command{
 		Name: n,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			return nil
 		},
 	}
@@ -88,7 +88,7 @@ func TestExecute(t *testing.T) {
 	r := newCmd("root")
 	c := newCmd("neko")
 
-	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		return nil
 	}
 
@@ -117,7 +117,7 @@ func TestExecute_Args(t *testing.T) {
 	r := newCmd("root")
 	c := newCmd("neko")
 
-	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		assert.Equal(t, c.Name, "neko", "コマンド名が取得できるか")
 		assert.Equal(t, f.Arg(0), "arg", "引数の取得ができるか")
 		return nil
@@ -132,11 +132,11 @@ func TestExecute_Args(t *testing.T) {
 func TestExecute_Flag(t *testing.T) {
 	c := newCmd("neko")
 
-	c.SetFlagFunc = func(f *pflag.FlagSet) {
+	c.SetFlag = func(f *pflag.FlagSet) {
 		f.BoolP("kawaii", "k", false, "very kawaii flag")
 	}
 
-	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		kawaii, _ := f.GetBool("kawaii")
 		assert.Equal(t, kawaii, true, "フラグがtrue")
 		return nil
@@ -152,7 +152,7 @@ func TestExecute_Flag(t *testing.T) {
 		"フラグが指定できるか",
 	)
 
-	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		kawaii, _ := f.GetBool("kawaii")
 		assert.Equal(t, kawaii, false, "フラグがfalse")
 		return nil
@@ -169,11 +169,11 @@ func TestExecute_Flag(t *testing.T) {
 func TestExecute_Flag_Arg(t *testing.T) {
 	c := newCmd("add")
 
-	c.SetFlagFunc = func(f *pflag.FlagSet) {
+	c.SetFlag = func(f *pflag.FlagSet) {
 		f.String("comment", "", "comment")
 	}
 
-	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		comment, _ := f.GetString("comment")
 		assert.Equal(t, comment, "コメント", "フラグの引数が取得できるか")
 		return nil
@@ -193,7 +193,7 @@ func TestExecute_Flag_Arg(t *testing.T) {
 func TextExecute_SubCommand_Arg(t *testing.T) {
 	b := newCmd("clone")
 
-	b.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {
+	b.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		assert.Equal(t, f.Arg(0), "nekome", "サブコマンドの引数が取得できるか")
 		return nil
 	}

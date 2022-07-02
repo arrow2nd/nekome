@@ -20,10 +20,10 @@ func (c *Command) createHelpText() string {
 	}
 	usage += " [flags]" + newLine
 
-	// Alias
+	// Shorthand
 	alias := ""
-	if c.Alias != "" {
-		alias = fmt.Sprintf("Alias:\n  %s%s", c.Alias, newLine)
+	if c.Shorthand != "" {
+		alias = fmt.Sprintf("Shorthand:\n  %s%s", c.Shorthand, newLine)
 	}
 
 	// Example
@@ -53,8 +53,8 @@ func (c *Command) createHelpText() string {
 func (c *Command) help(cmd *Command) {
 	text := cmd.createHelpText()
 
-	if c.HelpFunc != nil {
-		c.HelpFunc(cmd, text)
+	if c.Help != nil {
+		c.Help(cmd, text)
 		return
 	}
 
