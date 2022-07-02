@@ -30,7 +30,7 @@ func (a *App) initCmd() {
 	}
 
 	// ヘルプの出力を新規ページに割り当てる
-	a.cmd.HelpFunc = func(c *cli.Command, h string) {
+	a.cmd.Help = func(c *cli.Command, h string) {
 		a.view.AddPage(newHelpPage(c.Name, h), true)
 	}
 }

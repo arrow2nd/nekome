@@ -46,11 +46,11 @@ func (a *App) newHelpShortCuts() *cli.Command {
 `
 
 	return &cli.Command{
-		Name:         "helpshortcuts",
-		Short:        "Show help for shortcut keys",
-		ValidateFunc: cli.NoArgs(),
-		Hidden:       shared.isCommandLineMode,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:     "helpshortcuts",
+		Short:    "Show help for shortcut keys",
+		Validate: cli.NoArgs(),
+		Hidden:   shared.isCommandLineMode,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			return a.view.AddPage(newHelpPage("Shortcuts", help), true)
 		},
 	}

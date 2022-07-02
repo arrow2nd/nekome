@@ -20,20 +20,20 @@ import (
 // newTweetCmd : tweetコマンド生成
 func (a *App) newTweetCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "tweet",
-		Alias: "t",
-		Short: "Post a tweet",
+		Name:      "tweet",
+		Shorthand: "t",
+		Short:     "Post a tweet",
 		Long: `Post a tweet.
 If you omit the tweet statement, the editor will be activated.
 You cannot tweet only images.`,
 		Example: "tweet にゃーん --image cute_cat.png,very_cute_cat.png",
-		SetFlagFunc: func(f *pflag.FlagSet) {
+		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
 			f.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
 		},
-		RunFunc: a.execTweetCmd,
+		Run: a.execTweetCmd,
 	}
 }
 

@@ -16,13 +16,13 @@ func setUnfocusFlag(f *pflag.FlagSet) {
 // newHomeCmd : homeコマンド生成
 func (a *App) newHomeCmd() *cli.Command {
 	return &cli.Command{
-		Name:         "home",
-		Alias:        "h",
-		Short:        "Add home timeline page",
-		ValidateFunc: cli.NoArgs(),
-		Hidden:       shared.isCommandLineMode,
-		SetFlagFunc:  setUnfocusFlag,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:      "home",
+		Shorthand: "h",
+		Short:     "Add home timeline page",
+		Validate:  cli.NoArgs(),
+		Hidden:    shared.isCommandLineMode,
+		SetFlag:   setUnfocusFlag,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
 		},
@@ -32,13 +32,13 @@ func (a *App) newHomeCmd() *cli.Command {
 // newMentionCmd : mentionコマンド生成
 func (a *App) newMentionCmd() *cli.Command {
 	return &cli.Command{
-		Name:         "mention",
-		Alias:        "m",
-		Short:        "Add mention timeline page",
-		ValidateFunc: cli.NoArgs(),
-		Hidden:       shared.isCommandLineMode,
-		SetFlagFunc:  setUnfocusFlag,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:      "mention",
+		Shorthand: "m",
+		Short:     "Add mention timeline page",
+		Validate:  cli.NoArgs(),
+		Hidden:    shared.isCommandLineMode,
+		SetFlag:   setUnfocusFlag,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
 		},
@@ -48,14 +48,14 @@ func (a *App) newMentionCmd() *cli.Command {
 // newListCmd : listコマンド生成
 func (a *App) newListCmd() *cli.Command {
 	return &cli.Command{
-		Name:         "list",
-		Alias:        "l",
-		Short:        "Add list timeline page",
-		Example:      "list cathouse 1234567890",
-		ValidateFunc: cli.RequireArgs(2),
-		Hidden:       shared.isCommandLineMode,
-		SetFlagFunc:  setUnfocusFlag,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:      "list",
+		Shorthand: "l",
+		Short:     "Add list timeline page",
+		Example:   "list cathouse 1234567890",
+		Validate:  cli.RequireArgs(2),
+		Hidden:    shared.isCommandLineMode,
+		SetFlag:   setUnfocusFlag,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			name := f.Arg(0)
 			if name == "" {
 				return errors.New("please specify list name")
@@ -75,14 +75,14 @@ func (a *App) newListCmd() *cli.Command {
 // newUserCmd : userコマンド生成
 func (a *App) newUserCmd() *cli.Command {
 	return &cli.Command{
-		Name:         "user",
-		Alias:        "u",
-		Short:        "Add user timeline page",
-		Example:      "user github",
-		ValidateFunc: cli.RangeArgs(0, 1),
-		Hidden:       shared.isCommandLineMode,
-		SetFlagFunc:  setUnfocusFlag,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:      "user",
+		Shorthand: "u",
+		Short:     "Add user timeline page",
+		Example:   "user github",
+		Validate:  cli.RangeArgs(0, 1),
+		Hidden:    shared.isCommandLineMode,
+		SetFlag:   setUnfocusFlag,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			userName := shared.api.CurrentUser.UserName
 
 			// ユーザの指定があるなら置き換え
@@ -102,14 +102,14 @@ func (a *App) newUserCmd() *cli.Command {
 // newSearchCmd : searchコマンド生成
 func (a *App) newSearchCmd() *cli.Command {
 	return &cli.Command{
-		Name:         "search",
-		Alias:        "s",
-		Short:        "Add seaech result page",
-		Example:      "  search golang",
-		ValidateFunc: cli.RequireArgs(1),
-		Hidden:       shared.isCommandLineMode,
-		SetFlagFunc:  setUnfocusFlag,
-		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+		Name:      "search",
+		Shorthand: "s",
+		Short:     "Add seaech result page",
+		Example:   "  search golang",
+		Validate:  cli.RequireArgs(1),
+		Hidden:    shared.isCommandLineMode,
+		SetFlag:   setUnfocusFlag,
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			query := f.Arg(0)
 			if query == "" {
 				return errors.New("please specify search keywords")
