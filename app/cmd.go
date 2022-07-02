@@ -23,6 +23,7 @@ func (a *App) initCmd() {
 		a.newTweetCmd(),
 		a.newQuitCmd(),
 		a.newDocsCmd(),
+		a.newAccountCmd(),
 	)
 
 	if shared.isCommandLineMode {
