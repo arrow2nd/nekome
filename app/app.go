@@ -165,7 +165,7 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// ショートカットのヘルプ
 	if keyRune == '?' {
-		shared.RequestExecCommand("helpshortcuts")
+		shared.RequestExecCommand("docs shortcuts")
 		return nil
 	}
 

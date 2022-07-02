@@ -59,8 +59,8 @@ type texts struct {
 	TabUser string
 	// TabSearch : 検索ページのタブ
 	TabSearch string
-	// TabHelp : ヘルプページのタブ
-	TabHelp string
+	// TabDocs : テキストページのタブ
+	TabDocs string
 }
 
 type icon struct {
@@ -137,7 +137,7 @@ func defaultSettings() *Settings {
 			TabList:    "List: {name}",
 			TabUser:    "User: @{name}",
 			TabSearch:  "Search: {query}",
-			TabHelp:    "Help: {name}",
+			TabDocs:    "Docs: {name}",
 		},
 		Icon: icon{
 			Geo:      "📍",

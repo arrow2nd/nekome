@@ -5,8 +5,25 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func (a *App) newHelpShortCuts() *cli.Command {
-	help := `[-:-:b]System
+func (a *App) newDocsCmd() *cli.Command {
+	cmd := &cli.Command{
+		Name:      "docs",
+		Shorthand: "d",
+		Short:     "Show the document",
+		Hidden:    shared.isCommandLineMode,
+		Validate:  cli.NoArgs(),
+		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			return a.view.AddPage(newDocsPage("Document", c.GenHelpText()), true)
+		},
+	}
+
+	cmd.AddCommand(a.newDocShortcutsCmd())
+
+	return cmd
+}
+
+func (a *App) newDocShortcutsCmd() *cli.Command {
+	text := `[-:-:b]System
 [-:gray:-] ctrl+l [-:-:-] Redraw screen (window width changes are not reflected)
 [-:gray:-] ctrl+w [-:-:-] Close current page
 [-:gray:-] ctrl+q [-:-:-] Exit Application
@@ -44,14 +61,13 @@ func (a *App) newHelpShortCuts() *cli.Command {
 [-:gray:-] x [-:-:-] Block a user
 [-:gray:-] X [-:-:-] Unblock a user
 `
-
 	return &cli.Command{
-		Name:     "helpshortcuts",
-		Short:    "Show help for shortcut keys",
-		Validate: cli.NoArgs(),
-		Hidden:   shared.isCommandLineMode,
+		Name:      "shortcuts",
+		Shorthand: "s",
+		Short:     "Documentation for shortcut keys",
+		Validate:  cli.NoArgs(),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			return a.view.AddPage(newHelpPage("Shortcuts", help), true)
+			return a.view.AddPage(newDocsPage("Shortcuts", text), true)
 		},
 	}
 }

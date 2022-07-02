@@ -22,7 +22,7 @@ func (a *App) initCmd() {
 		a.newSearchCmd(),
 		a.newTweetCmd(),
 		a.newQuitCmd(),
-		a.newHelpShortCuts(),
+		a.newDocsCmd(),
 	)
 
 	if shared.isCommandLineMode {
@@ -31,6 +31,6 @@ func (a *App) initCmd() {
 
 	// ヘルプの出力を新規ページに割り当てる
 	a.cmd.Help = func(c *cli.Command, h string) {
-		a.view.AddPage(newHelpPage(c.Name, h), true)
+		a.view.AddPage(newDocsPage(c.Name, h), true)
 	}
 }

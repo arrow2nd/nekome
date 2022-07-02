@@ -6,14 +6,14 @@ import (
 	"github.com/rivo/tview"
 )
 
-type helpPage struct {
+type docsPage struct {
 	*basePage
 	textView *tview.TextView
 }
 
-// newHelpPage : ヘルプページ生成
-func newHelpPage(name, text string) *helpPage {
-	tabName := shared.conf.Settings.Texts.TabHelp
+// newDocsPage : ドキュメントページ生成
+func newDocsPage(name, text string) *docsPage {
+	tabName := shared.conf.Settings.Texts.TabDocs
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
 	textView := tview.NewTextView().
@@ -21,7 +21,7 @@ func newHelpPage(name, text string) *helpPage {
 		SetWordWrap(true).
 		SetText(text)
 
-	p := &helpPage{
+	p := &docsPage{
 		basePage: newBasePage(tabName),
 		textView: textView,
 	}
@@ -32,4 +32,4 @@ func newHelpPage(name, text string) *helpPage {
 }
 
 // Load : pageのインターフェースを満たすためのダミー
-func (h *helpPage) Load() {}
+func (d *docsPage) Load() {}
