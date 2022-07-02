@@ -11,48 +11,39 @@ import (
 	"path"
 	"strings"
 
+	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
-	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
 )
 
 // newTweetCmd : tweetコマンド生成
-func (a *App) newTweetCmd() *cobra.Command {
-	setFlags := func(cmd *cobra.Command, args []string) {
-		cmd.ResetFlags()
-
-		flags := cmd.Flags()
-		flags.StringP("quote", "q", "", "specify the ID of the tweet to quote")
-		flags.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
-		flags.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
-		flags.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
-	}
-
-	cmd := &cobra.Command{
-		Use:     "tweet",
-		Aliases: []string{"t"},
-		Short:   "Post a tweet",
+func (a *App) newTweetCmd() *cli.Command {
+	return &cli.Command{
+		Name:  "tweet",
+		Alias: "t",
+		Short: "Post a tweet",
 		Long: `Post a tweet.
 If you omit the tweet statement, the editor will be activated.
 You cannot tweet only images.`,
-		Example: "  tweet にゃーん --image cute_cat.png,very_cute_cat.png",
-		PostRun: setFlags,
-		RunE:    a.execTweetCmd,
+		Example: "tweet にゃーん --image cute_cat.png,very_cute_cat.png",
+		SetFlagFunc: func(f *pflag.FlagSet) {
+			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
+			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
+			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
+			f.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
+		},
+		RunFunc: a.execTweetCmd,
 	}
-
-	setFlags(cmd, nil)
-
-	return cmd
 }
 
 // execTweetCmd : tweetコマンド処理
-func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
-	flags := cmd.Flags()
-	text := ""
+func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
+	text := f.Arg(0)
 
-	// ツイート文が無いならエディタを起動
-	if len(args) == 0 {
-		editor, _ := flags.GetString("editor")
+	// ツイート文が無いなら、エディタを起動
+	if text == "" {
+		editor, _ := f.GetString("editor")
 
 		t, err := a.editTweet(editor)
 		if err != nil {
@@ -60,8 +51,6 @@ func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 		}
 
 		text = t
-	} else {
-		text = args[0]
 	}
 
 	// 末尾の改行を削除
@@ -70,9 +59,9 @@ func (a *App) execTweetCmd(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	quote, _ := flags.GetString("quote")
-	reply, _ := flags.GetString("reply")
-	images, _ := flags.GetStringSlice("image")
+	quote, _ := f.GetString("quote")
+	reply, _ := f.GetString("reply")
+	images, _ := f.GetStringSlice("image")
 
 	post := func() {
 		var mediaIDs []string

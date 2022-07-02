@@ -5,17 +5,17 @@ import (
 	"strings"
 
 	"github.com/arrow2nd/nekome/api"
+	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
-	"github.com/spf13/cobra"
 )
 
 // App : アプリケーション
 type App struct {
 	app         *tview.Application
-	cmd         *cobra.Command
+	cmd         *cli.Command
 	view        *view
 	statusBar   *statusBar
 	commandLine *commandLine
@@ -65,7 +65,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 	// コマンドライン
 	a.commandLine.Init()
 	go func() {
-		cmds := a.cmd.Commands()
+		cmds := a.cmd.GetChildrenNames()
 		if err := a.commandLine.SetListCompleteItems(cmds); err != nil {
 			shared.SetErrorStatus("Init - CommandLine", err.Error())
 		}
@@ -106,8 +106,7 @@ func (a *App) Run() error {
 
 // ExecCommand : コマンドを実行
 func (a *App) ExecCommand(args []string) error {
-	a.cmd.SetArgs(args)
-	return a.cmd.Execute()
+	return a.cmd.Execute(args)
 }
 
 // quitApp : アプリを終了

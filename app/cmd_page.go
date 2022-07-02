@@ -4,140 +4,119 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/spf13/cobra"
+	"github.com/arrow2nd/nekome/cli"
+	"github.com/spf13/pflag"
 )
 
 // setUnfocusFlagc : unfocusフラグを設定
-func setUnfocusFlag(c *cobra.Command, args []string) {
-	c.ResetFlags()
-
-	c.Flags().BoolP("unfocus", "u", false, "no focus on page")
+func setUnfocusFlag(f *pflag.FlagSet) {
+	f.BoolP("unfocus", "u", false, "no focus on page")
 }
 
 // newHomeCmd : homeコマンド生成
-func (a *App) newHomeCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "home",
-		Aliases: []string{"h"},
-		Short:   "Add home timeline page",
-		Args:    cobra.NoArgs,
-		Hidden:  shared.isCommandLineMode,
-		PostRun: setUnfocusFlag,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			unfocus, _ := cmd.Flags().GetBool("unfocus")
+func (a *App) newHomeCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "home",
+		Alias:        "h",
+		Short:        "Add home timeline page",
+		ValidateFunc: cli.NoArgs(),
+		Hidden:       shared.isCommandLineMode,
+		SetFlagFunc:  setUnfocusFlag,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
 		},
 	}
-
-	setUnfocusFlag(cmd, nil)
-
-	return cmd
 }
 
 // newMentionCmd : mentionコマンド生成
-func (a *App) newMentionCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "mention",
-		Aliases: []string{"m"},
-		Short:   "Add mention timeline page",
-		Args:    cobra.NoArgs,
-		Hidden:  shared.isCommandLineMode,
-		PostRun: setUnfocusFlag,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			unfocus, _ := cmd.Flags().GetBool("unfocus")
+func (a *App) newMentionCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "mention",
+		Alias:        "m",
+		Short:        "Add mention timeline page",
+		ValidateFunc: cli.NoArgs(),
+		Hidden:       shared.isCommandLineMode,
+		SetFlagFunc:  setUnfocusFlag,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
 		},
 	}
-
-	setUnfocusFlag(cmd, nil)
-
-	return cmd
 }
 
 // newListCmd : listコマンド生成
-func (a *App) newListCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "list",
-		Aliases: []string{"l"},
-		Short:   "Add list timeline page",
-		Example: "  list cathouse 1234567890",
-		Args:    cobra.ExactValidArgs(2),
-		Hidden:  shared.isCommandLineMode,
-		PostRun: setUnfocusFlag,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			name := args[0]
+func (a *App) newListCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "list",
+		Alias:        "l",
+		Short:        "Add list timeline page",
+		Example:      "list cathouse 1234567890",
+		ValidateFunc: cli.RequireArgs(2),
+		Hidden:       shared.isCommandLineMode,
+		SetFlagFunc:  setUnfocusFlag,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+			name := f.Arg(0)
 			if name == "" {
 				return errors.New("please specify list name")
 			}
 
-			id := args[1]
+			id := f.Arg(1)
 			if id == "" {
 				return errors.New("please specify list id")
 			}
 
-			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newListPage(name, id), !unfocus)
 		},
 	}
-
-	setUnfocusFlag(cmd, nil)
-
-	return cmd
 }
 
 // newUserCmd : userコマンド生成
-func (a *App) newUserCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "user",
-		Aliases: []string{"u"},
-		Short:   "Add user timeline page",
-		Example: "  user github",
-		Args:    cobra.RangeArgs(0, 1),
-		Hidden:  shared.isCommandLineMode,
-		PostRun: setUnfocusFlag,
-		RunE: func(cmd *cobra.Command, args []string) error {
+func (a *App) newUserCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "user",
+		Alias:        "u",
+		Short:        "Add user timeline page",
+		Example:      "user github",
+		ValidateFunc: cli.RangeArgs(0, 1),
+		Hidden:       shared.isCommandLineMode,
+		SetFlagFunc:  setUnfocusFlag,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
 			userName := shared.api.CurrentUser.UserName
 
 			// ユーザの指定があるなら置き換え
-			if len(args) > 0 {
-				userName = args[0]
+			if f.NArg() > 0 {
+				userName = f.Arg(0)
 			}
 
 			// @を除去
 			userName = strings.ReplaceAll(userName, "@", "")
 
-			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newUserPage(userName), !unfocus)
 		},
 	}
-
-	setUnfocusFlag(cmd, nil)
-
-	return cmd
 }
 
 // newSearchCmd : searchコマンド生成
-func (a *App) newSearchCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "search",
-		Aliases: []string{"s"},
-		Short:   "Add seaech result page",
-		Example: "  search golang",
-		Args:    cobra.ExactValidArgs(1),
-		Hidden:  shared.isCommandLineMode,
-		PostRun: setUnfocusFlag,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			query := args[0]
+func (a *App) newSearchCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "search",
+		Alias:        "s",
+		Short:        "Add seaech result page",
+		Example:      "  search golang",
+		ValidateFunc: cli.RequireArgs(1),
+		Hidden:       shared.isCommandLineMode,
+		SetFlagFunc:  setUnfocusFlag,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
+			query := f.Arg(0)
 			if query == "" {
 				return errors.New("please specify search keywords")
 			}
 
-			unfocus, _ := cmd.Flags().GetBool("unfocus")
+			unfocus, _ := f.GetBool("unfocus")
 			return a.view.AddPage(newSearchPage(query), !unfocus)
 		},
 	}
-
-	setUnfocusFlag(cmd, nil)
-
-	return cmd
 }

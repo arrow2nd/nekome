@@ -1,15 +1,11 @@
 package app
 
-import (
-	"fmt"
-
-	"github.com/spf13/cobra"
-)
+import "github.com/arrow2nd/nekome/cli"
 
 // newCmd : コマンド生成
-func newCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "nekome",
+func newCmd() *cli.Command {
+	return &cli.Command{
+		Name:  "nekome",
 		Short: "TUI Twitter client 🐈",
 		Long:  "nekome is a TUI Twitter client that runs on the terminal 🐈",
 	}
@@ -17,10 +13,7 @@ func newCmd() *cobra.Command {
 
 // initCmd : コマンド初期化
 func (a *App) initCmd() {
-	a.cmd.SilenceUsage = true
-	a.cmd.SilenceErrors = true
-	a.cmd.CompletionOptions.HiddenDefaultCmd = !shared.isCommandLineMode
-
+	// コマンド追加
 	a.cmd.AddCommand(
 		a.newHomeCmd(),
 		a.newMentionCmd(),
@@ -37,13 +30,7 @@ func (a *App) initCmd() {
 	}
 
 	// ヘルプの出力を新規ページに割り当てる
-	a.cmd.SetHelpFunc(func(c *cobra.Command, s []string) {
-		help := c.Long
-		if help == "" {
-			help = c.Short
-		}
-
-		text := fmt.Sprintf("%s\n\n%s", help, c.UsageString())
-		a.view.AddPage(newHelpPage(c.Name(), text), true)
-	})
+	a.cmd.HelpFunc = func(c *cli.Command, h string) {
+		a.view.AddPage(newHelpPage(c.Name, h), true)
+	}
 }

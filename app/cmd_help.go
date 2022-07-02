@@ -1,8 +1,11 @@
 package app
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/arrow2nd/nekome/cli"
+	"github.com/spf13/pflag"
+)
 
-func (a *App) newHelpShortCuts() *cobra.Command {
+func (a *App) newHelpShortCuts() *cli.Command {
 	help := `[-:-:b]System
 [-:gray:-] ctrl+l [-:-:-] Redraw screen (window width changes are not reflected)
 [-:gray:-] ctrl+w [-:-:-] Close current page
@@ -42,12 +45,12 @@ func (a *App) newHelpShortCuts() *cobra.Command {
 [-:gray:-] X [-:-:-] Unblock a user
 `
 
-	return &cobra.Command{
-		Use:    "helpshortcuts",
-		Short:  "Show help for shortcut keys",
-		Args:   cobra.NoArgs,
-		Hidden: shared.isCommandLineMode,
-		RunE: func(cmd *cobra.Command, args []string) error {
+	return &cli.Command{
+		Name:         "helpshortcuts",
+		Short:        "Show help for shortcut keys",
+		ValidateFunc: cli.NoArgs(),
+		Hidden:       shared.isCommandLineMode,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
 			return a.view.AddPage(newHelpPage("Shortcuts", help), true)
 		},
 	}

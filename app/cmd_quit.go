@@ -1,17 +1,21 @@
 package app
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/arrow2nd/nekome/cli"
+	"github.com/spf13/pflag"
+)
 
 // newQuitCmd : quitコマンド生成
-func (a *App) newQuitCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:     "quit",
-		Aliases: []string{"q"},
-		Short:   "Quit the application",
-		Args:    cobra.NoArgs,
-		Hidden:  shared.isCommandLineMode,
-		Run: func(cmd *cobra.Command, args []string) {
+func (a *App) newQuitCmd() *cli.Command {
+	return &cli.Command{
+		Name:         "quit",
+		Alias:        "q",
+		Short:        "Quit the application",
+		ValidateFunc: cli.NoArgs(),
+		Hidden:       shared.isCommandLineMode,
+		RunFunc: func(c *cli.Command, f *pflag.FlagSet) error {
 			a.quitApp()
+			return nil
 		},
 	}
 }
