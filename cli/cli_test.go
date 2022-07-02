@@ -133,7 +133,7 @@ func TestExecute_Flag(t *testing.T) {
 	c := newCmd("neko")
 
 	c.SetFlagFunc = func(f *pflag.FlagSet) {
-		f.Bool("kawaii", false, "very kawaii flag")
+		f.BoolP("kawaii", "k", false, "very kawaii flag")
 	}
 
 	c.RunFunc = func(c *cli.Command, f *pflag.FlagSet) error {

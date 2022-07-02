@@ -3,6 +3,7 @@ package cli_test
 import (
 	"testing"
 
+	"github.com/arrow2nd/nekome/cli"
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,7 +20,7 @@ func TestHelp(t *testing.T) {
 	r.Alias = "r"
 	r.Short = "root command"
 	r.Example = "example"
-	r.HelpFunc = func(h string) {
+	r.HelpFunc = func(c *cli.Command, h string) {
 		assert.Equal(t, h, `root command
 
 Usage:

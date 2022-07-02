@@ -50,11 +50,11 @@ func (c *Command) createHelpText() string {
 }
 
 // help : ヘルプを表示
-func (c *Command) help() {
-	text := c.createHelpText()
+func (c *Command) help(cmd *Command) {
+	text := cmd.createHelpText()
 
 	if c.HelpFunc != nil {
-		c.HelpFunc(text)
+		c.HelpFunc(cmd, text)
 		return
 	}
 

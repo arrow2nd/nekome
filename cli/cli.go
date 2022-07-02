@@ -31,19 +31,21 @@ type Command struct {
 	// RunFunc : 実行する関数
 	RunFunc func(c *Command, f *pflag.FlagSet) error
 	// HelpFunc : ヘルプ関数
-	HelpFunc func(h string)
+	HelpFunc func(c *Command, h string)
 
 	// children : サブコマンド
 	children map[string]*Command
 }
 
 // AddCommand : コマンドを追加
-func (c *Command) AddCommand(newCommand *Command) {
+func (c *Command) AddCommand(newCmds ...*Command) {
 	if c.children == nil {
 		c.children = make(map[string]*Command)
 	}
 
-	c.children[newCommand.Name] = newCommand
+	for _, cmd := range newCmds {
+		c.children[cmd.Name] = cmd
+	}
 }
 
 // GetChildren : サブコマンドを取得
@@ -112,13 +114,6 @@ func getCommand(cmd *Command, args []string) (*Command, []string, error) {
 		return nil, nil, fmt.Errorf("command not found: %s", args[0])
 	}
 
-	// 引数チェック
-	if fCmd.ValidateFunc != nil {
-		if err := fCmd.ValidateFunc(fCmd, fArgs); err != nil {
-			return nil, nil, err
-		}
-	}
-
 	return fCmd, fArgs, nil
 }
 
@@ -147,9 +142,15 @@ func (c *Command) Execute(args []string) error {
 		return err
 	}
 
+	if cmd.ValidateFunc != nil {
+		if err := cmd.ValidateFunc(cmd, f.Args()); err != nil {
+			return err
+		}
+	}
+
 	// ヘルプ
 	if help, _ := f.GetBool("help"); help {
-		cmd.help()
+		c.help(cmd)
 		return nil
 	}
 
