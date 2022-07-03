@@ -19,7 +19,7 @@ func (c *Cred) Get(userName string) (*api.User, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("user %s does not exist", userName)
+	return nil, fmt.Errorf("user not found: %s", userName)
 }
 
 // GetAllNames : 全てのユーザ名を取得
@@ -49,12 +49,12 @@ func (c *Cred) Write(newUser *api.User) {
 
 // Delete : 削除
 func (c *Cred) Delete(userName string) error {
-	var err error = nil
+	err := fmt.Errorf("user not found: %s", userName)
 	tmp := []api.User{}
 
 	for _, user := range c.users {
 		if user.UserName == userName {
-			err = fmt.Errorf("user %s does not exist", userName)
+			err = nil
 			continue
 		}
 

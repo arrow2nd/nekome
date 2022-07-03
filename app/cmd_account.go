@@ -38,7 +38,12 @@ func (a *App) newAccountAddCmd() *cli.Command {
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			main, _ := f.GetBool("main")
-			return addAccount(main)
+			if err := addAccount(main); err != nil {
+				return err
+			}
+
+			fmt.Println("successfully added")
+			return nil
 		},
 	}
 }
@@ -51,7 +56,16 @@ func (a *App) newAccountDeleteCmd() *cli.Command {
 		Hidden:    !shared.isCommandLineMode,
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			return shared.conf.Cred.Delete(f.Arg(0))
+			if err := shared.conf.Cred.Delete(f.Arg(0)); err != nil {
+				return err
+			}
+
+			if err := shared.conf.SaveCred(); err != nil {
+				return err
+			}
+
+			fmt.Printf("successfully deleted: %s\n", f.Arg(0))
+			return nil
 		},
 	}
 }
@@ -83,6 +97,7 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 		Name:      "switch",
 		Shorthand: "s",
 		Short:     "Switch the account to be used",
+		Hidden:    shared.isCommandLineMode,
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			// 既にログイン中なら切り替えない
