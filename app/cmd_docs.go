@@ -12,9 +12,6 @@ func (a *App) newDocsCmd() *cli.Command {
 		Short:     "Show the document",
 		Hidden:    shared.isCommandLineMode,
 		Validate:  cli.NoArgs(),
-		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			return a.view.AddPage(newDocsPage("Document", c.GenHelpText()), true)
-		},
 	}
 
 	cmd.AddCommand(a.newDocShortcutsCmd())

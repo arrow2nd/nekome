@@ -1,8 +1,6 @@
 package app
 
 import (
-	"fmt"
-
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/spf13/pflag"
 )
@@ -13,17 +11,6 @@ func (a *App) newAccountCmd() *cli.Command {
 		Shorthand: "a",
 		Short:     "Manage your account",
 		Validate:  cli.NoArgs(),
-		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			text := c.GenHelpText()
-
-			if shared.isCommandLineMode {
-				fmt.Print(text)
-			} else {
-				a.view.AddPage(newDocsPage("Account", text), true)
-			}
-
-			return nil
-		},
 	}
 
 	cmd.AddCommand(
