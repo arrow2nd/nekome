@@ -172,5 +172,11 @@ func (c *Command) Execute(args []string) error {
 		}
 	}
 
+	// 実行関数が無い場合、ヘルプを表示
+	if cmd.Run == nil {
+		c.help(cmd)
+		return nil
+	}
+
 	return cmd.Run(cmd, f)
 }
