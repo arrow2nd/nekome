@@ -219,7 +219,7 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// 上にスクロール
-	if key == tcell.KeyUp || key == tcell.KeyCtrlJ {
+	if key == tcell.KeyPgUp || key == tcell.KeyCtrlJ {
 		r, c := t.view.GetScrollOffset()
 		t.view.ScrollTo(r+1, c)
 		return nil
