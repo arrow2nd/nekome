@@ -23,6 +23,10 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 		return nil, e
 	}
 
+	if res.Raw == nil {
+		return []*twitter.TweetObj{}, nil
+	}
+
 	if e := checkPartialError(res.Raw.Errors); len(res.Raw.Tweets) == 0 && e != nil {
 		return nil, e
 	}

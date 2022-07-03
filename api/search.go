@@ -22,6 +22,10 @@ func (a *API) SearchRecentTweets(query, sinceID string, results int) ([]*twitter
 		return nil, nil, e
 	}
 
+	if res.Raw == nil {
+		return []*twitter.TweetDictionary{}, res.RateLimit, nil
+	}
+
 	ok, tweets := createTweetDictionarySlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e

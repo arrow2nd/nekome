@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/dghubble/oauth1"
@@ -69,6 +70,10 @@ func (a *API) authUserLookup(ct, ut *oauth1.Token) (*twitter.UserObj, error) {
 
 	if e := checkError(err); e != nil {
 		return nil, e
+	}
+
+	if res.Raw == nil {
+		return nil, errors.New("empty response data")
 	}
 
 	if e := checkPartialError(res.Raw.Errors); res.Raw.Users[0] == nil && e != nil {

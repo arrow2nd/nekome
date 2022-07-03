@@ -22,6 +22,10 @@ func (a *API) FetchHomeTileline(userID, sinceID string, results int) ([]*twitter
 		return nil, nil, e
 	}
 
+	if res.Raw == nil {
+		return []*twitter.TweetDictionary{}, res.RateLimit, nil
+	}
+
 	ok, tweets := createTweetDictionarySlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
@@ -44,6 +48,10 @@ func (a *API) FetchUserTimeline(userID, sinceID string, results int) ([]*twitter
 	res, err := a.client.UserTweetTimeline(context.Background(), userID, opts)
 	if e := checkError(err); e != nil {
 		return nil, nil, e
+	}
+
+	if res.Raw == nil {
+		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
 	ok, tweets := createTweetDictionarySlice(res.Raw)
@@ -69,6 +77,10 @@ func (a *API) FetchUserMentionTimeline(userID, sinceID string, results int) ([]*
 
 	if e := checkError(err); e != nil {
 		return nil, nil, e
+	}
+
+	if res.Raw == nil {
+		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
 	ok, tweets := createTweetDictionarySlice(res.Raw)

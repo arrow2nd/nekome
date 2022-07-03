@@ -21,6 +21,10 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 		return nil, e
 	}
 
+	if res.Raw == nil {
+		return []*UserDictionary{}, nil
+	}
+
 	ok, users := createUserDictionarySlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, e
