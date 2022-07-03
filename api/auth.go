@@ -31,8 +31,9 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 	}
 
 	fmt.Println("🐈 Go to the following URL to authenticate the application and enter the PIN that is displayed")
-	fmt.Println("-----")
+	fmt.Println()
 	fmt.Println(authURL.String())
+	fmt.Println()
 	fmt.Print("PIN: ")
 
 	var verifier string
