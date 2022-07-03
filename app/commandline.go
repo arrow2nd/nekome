@@ -69,9 +69,15 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 		return err
 	}
 
-	// フラグ指定済みのリストコマンドを追加
+	// フラグ指定済みのlistコマンドを追加
 	for _, l := range lists {
 		cmd := fmt.Sprintf("list %s %s", l.Name, l.ID)
+		c.autoComplateItems = append(c.autoComplateItems, cmd)
+	}
+
+	// ユーザ指定済みのaccount switchコマンドを追加
+	for _, u := range shared.conf.Cred.GetAllNames() {
+		cmd := fmt.Sprintf("account switch %s", u)
 		c.autoComplateItems = append(c.autoComplateItems, cmd)
 	}
 
