@@ -155,7 +155,7 @@ func (a *App) initAutocomplate() {
 
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
-	for _, c := range shared.conf.Settings.Feature.RunCommands {
+	for _, c := range shared.conf.Settings.Feature.Startup {
 		if err := a.RunCommand(strings.Split(c, " ")); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}

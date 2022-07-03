@@ -15,8 +15,8 @@ type feature struct {
 	IsLocaleCJK bool
 	// Confirm : 確認ウィンドウの表示
 	Confirm map[string]bool
-	// RunCommands : 起動時に実行するコマンド
-	RunCommands []string
+	// Startup : 起動時に実行するコマンド
+	Startup []string
 }
 
 type appearance struct {
@@ -111,7 +111,7 @@ func defaultSettings() *Settings {
 				"Tweet":     true,
 				"Quit":      true,
 			},
-			RunCommands: []string{
+			Startup: []string{
 				"home",
 				"mention --unfocus",
 			},
