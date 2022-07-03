@@ -1,6 +1,9 @@
 package app
 
-import "github.com/arrow2nd/nekome/cli"
+import (
+	"github.com/arrow2nd/nekome/cli"
+	"github.com/spf13/pflag"
+)
 
 // newCmd : コマンド生成
 func newCmd() *cli.Command {
@@ -8,6 +11,9 @@ func newCmd() *cli.Command {
 		Name:  "nekome",
 		Short: "TUI Twitter client 🐈",
 		Long:  "nekome is a TUI Twitter client that runs on the terminal 🐈",
+		SetFlag: func(f *pflag.FlagSet) {
+			f.StringP("user", "u", shared.conf.Settings.Feature.MainUser, "specify user to use")
+		},
 	}
 }
 

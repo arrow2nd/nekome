@@ -18,6 +18,7 @@ type App struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *commandLine
+	args        []string
 }
 
 // New : 生成
@@ -28,36 +29,19 @@ func New() *App {
 		view:        newView(),
 		statusBar:   newStatusBar(),
 		commandLine: newCommandLine(),
+		args:        []string{},
 	}
 }
 
 // Init : 初期化
 func (a *App) Init() error {
-	// 全体共有
-	shared.isCommandLineMode = len(os.Args[1:]) > 0
-	shared.conf = config.New()
-
-	// 設定を読込む
-	if err := shared.conf.LoadSettings(); err != nil {
+	// 設定読み込み
+	if err := a.loadConfig(); err != nil {
 		return err
 	}
 
-	// スタイルを読込む
-	if err := shared.conf.LoadStyle(); err != nil {
-		return err
-	}
-
-	// 認証情報を読込む
-	if ok, err := shared.conf.LoadCred(); err != nil {
-		return err
-	} else if !ok {
-		if err := addAccount(true); err != nil {
-			return err
-		}
-	}
-
-	// ログイン処理
-	if err := loginAccount(shared.conf.Settings.Feature.MainUser); err != nil {
+	// フラグをパース
+	if err := a.parseRuntimeFlags(); err != nil {
 		return err
 	}
 
@@ -77,14 +61,14 @@ func (a *App) Init() error {
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
-	// ページビュー
+	// ページのキーハンドラを設定
 	a.view.SetInputCapture(a.handlePageKeyEvent)
 
-	// ステータスバー
+	// ステータスバー初期化
 	a.statusBar.Init()
 	a.statusBar.DrawAccountInfo()
 
-	// コマンドライン
+	// コマンドライン初期化
 	a.commandLine.Init()
 	a.initAutocomplate()
 
@@ -107,6 +91,59 @@ func (a *App) Init() error {
 	return nil
 }
 
+// loadConfig : 設定を読み込む
+func (a *App) loadConfig() error {
+	shared.conf = config.New()
+
+	// 環境設定
+	if err := shared.conf.LoadSettings(); err != nil {
+		return err
+	}
+
+	// スタイル
+	if err := shared.conf.LoadStyle(); err != nil {
+		return err
+	}
+
+	// 認証情報
+	ok, err := shared.conf.LoadCred()
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		return nil
+	}
+
+	// 認証情報が無い場合、新規追加
+	return addAccount(true)
+}
+
+// parseRuntimeFlags : 実行時のフラグをパース
+func (a *App) parseRuntimeFlags() error {
+	// フラグをパース
+	f := a.cmd.NewFlagSet()
+	if err := f.Parse(os.Args[1:]); err != nil {
+		return err
+	}
+
+	// コマンドラインモードかどうか
+	shared.isCommandLineMode = f.NArg() > 0 || f.Changed("help")
+
+	// ヘルプが指定されているならログインは行わない
+	if f.Changed("help") {
+		a.args = os.Args[1:]
+		return nil
+	}
+
+	// 引数を保存
+	a.args = f.Args()
+
+	// ログイン処理
+	user, _ := f.GetString("user")
+	return loginAccount(user)
+}
+
 // initAutocomplate : 入力補完を初期化
 func (a *App) initAutocomplate() {
 	cmds := a.cmd.GetChildrenNames(true)
@@ -119,7 +156,7 @@ func (a *App) initAutocomplate() {
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
 	for _, c := range shared.conf.Settings.Feature.RunCommands {
-		if err := a.ExecCommand(strings.Split(c, " ")); err != nil {
+		if err := a.RunCommand(strings.Split(c, " ")); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
 	}
@@ -129,15 +166,15 @@ func (a *App) runStartupCommands() {
 func (a *App) Run() error {
 	// コマンドラインモード
 	if shared.isCommandLineMode {
-		return a.ExecCommand(os.Args[1:])
+		return a.RunCommand(a.args)
 	}
 
 	go a.eventReciever()
 	return a.app.Run()
 }
 
-// ExecCommand : コマンドを実行
-func (a *App) ExecCommand(args []string) error {
+// RunCommand : コマンドを実行
+func (a *App) RunCommand(args []string) error {
 	return a.cmd.Execute(args)
 }
 
@@ -169,7 +206,7 @@ func (a *App) eventReciever() {
 			a.view.PopupModal(opt)
 			a.app.Draw()
 		case cmd := <-shared.chExecCommand:
-			if err := a.ExecCommand(strings.Split(cmd, " ")); err != nil {
+			if err := a.RunCommand(strings.Split(cmd, " ")); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
 		case cmd := <-shared.chInputCommand:
