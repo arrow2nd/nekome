@@ -1,42 +1,12 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 
-	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/spf13/pflag"
 )
-
-// addAccount : アカウントを追加
-func addAccount(setMain bool) error {
-	// 認証
-	authUser, err := shared.api.Auth(&shared.conf.Settings.Feature.Consumer)
-	if err != nil {
-		return err
-	}
-	shared.conf.Cred.Write(authUser)
-
-	// メインユーザに設定
-	if setMain {
-		shared.conf.Settings.Feature.MainUser = authUser.UserName
-	}
-
-	return shared.conf.SaveAll()
-}
-
-// loginAccount : ログイン
-func loginAccount(u string) error {
-	// ログインするユーザを取得
-	user, err := shared.conf.Cred.Get(u)
-	if err != nil {
-		return err
-	}
-
-	// 新しいユーザで初期化
-	shared.api = api.New(&shared.conf.Settings.Feature.Consumer, user)
-	return nil
-}
 
 func (a *App) newAccountCmd() *cli.Command {
 	cmd := &cli.Command{
@@ -115,6 +85,11 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 		Short:     "Switch the account to be used",
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			// 既にログイン中なら切り替えない
+			if f.Arg(0) == shared.api.CurrentUser.UserName {
+				return errors.New("account currently logged in")
+			}
+
 			// ログイン
 			if err := loginAccount(f.Arg(0)); err != nil {
 				return err
