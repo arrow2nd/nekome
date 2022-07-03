@@ -96,8 +96,8 @@ func (c *Command) GetChildrenNames(all bool) []string {
 	return ls
 }
 
-// newFlagSet : flagsetを生成
-func (c *Command) newFlagSet() *pflag.FlagSet {
+// NewFlagSet : flagsetを生成
+func (c *Command) NewFlagSet() *pflag.FlagSet {
 	f := pflag.NewFlagSet(c.Name, pflag.ContinueOnError)
 
 	if c.SetFlag != nil {
@@ -152,7 +152,7 @@ func (c *Command) Execute(args []string) error {
 	}
 
 	// フラグを初期化
-	f := cmd.newFlagSet()
+	f := cmd.NewFlagSet()
 
 	// パース
 	if err := f.Parse(args); err != nil {

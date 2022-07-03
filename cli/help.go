@@ -54,7 +54,7 @@ func (c *Command) GenHelpText() string {
 	}
 
 	// Flags
-	fs := c.newFlagSet().FlagUsages()
+	fs := c.NewFlagSet().FlagUsages()
 	flags := fmt.Sprintf("Flags:\n%s", fs)
 
 	return desc + usage + alias + example + cmds + flags
