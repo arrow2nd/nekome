@@ -122,6 +122,20 @@ func (v *view) AddPage(p page, focus bool) error {
 	return nil
 }
 
+// Reset : リセット
+func (v *view) Reset() {
+	// ページを削除
+	for id := range v.pages {
+		v.pageView.RemovePage(id)
+	}
+	v.pages = map[string]page{}
+
+	// タブを削除
+	v.tabs = []*tab{}
+	v.tabView.SetText("")
+	v.tabIndex = 0
+}
+
 // RemoveCurrentPage : 現在のページを削除
 func (v *view) RemoveCurrentPage() {
 	// ページが1つのみなら削除しない

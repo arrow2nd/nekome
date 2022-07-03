@@ -21,12 +21,12 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 
 	requestToken, _, err := config.RequestToken()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to request token: %w", err)
 	}
 
 	authURL, err := config.AuthorizationURL(requestToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to issue authentication URL: %w", err)
 	}
 
 	fmt.Println("🐈 Go to the following URL to authenticate the application and enter the PIN that is displayed")
@@ -38,19 +38,19 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 
 	_, err = fmt.Scanf("%s", &verifier)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read PIN: %w", err)
 	}
 
 	accessToken, accessSecret, err := config.AccessToken(requestToken, "", verifier)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to obtain token: %w", err)
 	}
 
 	newToken := oauth1.NewToken(accessToken, accessSecret)
 
 	user, err := a.authUserLookup(client, newToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to obtain authenticated user: %w", err)
 	}
 
 	return &User{

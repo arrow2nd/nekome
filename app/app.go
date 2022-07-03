@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/arrow2nd/nekome/api"
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/gdamore/tcell/v2"
@@ -33,18 +32,41 @@ func New() *App {
 }
 
 // Init : 初期化
-func (a *App) Init(app *api.API, conf *config.Config) {
+func (a *App) Init() error {
 	// 全体共有
 	shared.isCommandLineMode = len(os.Args[1:]) > 0
-	shared.api = app
-	shared.conf = conf
+	shared.conf = config.New()
 
-	// コマンド
+	// 設定を読込む
+	if err := shared.conf.LoadSettings(); err != nil {
+		return err
+	}
+
+	// スタイルを読込む
+	if err := shared.conf.LoadStyle(); err != nil {
+		return err
+	}
+
+	// 認証情報を読込む
+	if ok, err := shared.conf.LoadCred(); err != nil {
+		return err
+	} else if !ok {
+		if err := addAccount(true); err != nil {
+			return err
+		}
+	}
+
+	// ログイン処理
+	if err := loginAccount(shared.conf.Settings.Feature.MainUser); err != nil {
+		return err
+	}
+
+	// コマンド初期化
 	a.initCmd()
 
 	// コマンドラインモードならUIの初期化をスキップ
 	if shared.isCommandLineMode {
-		return
+		return nil
 	}
 
 	// 日本語環境等での罫線の乱れ対策
@@ -64,12 +86,7 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 
 	// コマンドライン
 	a.commandLine.Init()
-	go func() {
-		cmds := a.cmd.GetChildrenNames(true)
-		if err := a.commandLine.SetAutocompleteItems(cmds); err != nil {
-			shared.SetErrorStatus("Init - CommandLine", err.Error())
-		}
-	}()
+	a.initAutocomplate()
 
 	// 画面レイアウト
 	// NOTE: 追加順がキーハンドラの優先順になるっぽい
@@ -85,7 +102,22 @@ func (a *App) Init(app *api.API, conf *config.Config) {
 		SetRoot(layout, true).
 		SetInputCapture(a.handleGlobalKeyEvents)
 
-	// コマンドを実行
+	a.runStartupCommands()
+
+	return nil
+}
+
+// initAutocomplate : 入力補完を初期化
+func (a *App) initAutocomplate() {
+	cmds := a.cmd.GetChildrenNames(true)
+	if err := a.commandLine.SetAutocompleteItems(cmds); err != nil {
+		shared.SetErrorStatus("Init - CommandLine", err.Error())
+	}
+
+}
+
+// runStartupCommands : 起動時に実行するコマンドを実行
+func (a *App) runStartupCommands() {
 	for _, c := range shared.conf.Settings.Feature.RunCommands {
 		if err := a.ExecCommand(strings.Split(c, " ")); err != nil {
 			shared.SetErrorStatus("Command", err.Error())

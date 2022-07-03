@@ -16,12 +16,12 @@ func (e ExitCode) GetInt() int {
 const (
 	// ExitCodeOK : 正常
 	ExitCodeOK ExitCode = iota
-	// ExitCodeErrAuth : 認証エラー
-	ExitCodeErrAuth
-	// ExitCodeErrFileIO : ファイルIOエラー
-	ExitCodeErrFileIO
+	// ExitCodeErrInit : 初期化エラー
+	ExitCodeErrInit
 	// ExitCodeErrApp : アプリケーションエラー
 	ExitCodeErrApp
+	// ExitCodeErrFileIO : ファイルIOエラー
+	ExitCodeErrFileIO
 )
 
 // LogExit : ログを出力して終了

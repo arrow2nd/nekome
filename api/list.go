@@ -16,6 +16,10 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 		return nil, e
 	}
 
+	if res.Raw == nil {
+		return []*twitter.ListObj{}, nil
+	}
+
 	if e := checkPartialError(res.Raw.Errors); len(res.Raw.Lists) == 0 && e != nil {
 		return nil, e
 	}
