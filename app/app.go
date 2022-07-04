@@ -2,7 +2,6 @@ package app
 
 import (
 	"os"
-	"strings"
 
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
@@ -156,7 +155,7 @@ func (a *App) initAutocomplate() {
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
 	for _, c := range shared.conf.Settings.Feature.Startup {
-		if err := a.RunCommand(strings.Split(c, " ")); err != nil {
+		if err := a.RunCommand(c); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
 	}
@@ -166,7 +165,7 @@ func (a *App) runStartupCommands() {
 func (a *App) Run() error {
 	// コマンドラインモード
 	if shared.isCommandLineMode {
-		return a.RunCommand(a.args)
+		return a.cmd.Execute(a.args)
 	}
 
 	go a.eventReciever()
@@ -174,7 +173,12 @@ func (a *App) Run() error {
 }
 
 // RunCommand : コマンドを実行
-func (a *App) RunCommand(args []string) error {
+func (a *App) RunCommand(cmd string) error {
+	args, err := split(cmd)
+	if err != nil {
+		return err
+	}
+
 	return a.cmd.Execute(args)
 }
 
@@ -206,7 +210,7 @@ func (a *App) eventReciever() {
 			a.view.PopupModal(opt)
 			a.app.Draw()
 		case cmd := <-shared.chExecCommand:
-			if err := a.RunCommand(strings.Split(cmd, " ")); err != nil {
+			if err := a.RunCommand(cmd); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
 		case cmd := <-shared.chInputCommand:

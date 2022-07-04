@@ -2,6 +2,7 @@ package app
 
 import (
 	"crypto/md5"
+	"encoding/csv"
 	"encoding/hex"
 	"fmt"
 	"html"
@@ -114,6 +115,13 @@ func trimEndNewline(s string) string {
 	}
 
 	return s
+}
+
+// split : 文字列をスペースで分割（ダブルクオートで囲まれた部分は残す）
+func split(s string) ([]string, error) {
+	r := csv.NewReader(strings.NewReader(s))
+	r.Comma = ' '
+	return r.Read()
 }
 
 // isSameDate : 同じ日付かどうか
