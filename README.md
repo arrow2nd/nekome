@@ -5,6 +5,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/arrow2nd/nekome)](https://goreportcard.com/report/github.com/arrow2nd/nekome)
 [![GitHub license](https://img.shields.io/github/license/arrow2nd/nekome)](https://github.com/arrow2nd/nekome/blob/main/LICENSE)
 
+![nekome](https://user-images.githubusercontent.com/44780846/177174791-d5fb9db2-2a83-490a-8ed0-7d08fe16f89c.gif)
+
 ## 特徴
 
 - Twitter API v2 対応
@@ -28,11 +30,11 @@
 
 ### コマンド
 
-> [./docs/commands.md](コマンド一覧)、もしくは `nekome -h` をご覧ください。
+> [コマンド一覧](./docs/commands.md)、もしくは `nekome -h` をご覧ください。
 
 ### ショートカット
 
-> [./docs/shortcuts.md](ショートカット一覧)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
+> [ショートカット一覧](./docs/shortcuts.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
 
 ## 由来
 
