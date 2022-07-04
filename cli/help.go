@@ -17,7 +17,7 @@ func (c *Command) GenHelpText() string {
 	desc += newLine
 
 	// Usage
-	usage := fmt.Sprintf("Usage:\n  %s", c.Name)
+	usage := fmt.Sprintf("Usage:\n  %s%s", c.Name, c.UsageArgs)
 	if c.children != nil {
 		usage += " [command]"
 	}

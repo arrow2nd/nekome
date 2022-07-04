@@ -19,6 +19,8 @@ type Command struct {
 	Short string
 	// Long : 長いヘルプ文
 	Long string
+	// UsageArgs : 使い方（引数）
+	UsageArgs string
 	// Example : サンプル
 	Example string
 	// Hidden : コマンドを表示しない
