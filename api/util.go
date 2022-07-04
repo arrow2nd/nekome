@@ -1,14 +1,33 @@
 package api
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/dghubble/oauth1"
 	"github.com/g8rswimmer/go-twitter/v2"
+	"github.com/manifoldco/promptui"
 )
 
 var (
 	consumerToken  = ""
 	consumerSecret = ""
 )
+
+// inputPIN : PINの入力を受付
+func inputPIN() (string, error) {
+	prompt := promptui.Prompt{
+		Label: "PIN",
+		Validate: func(s string) error {
+			if _, err := strconv.Atoi(s); err != nil {
+				return errors.New("please enter a number")
+			}
+			return nil
+		},
+	}
+
+	return prompt.Run()
+}
 
 // getConsumerToken : クライアントトークンを取得
 func getConsumerToken(ct *oauth1.Token) *oauth1.Token {

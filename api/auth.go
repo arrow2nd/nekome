@@ -20,11 +20,13 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 		Endpoint:       twauth.AuthorizeEndpoint,
 	}
 
+	// リクエストトークンを取得
 	requestToken, _, err := config.RequestToken()
 	if err != nil {
 		return nil, fmt.Errorf("failed to request token: %w", err)
 	}
 
+	// 認証URLを取得
 	authURL, err := config.AuthorizationURL(requestToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to issue authentication URL: %w", err)
@@ -34,15 +36,14 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 	fmt.Println()
 	fmt.Println(authURL.String())
 	fmt.Println()
-	fmt.Print("PIN: ")
 
-	var verifier string
-
-	_, err = fmt.Scanf("%s", &verifier)
+	// PINの入力受付
+	verifier, err := inputPIN()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read PIN: %w", err)
 	}
 
+	// アクセストークン取得
 	accessToken, accessSecret, err := config.AccessToken(requestToken, "", verifier)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain token: %w", err)
@@ -50,6 +51,7 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 
 	newToken := oauth1.NewToken(accessToken, accessSecret)
 
+	// 認証ユーザの詳細を取得
 	user, err := a.authUserLookup(client, newToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain authenticated user: %w", err)
