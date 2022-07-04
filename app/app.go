@@ -1,14 +1,18 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/log"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
 )
+
+var version = "develop"
 
 // App : アプリケーション
 type App struct {
@@ -39,7 +43,7 @@ func (a *App) Init() error {
 		return err
 	}
 
-	// フラグをパース
+	// フラグをパースして対応する処理を実行
 	if err := a.parseRuntimeFlags(); err != nil {
 		return err
 	}
@@ -129,10 +133,15 @@ func (a *App) parseRuntimeFlags() error {
 	// コマンドラインモードかどうか
 	shared.isCommandLineMode = f.NArg() > 0 || f.Changed("help")
 
-	// ヘルプが指定されているならログインは行わない
+	// ヘルプフラグが指定されているならログインは行わない
 	if f.Changed("help") {
 		a.args = os.Args[1:]
 		return nil
+	}
+
+	// バージョンフラグが指定されているなら表示して終了
+	if f.Changed("version") {
+		log.LogExit(fmt.Sprintf("🐈 nekome v.%s", version))
 	}
 
 	// 引数を保存
