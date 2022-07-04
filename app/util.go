@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
@@ -17,6 +18,31 @@ import (
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
 )
+
+// execEditor : エディタを起動
+func (a *App) execEditor(editor string, args ...string) error {
+	var err error
+
+	cmd := exec.Command(editor, args...)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if shared.isCommandLineMode {
+		err = cmd.Run()
+	} else {
+		a.app.Suspend(func() {
+			err = cmd.Run()
+		})
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to open editor (%s) : %w", editor, err)
+	}
+
+	return nil
+}
 
 // getWindowWidth : 表示領域の幅を取得
 func getWindowWidth() int {

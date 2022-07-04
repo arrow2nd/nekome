@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"strings"
 
@@ -30,7 +29,7 @@ You cannot tweet only images.`,
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
-			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to start (default is $EDITOR)")
+			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
 			f.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
 		},
 		Run: a.execTweetCmd,
@@ -181,22 +180,8 @@ func (a *App) editTweet(editor string) (string, error) {
 	}
 
 	// エディタを起動
-	cmd := exec.Command(editor, tmpFile)
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if shared.isCommandLineMode {
-		err = cmd.Run()
-	} else {
-		a.app.Suspend(func() {
-			err = cmd.Run()
-		})
-	}
-
-	if err != nil {
-		return "", fmt.Errorf("failed to open editor (%s) : %w", editor, err)
+	if err := a.execEditor(editor, tmpFile); err != nil {
+		return "", err
 	}
 
 	// 一時ファイル読み込み
