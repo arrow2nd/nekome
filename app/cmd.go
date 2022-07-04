@@ -30,6 +30,7 @@ func (a *App) initCmd() {
 		a.newQuitCmd(),
 		a.newDocsCmd(),
 		a.newAccountCmd(),
+		a.newEditCmd(),
 	)
 
 	if shared.isCommandLineMode {

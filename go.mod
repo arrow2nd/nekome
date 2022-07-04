@@ -12,9 +12,11 @@ require (
 )
 
 require (
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect

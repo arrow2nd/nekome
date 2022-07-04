@@ -34,6 +34,26 @@ func GetConfigDir() (string, error) {
 	return path, nil
 }
 
+// GetConfigFileNames : configディレクトリ以下のファイル名を取得
+func GetConfigFileNames() ([]string, error) {
+	path, err := GetConfigDir()
+	if err != nil {
+		return nil, err
+	}
+
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	fileNames := []string{}
+	for _, e := range entries {
+		fileNames = append(fileNames, e.Name())
+	}
+
+	return fileNames, nil
+}
+
 // LoadCred : 認証情報を読込む
 func (c *Config) LoadCred() (bool, error) {
 	if !c.hasFileExists(credFileName) {
