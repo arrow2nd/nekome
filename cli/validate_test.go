@@ -21,7 +21,7 @@ func TestVaidateNoArgs(t *testing.T) {
 	r := newValidateCmd(cli.NoArgs())
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"test"}),
 		"引数の数が正しい",
@@ -40,7 +40,7 @@ func TestVaidateRequireArgs(t *testing.T) {
 	r := newValidateCmd(cli.RequireArgs(2))
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"test", "a", "b"}),
 		"引数の数が正しい",
@@ -66,19 +66,19 @@ func TestVaidateRangeArgs(t *testing.T) {
 	r := newValidateCmd(cli.RangeArgs(2, 4))
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"test", "a", "b"}),
 		"引数の数が正しい（2つ）",
 	)
 
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"test", "a", "b", "c"}),
 		"引数の数が正しい（3つ）",
 	)
 
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"test", "a", "b", "c", "d"}),
 		"引数の数が正しい（4つ）",

@@ -218,6 +218,37 @@ func TestTrimEndNewline(t *testing.T) {
 	}
 }
 
+func TestSplit(t *testing.T) {
+	tests := []struct {
+		name string
+		s    string
+		want []string
+	}{
+		{
+			name: "正しく分割できるか（英語）",
+			s:    "komiya kaho",
+			want: []string{"komiya", "kaho"},
+		},
+		{
+			name: "正しく分割できるか（日本語）",
+			s:    "小宮 果穂",
+			want: []string{"小宮", "果穂"},
+		},
+		{
+			name: "ダブルクオートで囲んだ部分が残るか",
+			s:    `aketa mikoto "ikaruga luca" nanakusa nichika`,
+			want: []string{"aketa", "mikoto", `ikaruga luca`, "nanakusa", "nichika"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := split(tt.s)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestIsSameDate(t *testing.T) {
 	tests := []struct {
 		name string
@@ -303,7 +334,7 @@ func TestCreateUserSummary(t *testing.T) {
 		UserName: "test",
 	})
 
-	assert.Equal(t, summary, "TEST @test", "作成できるか")
+	assert.Equal(t, "TEST @test", summary, "作成できるか")
 }
 
 func TestCreateTweetSummary(t *testing.T) {

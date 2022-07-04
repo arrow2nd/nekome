@@ -21,8 +21,8 @@ func TestAddCommand(t *testing.T) {
 	c := newCmd("root")
 	assert.Equal(
 		t,
-		len(c.GetChildren()),
 		0,
+		len(c.GetChildren()),
 		"サブコマンドが無いか（追加前）",
 	)
 
@@ -30,8 +30,8 @@ func TestAddCommand(t *testing.T) {
 	c.AddCommand(newCmd("test"))
 	assert.Equal(
 		t,
-		len(c.GetChildren()),
 		1,
+		len(c.GetChildren()),
 		"正しくサブコマンドが追加されているか",
 	)
 }
@@ -46,15 +46,15 @@ func TestGetChildren(t *testing.T) {
 	// 正常
 	assert.Equal(
 		t,
-		children[0].Name,
 		"a",
+		children[0].Name,
 		"サブコマンドを取得できるか（a）",
 	)
 
 	assert.Equal(
 		t,
-		children[1].Name,
 		"b",
+		children[1].Name,
 		"サブコマンドを取得できるか（b）",
 	)
 }
@@ -71,15 +71,15 @@ func TestGetChildrenNames(t *testing.T) {
 	// 正常
 	assert.Equal(
 		t,
-		r.GetChildrenNames(false),
 		[]string{"a", "b"},
+		r.GetChildrenNames(false),
 		"サブコマンド名を取得できるか",
 	)
 
 	assert.NotEqual(
 		t,
-		r.GetChildrenNames(false),
 		[]string{"a", "b", "c"},
+		r.GetChildrenNames(false),
 		"非表示のコマンドが除外されている",
 	)
 }
@@ -99,8 +99,8 @@ func TestGetChildrenNamesAll(t *testing.T) {
 	// 正常
 	assert.Equal(
 		t,
-		r.GetChildrenNames(true),
 		[]string{"d", "d b", "d b a", "d c", "e"},
+		r.GetChildrenNames(true),
 		"全てのサブコマンドの組み合わせを取得できるか",
 	)
 }
@@ -116,7 +116,7 @@ func TestExecute(t *testing.T) {
 	r.AddCommand(c)
 
 	// 正常
-	assert.Nil(t, r.Execute([]string{"neko"}), "実行できるか")
+	assert.NoError(t, r.Execute([]string{"neko"}), "実行できるか")
 
 	// 異常
 	assert.EqualError(
@@ -139,15 +139,15 @@ func TestExecute_Args(t *testing.T) {
 	c := newCmd("neko")
 
 	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
-		assert.Equal(t, c.Name, "neko", "コマンド名が取得できるか")
-		assert.Equal(t, f.Arg(0), "arg", "引数の取得ができるか")
+		assert.Equal(t, "neko", c.Name, "コマンド名が取得できるか")
+		assert.Equal(t, "arg", f.Arg(0), "引数の取得ができるか")
 		return nil
 	}
 
 	r.AddCommand(c)
 
 	// 正常
-	assert.Nil(t, r.Execute([]string{"neko", "arg"}), "実行できるか")
+	assert.NoError(t, r.Execute([]string{"neko", "arg"}), "実行できるか")
 }
 
 func TestExecute_Flag(t *testing.T) {
@@ -167,7 +167,7 @@ func TestExecute_Flag(t *testing.T) {
 	r.AddCommand(c)
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"neko", "--kawaii"}),
 		"フラグが指定できるか",
@@ -180,7 +180,7 @@ func TestExecute_Flag(t *testing.T) {
 	}
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"neko"}),
 		"フラグが初期化されているか",
@@ -196,7 +196,7 @@ func TestExecute_Flag_Arg(t *testing.T) {
 
 	c.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		comment, _ := f.GetString("comment")
-		assert.Equal(t, comment, "コメント", "フラグの引数が取得できるか")
+		assert.Equal(t, "コメント", comment, "フラグの引数が取得できるか")
 		return nil
 	}
 
@@ -204,7 +204,7 @@ func TestExecute_Flag_Arg(t *testing.T) {
 	r.AddCommand(c)
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"add", "--comment", "コメント"}),
 		"実行できるか",
@@ -214,7 +214,7 @@ func TestExecute_Flag_Arg(t *testing.T) {
 func TestExecuteSubCommandArg(t *testing.T) {
 	b := newCmd("clone")
 	b.Run = func(c *cli.Command, f *pflag.FlagSet) error {
-		assert.Equal(t, f.Arg(0), "nekome", "サブコマンドの引数が取得できるか")
+		assert.Equal(t, "nekome", f.Arg(0), "サブコマンドの引数が取得できるか")
 		return nil
 	}
 
@@ -228,13 +228,13 @@ func TestExecuteSubCommandArg(t *testing.T) {
 	r.AddCommand(a)
 
 	// 正常
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"repo", "clone", "nekome"}),
 		"実行できるか",
 	)
 
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"repo"}),
 		"サブコマンドを持つコマンドを実行できるか",
@@ -242,11 +242,11 @@ func TestExecuteSubCommandArg(t *testing.T) {
 
 	a.Run = func(c *cli.Command, f *pflag.FlagSet) error {
 		test, _ := f.GetBool("test")
-		assert.Equal(t, test, true, "フラグが取得できるか")
+		assert.Equal(t, true, test, "フラグが取得できるか")
 		return nil
 	}
 
-	assert.Nil(
+	assert.NoError(
 		t,
 		r.Execute([]string{"repo", "--test"}),
 		"サブコマンドを持つコマンドのフラグをパースできるか",
