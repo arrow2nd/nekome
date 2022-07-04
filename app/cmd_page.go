@@ -51,6 +51,7 @@ func (a *App) newListCmd() *cli.Command {
 		Name:      "list",
 		Shorthand: "l",
 		Short:     "Add list timeline page",
+		UsageArgs: "<list name> <list ID>",
 		Example:   "list cathouse 1234567890",
 		Validate:  cli.RequireArgs(2),
 		Hidden:    shared.isCommandLineMode,
@@ -78,6 +79,10 @@ func (a *App) newUserCmd() *cli.Command {
 		Name:      "user",
 		Shorthand: "u",
 		Short:     "Add user timeline page",
+		Long: `Add user timeline page.
+The @ in the user name can be omitted.
+If no user name is specified, the currently logged-in user is specified.`,
+		UsageArgs: "[user name]",
 		Example:   "user github",
 		Validate:  cli.RangeArgs(0, 1),
 		Hidden:    shared.isCommandLineMode,
@@ -105,7 +110,8 @@ func (a *App) newSearchCmd() *cli.Command {
 		Name:      "search",
 		Shorthand: "s",
 		Short:     "Add seaech result page",
-		Example:   "  search golang",
+		UsageArgs: "<query>",
+		Example:   "search golang",
 		Validate:  cli.RequireArgs(1),
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,

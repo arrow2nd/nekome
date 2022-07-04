@@ -21,6 +21,7 @@ func (a *App) newEditCmd() *cli.Command {
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			// 選択肢に表示するファイルを取得
 			items, err := config.GetConfigFileNames()
 			if err != nil {
 				return err
@@ -31,6 +32,7 @@ func (a *App) newEditCmd() *cli.Command {
 				Items: items,
 			}
 
+			// プロンプト表示
 			_, file, err := prompt.Run()
 			if err != nil {
 				return err
@@ -41,6 +43,7 @@ func (a *App) newEditCmd() *cli.Command {
 				return err
 			}
 
+			// エディタ記号
 			editor, _ := f.GetString("editor")
 			return a.execEditor(editor, path.Join(dir, file))
 		},

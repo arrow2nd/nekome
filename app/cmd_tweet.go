@@ -24,8 +24,11 @@ func (a *App) newTweetCmd() *cli.Command {
 		Short:     "Post a tweet",
 		Long: `Post a tweet.
 If you omit the tweet statement, the editor will be activated.
-You cannot tweet only images.`,
-		Example: "tweet にゃーん --image cute_cat.png,very_cute_cat.png",
+When specifying multiple images, please separate them with commas.
+You may attach up to four images at a time.
+You may not tweet only images.`,
+		UsageArgs: "[text]",
+		Example:   "tweet にゃーん --image cute_cat.png,very_cute_cat.png",
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")

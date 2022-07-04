@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/arrow2nd/nekome/cli"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/pflag"
 )
 
@@ -53,13 +54,36 @@ func (a *App) newAccountDeleteCmd() *cli.Command {
 		Name:      "delete",
 		Shorthand: "d",
 		Short:     "Delete account",
+		Long: `Delete account.
+If you do not specify an account name, you can select it interactively.`,
+		UsageArgs: "[user name]",
+		Example:   "delete arrow2nd",
 		Hidden:    !shared.isCommandLineMode,
-		Validate:  cli.RequireArgs(1),
+		Validate:  cli.RangeArgs(0, 1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			if err := shared.conf.Cred.Delete(f.Arg(0)); err != nil {
+			target := f.Arg(0)
+
+			// 指定が無い場合、ユーザを選択
+			if target == "" {
+				prompt := promptui.Select{
+					Label: "Account to delete",
+					Items: shared.conf.Cred.GetAllNames(),
+				}
+
+				_, seletecd, err := prompt.Run()
+				if err != nil {
+					return err
+				}
+
+				target = seletecd
+			}
+
+			// 削除実行
+			if err := shared.conf.Cred.Delete(target); err != nil {
 				return err
 			}
 
+			// 書き込み
 			if err := shared.conf.SaveCred(); err != nil {
 				return err
 			}
@@ -97,6 +121,8 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 		Name:      "switch",
 		Shorthand: "s",
 		Short:     "Switch the account to be used",
+		UsageArgs: "[user name]",
+		Example:   "switch arrow2nd",
 		Hidden:    shared.isCommandLineMode,
 		Validate:  cli.RequireArgs(1),
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
