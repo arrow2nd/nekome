@@ -80,7 +80,7 @@ func (c *Config) LoadSettings() error {
 
 // LoadStyle : スタイルを読込む
 func (c *Config) LoadStyle() error {
-	fileName := c.Settings.Apperance.StyleFile
+	fileName := c.Settings.Appearance.StyleFile
 
 	if !c.hasFileExists(fileName) {
 		if err := c.saveDefaultStyle(); err != nil {
@@ -103,7 +103,7 @@ func (c *Config) SaveSettings() error {
 
 // saveDefaultStyle : デフォルトのスタイルを保存
 func (c *Config) saveDefaultStyle() error {
-	return c.save(c.Settings.Apperance.StyleFile, c.Style)
+	return c.save(c.Settings.Appearance.StyleFile, c.Style)
 }
 
 // SaveAll : 一括保存

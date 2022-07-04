@@ -11,7 +11,7 @@ import (
 func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
 
-	maxRow := shared.conf.Settings.Apperance.UserBIOMaxRow
+	maxRow := shared.conf.Settings.Appearance.UserBIOMaxRow
 	desc = truncate(desc, w*maxRow)
 
 	return desc, getStringDisplayRow(desc, w)
@@ -38,7 +38,7 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 
 // createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示行数を返す
 func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
-	padding := shared.conf.Settings.Apperance.UserProfilePaddingX
+	padding := shared.conf.Settings.Appearance.UserProfilePaddingX
 	width := w - padding*2
 
 	desc, row := createUserBioLayout(u.Description, width)

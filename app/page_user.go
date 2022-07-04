@@ -40,7 +40,7 @@ func newUserPage(userName string) *userPage {
 		userDic:          nil,
 	}
 
-	padding := shared.conf.Settings.Apperance.UserProfilePaddingX
+	padding := shared.conf.Settings.Appearance.UserProfilePaddingX
 
 	p.profile.
 		SetDynamicColors(true).

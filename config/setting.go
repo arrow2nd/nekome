@@ -80,8 +80,8 @@ type icon struct {
 type Settings struct {
 	// Feature : 機能に関する設定
 	Feature feature
-	// Apperance : 外観に関する設定
-	Apperance appearance
+	// Appearance : 外観に関する設定
+	Appearance appearance
 	// Texts : 各種文字列
 	Texts texts
 	// Icon : 各種アイコン
@@ -116,7 +116,7 @@ func defaultSettings() *Settings {
 				"mention --unfocus",
 			},
 		},
-		Apperance: appearance{
+		Appearance: appearance{
 			StyleFile:           "default.yml",
 			DateFormat:          "2006/01/02",
 			TimeFormat:          "15:04:05",

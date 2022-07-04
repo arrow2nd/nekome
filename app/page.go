@@ -38,7 +38,7 @@ type basePage struct {
 
 func newBasePage(name string) *basePage {
 	return &basePage{
-		name:      truncate(name, shared.conf.Settings.Apperance.TabMaxWidth),
+		name:      truncate(name, shared.conf.Settings.Appearance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
 	}

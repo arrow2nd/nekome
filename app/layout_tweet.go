@@ -75,7 +75,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 
 	// グラフの表示幅を計算
 	windowWidth := float64(getWindowWidth())
-	graphMaxWidth := float64(shared.conf.Settings.Apperance.GraphMaxWidth)
+	graphMaxWidth := float64(shared.conf.Settings.Appearance.GraphMaxWidth)
 
 	if graphMaxWidth > windowWidth {
 		graphMaxWidth = windowWidth
@@ -98,7 +98,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 		}
 
 		graph := strings.Repeat(
-			shared.conf.Settings.Apperance.GraphChar,
+			shared.conf.Settings.Appearance.GraphChar,
 			int(math.Floor(per*graphMaxWidth)),
 		)
 
