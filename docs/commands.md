@@ -83,7 +83,7 @@ nekome account list
 設定ファイルを編集
 
 ```
-nekome account edit [フラグ]
+nekome edit [フラグ]
 ```
 
 #### フラグ
@@ -172,8 +172,13 @@ nekome account edit [フラグ]
 ショートカットキーのドキュメントを表示します
 
 ```
-:docs shortcuts
+:docs shortcuts [フラグ]
 ```
+
+##### フラグ
+
+- `-u` `--unfocus`
+  - ページを追加する際にフォーカスを当てない
 
 ### quit
 
