@@ -21,42 +21,42 @@ func (a *App) newDocsCmd() *cli.Command {
 
 func (a *App) newDocShortcutsCmd() *cli.Command {
 	text := `[-:-:b]System
-[-:gray:-] ctrl+l [-:-:-] Redraw screen (window width changes are not reflected)
-[-:gray:-] ctrl+w [-:-:-] Close current page
-[-:gray:-] ctrl+q [-:-:-] Exit Application
+[black:gray:-] ctrl+l [-:-:-] Redraw screen (window width changes are not reflected)
+[black:gray:-] ctrl+w [-:-:-] Close current page
+[black:gray:-] ctrl+q [-:-:-] Exit Application
 
 [-:-:b]Navigation
-[-:gray:-] j, up [-:-:-]    Focus the next tweet
-[-:gray:-] k, down [-:-:-]  Focus the previous tweet
-[-:gray:-] g, home [-:-:-]  Focus the top tweet
-[-:gray:-] G, end [-:-:-]   Focus the bottom tweet
-[-:gray:-] h, left [-:-:-]  Focus the previous tab
-[-:gray:-] l, right [-:-:-] Focus the next tab
-[-:gray:-] : [-:-:-]        Focus the command line
+[black:gray:-] j [-:-:-] [black:gray:-] up [-:-:-]    Focus the next tweet
+[black:gray:-] k [-:-:-] [black:gray:-] down [-:-:-]  Focus the previous tweet
+[black:gray:-] g [-:-:-] [black:gray:-] home [-:-:-]  Focus the top tweet
+[black:gray:-] G [-:-:-] [black:gray:-] end [-:-:-]   Focus the bottom tweet
+[black:gray:-] h [-:-:-] [black:gray:-] left [-:-:-]  Focus the previous tab
+[black:gray:-] l [-:-:-] [black:gray:-] right [-:-:-] Focus the next tab
+[black:gray:-] : [-:-:-]         Focus the command line
 
 [-:-:b]Scrolling
-[-:gray:-] ctrl+j, page up [-:-:-]   Scroll up
-[-:gray:-] ctrl+k, page down [-:-:-] Scroll down
+[black:gray:-] ctrl+j [-:-:-] [black:gray:-] page up [-:-:-]   Scroll up
+[black:gray:-] ctrl+k [-:-:-] [black:gray:-] page down [-:-:-] Scroll down
 
 [-:-:b]Tweet Navigation
-[-:gray:-] f [-:-:-] Like a tweet
-[-:gray:-] F [-:-:-] Unlike a tweet
-[-:gray:-] t [-:-:-] Retweet a tweet
-[-:gray:-] T [-:-:-] Unretweet a tweet
-[-:gray:-] q [-:-:-] Quote tweet
-[-:gray:-] r [-:-:-] Reply to
-[-:gray:-] D [-:-:-] Delete a tweet
-[-:gray:-] o [-:-:-] Open in browser
-[-:gray:-] i [-:-:-] Open author's user timeline page
-[-:gray:-] c [-:-:-] Copy link to clipboard
+[black:gray:-] f [-:-:-] Like a tweet
+[black:gray:-] F [-:-:-] Unlike a tweet
+[black:gray:-] t [-:-:-] Retweet a tweet
+[black:gray:-] T [-:-:-] Unretweet a tweet
+[black:gray:-] q [-:-:-] Quote tweet
+[black:gray:-] r [-:-:-] Reply to
+[black:gray:-] D [-:-:-] Delete a tweet
+[black:gray:-] o [-:-:-] Open in browser
+[black:gray:-] i [-:-:-] Open author's user timeline page
+[black:gray:-] c [-:-:-] Copy link to clipboard
 
 [-:-:b]User Navigation
-[-:gray:-] w [-:-:-] Follow a user
-[-:gray:-] W [-:-:-] Unfollow a user
-[-:gray:-] u [-:-:-] Mute a user
-[-:gray:-] U [-:-:-] Unmute a user
-[-:gray:-] x [-:-:-] Block a user
-[-:gray:-] X [-:-:-] Unblock a user
+[black:gray:-] w [-:-:-] Follow a user
+[black:gray:-] W [-:-:-] Unfollow a user
+[black:gray:-] u [-:-:-] Mute a user
+[black:gray:-] U [-:-:-] Unmute a user
+[black:gray:-] x [-:-:-] Block a user
+[black:gray:-] X [-:-:-] Unblock a user
 `
 	return &cli.Command{
 		Name:      "shortcuts",
