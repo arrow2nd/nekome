@@ -63,8 +63,10 @@ func (a *App) newDocShortcutsCmd() *cli.Command {
 		Shorthand: "s",
 		Short:     "Documentation for shortcut keys",
 		Validate:  cli.NoArgs(),
+		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			return a.view.AddPage(newDocsPage("Shortcuts", text), true)
+			unfocus, _ := f.GetBool("unfocus")
+			return a.view.AddPage(newDocsPage("Shortcuts", text), !unfocus)
 		},
 	}
 }
