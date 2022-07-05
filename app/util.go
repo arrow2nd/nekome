@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/csv"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"html"
 	"log"
@@ -23,6 +24,10 @@ import (
 // execEditor : エディタを起動
 func (a *App) execEditor(editor string, args ...string) error {
 	var err error
+
+	if editor == "" {
+		return errors.New("please specify which editor to use")
+	}
 
 	cmd := exec.Command(editor, args...)
 
