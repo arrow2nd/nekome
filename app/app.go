@@ -1,12 +1,10 @@
 package app
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
-	"github.com/arrow2nd/nekome/log"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
@@ -21,7 +19,6 @@ type App struct {
 	view        *view
 	statusBar   *statusBar
 	commandLine *commandLine
-	args        []string
 }
 
 // New : 生成
@@ -32,7 +29,6 @@ func New() *App {
 		view:        newView(),
 		statusBar:   newStatusBar(),
 		commandLine: newCommandLine(),
-		args:        []string{},
 	}
 }
 
@@ -43,9 +39,17 @@ func (a *App) Init() error {
 		return err
 	}
 
-	// フラグをパースして対応する処理を実行
-	if err := a.parseRuntimeFlags(); err != nil {
+	// 実行時の引数をパース
+	user, err := a.parseRuntimeArgs()
+	if err != nil {
 		return err
+	}
+
+	// ログイン
+	if user != "" {
+		if err := loginAccount(user); err != nil {
+			return err
+		}
 	}
 
 	// コマンド初期化
@@ -122,34 +126,25 @@ func (a *App) loadConfig() error {
 	return addAccount(true)
 }
 
-// parseRuntimeFlags : 実行時のフラグをパース
-func (a *App) parseRuntimeFlags() error {
+// parseRuntimeArgs : 実行時の引数をパースして、ログインユーザを返す
+func (a *App) parseRuntimeArgs() (string, error) {
 	// フラグをパース
 	f := a.cmd.NewFlagSet()
-	if err := f.Parse(os.Args[1:]); err != nil {
-		return err
-	}
+	f.Parse(os.Args[1:])
+
+	// ヘルプ, バージョンフラグがあるか
+	helpOrVersionFlagExists := f.Changed("help") || f.Changed("version")
 
 	// コマンドラインモードかどうか
-	shared.isCommandLineMode = f.NArg() > 0 || f.Changed("help")
+	shared.isCommandLineMode = f.NArg() > 0 || helpOrVersionFlagExists
 
-	// ヘルプフラグが指定されているならログインは行わない
-	if f.Changed("help") {
-		a.args = os.Args[1:]
-		return nil
+	// ログインしない
+	if helpOrVersionFlagExists {
+		return "", nil
 	}
 
-	// バージョンフラグが指定されているなら表示して終了
-	if f.Changed("version") {
-		log.LogExit(fmt.Sprintf("🐈 nekome v.%s", version))
-	}
-
-	// 引数を保存
-	a.args = f.Args()
-
-	// ログイン処理
 	user, _ := f.GetString("user")
-	return loginAccount(user)
+	return user, nil
 }
 
 // initAutocomplate : 入力補完を初期化
@@ -174,7 +169,7 @@ func (a *App) runStartupCommands() {
 func (a *App) Run() error {
 	// コマンドラインモード
 	if shared.isCommandLineMode {
-		return a.cmd.Execute(a.args)
+		return a.cmd.Execute(os.Args[1:])
 	}
 
 	go a.eventReciever()
