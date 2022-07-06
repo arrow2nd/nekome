@@ -11,7 +11,7 @@ builds:
       - darwin
     ldflags:
       - -s -w
-      - -X main.Version={{.Version}}
+      - -X main.version={{.Version}}
       - -X api.consumerToken={{.Env.CONSUMER_TOKEN}} 
       - -X api.consumerSecret={{.Env.CONSUMER_SECRET}}
 
