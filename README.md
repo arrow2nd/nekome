@@ -16,29 +16,45 @@
 
 ## インストール
 
-> 準備中...
+> **Warning**
+>
+> 以下の方法以外でインストールした場合、コンシューマキーが内蔵されていません。
+>
+> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) から Twitter API v2 の API キーを取得して、`settings.yml` に設定してください。
+
+### Homebrew
+
+```sh
+brew tap arrow2nd/tap
+brew install nekome
+```
+
+### Scoop
+
+```
+scoop bucket add arrow2nd https://github.com/arrow2nd/scoop-bucket.git
+scoop install arrow2nd/nekome
+```
+
+### バイナリ
+
+[Releases](https://github.com/arrow2nd/nekome/releases) からお使いの環境にあったファイルをダウンロードしてください。
 
 ## 使い方
 
 ### 初期設定
 
-> **Warning**
->
-> バイナリ版の場合、コンシューマキーが内蔵されていません。
->
-> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) から Twitter API v2 の API キーを取得して、`settings.yml` に設定してください。
-
 ### コマンド
 
-> [コマンド一覧](./docs/commands.md)、もしくは `nekome -h` をご覧ください。
+[コマンド一覧](./docs/commands.md)、もしくは `nekome -h` をご覧ください。
 
 ### ショートカット
 
-> [ショートカット一覧](./docs/shortcuts.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
+[ショートカット一覧](./docs/shortcuts.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
 
 ### 設定
 
-> [設定ファイル](./docs/config.md)をご覧ください。
+[設定ファイル](./docs/config.md)をご覧ください。
 
 ## 由来
 
