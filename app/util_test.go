@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/g8rswimmer/go-twitter/v2"
+	"github.com/mattn/go-runewidth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -154,6 +155,8 @@ func TestFind(t *testing.T) {
 }
 
 func TestTruncate(t *testing.T) {
+	runewidth.DefaultCondition.EastAsianWidth = false
+
 	tests := []struct {
 		name string
 		s    string
@@ -169,7 +172,7 @@ func TestTruncate(t *testing.T) {
 		{
 			name: "丸められた文字列が返る",
 			s:    "shirase_sakuyasan",
-			w:    16,
+			w:    15,
 			want: "shirase_sakuya…",
 		},
 	}
