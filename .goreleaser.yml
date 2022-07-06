@@ -1,0 +1,66 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X api.consumerToken={{.Env.CONSUMER_TOKEN}} 
+      - -X api.consumerSecret={{.Env.CONSUMER_SECRET}}
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+
+brews:
+  - name: nekome
+    tap:
+      owner: arrow2nd
+      name: homebrew-tap
+      token: "{{ .Env.GORELEASER_GITHUB_TOKEN }}"
+    url_template: "https://github.com/arrow2nd/nekome/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    folder: Formula
+    homepage: "https://arrow2nd.com/works/nekome"
+    description: "TUI Twitter client 🐈"
+    license: "MIT"
+    test: |
+      system "#{bin}/nekome -v"
+    install: |
+      bin.install "nekome"
+
+scoop:
+  bucket:
+    owner: arrow2nd
+    name: scoop-bucket
+    token: "{{ .Env.GORELEASER_GITHUB_TOKEN }}"
+  url_template: "https://github.com/arrow2nd/nekome/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  homepage: "https://arrow2nd.com/works/nekome"
+  description: "TUI Twitter client 🐈"
+  license: "MIT"
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
