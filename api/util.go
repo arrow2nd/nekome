@@ -30,7 +30,7 @@ func inputPIN() (string, error) {
 }
 
 // getConsumerToken : クライアントトークンを取得
-func getConsumerToken(ct *oauth1.Token) *oauth1.Token {
+func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 	token := consumerToken
 	secret := consumerSecret
 
@@ -42,10 +42,14 @@ func getConsumerToken(ct *oauth1.Token) *oauth1.Token {
 		secret = ct.TokenSecret
 	}
 
+	if token == "" || secret == "" {
+		return nil, errors.New("the client token/secret is not set correctly")
+	}
+
 	return &oauth1.Token{
 		Token:       token,
 		TokenSecret: secret,
-	}
+	}, nil
 }
 
 func createTweetDictionarySlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {

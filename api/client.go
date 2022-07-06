@@ -27,15 +27,24 @@ type API struct {
 }
 
 // New : 作成
-func New(client *oauth1.Token, user *User) *API {
-	return &API{
-		CurrentUser: user,
-		client:      newClient(client, user.Token),
+func New(ct *oauth1.Token, u *User) (*API, error) {
+	client, err := newClient(ct, u.Token)
+	if err != nil {
+		return nil, err
 	}
+
+	return &API{
+		CurrentUser: u,
+		client:      client,
+	}, nil
 }
 
-func newClient(ct, ut *oauth1.Token) *twitter.Client {
-	ct = getConsumerToken(ct)
+func newClient(ct, ut *oauth1.Token) (*twitter.Client, error) {
+	ct, err := getConsumerToken(ct)
+	if err != nil {
+		return nil, err
+	}
+
 	config := oauth1.NewConfig(ct.Token, ct.TokenSecret)
 	httpClient := config.Client(oauth1.NoContext, ut)
 
@@ -43,5 +52,5 @@ func newClient(ct, ut *oauth1.Token) *twitter.Client {
 		Authorizer: &authorizer{},
 		Client:     httpClient,
 		Host:       "https://api.twitter.com",
-	}
+	}, nil
 }

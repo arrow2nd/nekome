@@ -27,7 +27,13 @@ func loginAccount(u string) error {
 		return err
 	}
 
-	// 新しいユーザで初期化
-	shared.api = api.New(&shared.conf.Settings.Feature.Consumer, user)
+	// 新しいユーザでクライアントを生成
+	api, err := api.New(&shared.conf.Settings.Feature.Consumer, user)
+	if err != nil {
+		return err
+	}
+
+	shared.api = api
+
 	return nil
 }

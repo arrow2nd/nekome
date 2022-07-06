@@ -12,7 +12,11 @@ import (
 
 // Auth : アプリケーション認証を行う
 func (a *API) Auth(client *oauth1.Token) (*User, error) {
-	ct := getConsumerToken(client)
+	ct, err := getConsumerToken(client)
+	if err != nil {
+		return nil, err
+	}
+
 	config := oauth1.Config{
 		ConsumerKey:    ct.Token,
 		ConsumerSecret: ct.TokenSecret,
@@ -66,7 +70,10 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 
 // authUserLookup : トークンに紐づいたユーザの情報を取得
 func (a *API) authUserLookup(ct, ut *oauth1.Token) (*twitter.UserObj, error) {
-	client := newClient(ct, ut)
+	client, err := newClient(ct, ut)
+	if err != nil {
+		return nil, err
+	}
 
 	opts := twitter.UserLookupOpts{}
 	res, err := client.AuthUserLookup(context.Background(), opts)
