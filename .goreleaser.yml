@@ -11,9 +11,9 @@ builds:
       - darwin
     ldflags:
       - -s -w
-      - -X app.version={{.Version}}
-      - -X api.consumerToken={{.Env.CONSUMER_TOKEN}} 
-      - -X api.consumerSecret={{.Env.CONSUMER_SECRET}}
+      - -X github.com/arrow2nd/nekome/app.version={{.Version}}
+      - -X github.com/arrow2nd/nekome/api.consumerToken={{.Env.CONSUMER_TOKEN}} 
+      - -X github.com/arrow2nd/nekome/api.consumerSecret={{.Env.CONSUMER_SECRET}}
 
 archives:
   - replacements:
