@@ -1,0 +1,30 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: "^1.18.3"
+
+      - name: Run go vet
+        run: go vet -v ./...
+
+      - name: Run go test
+        run: go test -v -race ./...
