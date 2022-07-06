@@ -18,15 +18,15 @@
 
 > 準備中...
 
-## アンインストール
-
-> 準備中...
-
 ## 使い方
 
 ### 初期設定
 
-> 準備中...
+> **Warning**
+>
+> バイナリ版の場合、コンシューマキーが内蔵されていません。
+>
+> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) から Twitter API v2 の API キーを取得して、`settings.yml` に設定してください。
 
 ### コマンド
 
@@ -36,7 +36,7 @@
 
 > [ショートカット一覧](./docs/shortcuts.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
 
-### 設定ファイル
+### 設定
 
 > [設定ファイル](./docs/config.md)をご覧ください。
 
