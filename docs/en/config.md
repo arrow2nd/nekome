@@ -1,4 +1,4 @@
-# About the configuration file
+# About Configuration File
 
 The configuration file is created and saved as follows
 

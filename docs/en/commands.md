@@ -1,4 +1,4 @@
-# List of commands
+# Commands List
 
 ### nekome
 

@@ -1,4 +1,4 @@
-# Shortcut List
+# Shortcuts List
 
 ## Global Shortcuts
 

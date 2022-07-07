@@ -57,7 +57,7 @@ Download the appropriate file for your environment from [Releases](https://githu
 
 ### Commands
 
-Please refer to [command list](./docs/en/commands.md) or `nekome -h` .
+Please refer to [Commands List](./docs/en/commands.md) or `nekome -h` .
 
 ### Shortcuts
 
