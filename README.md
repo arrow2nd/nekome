@@ -46,6 +46,13 @@ scoop install arrow2nd/nekome
 
 ### 初期設定
 
+![image](https://user-images.githubusercontent.com/44780846/177674269-2efa3342-bb1a-4be3-8133-7fc8f6e8cec0.png)
+
+1. 初回起動時に認証ページの URL が表示されるので、ブラウザでアクセス
+2. 画面の指示に沿って認証を進め、表示される PIN コードをコピー
+3. PIN コードを nekome に入力
+4. 完了！ 🐱
+
 ### コマンド
 
 [コマンド一覧](./docs/commands.md)、もしくは `nekome -h` をご覧ください。
