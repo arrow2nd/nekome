@@ -23,7 +23,7 @@ func newCmd() *cli.Command {
 
 			// バージョンを表示
 			if shared.isCommandLineMode && ver {
-				log.LogExit(fmt.Sprintf("🐈 nekome for v.%s", version))
+				log.Exit(fmt.Sprintf("🐈 nekome for v.%s", version))
 			}
 
 			return nil

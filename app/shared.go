@@ -36,7 +36,7 @@ func (s *Shared) SetStatus(label, status string) {
 	message := createStatusMessage(label, status)
 
 	if s.isCommandLineMode {
-		log.LogExit(message)
+		log.Exit(message)
 	}
 
 	go func() {
