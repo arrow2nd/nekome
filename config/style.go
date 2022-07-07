@@ -90,7 +90,7 @@ func defaultStyle() *Style {
 			PollDetail: "gray:-:-",
 		},
 		User: userStyle{
-			Name:                 "lightgray:-:b",
+			Name:                 "white:-:b",
 			UserName:             "gray:-:i",
 			Verified:             "blue:-:-",
 			Private:              "gray:-:-",
