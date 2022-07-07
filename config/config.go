@@ -8,14 +8,15 @@ import (
 type Config struct {
 	// Cred : 認証
 	Cred *Cred
-	// Settings : 設定
+	// Settings : 環境設定
 	Settings *Settings
 	// Style : スタイル
-	Style   *Style
+	Style *Style
+
 	dirPath string
 }
 
-// New : 生成
+// New : 新規作成
 func New() *Config {
 	path, err := GetConfigDir()
 	if err != nil {
