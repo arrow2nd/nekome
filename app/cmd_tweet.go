@@ -22,6 +22,7 @@ func (a *App) newTweetCmd() *cli.Command {
 		Shorthand: "t",
 		Short:     "Post a tweet",
 		Long: `Post a tweet.
+
 If you omit the tweet statement, the editor will be activated.
 When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.
@@ -32,7 +33,7 @@ You may not tweet only images.`,
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
-			f.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
+			f.StringSliceP("image", "i", nil, "specify the image to attach (if there is more than one comma separated)")
 		},
 		Run: a.execTweetCmd,
 	}

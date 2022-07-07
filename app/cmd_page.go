@@ -75,6 +75,7 @@ func (a *App) newUserCmd() *cli.Command {
 		Shorthand: "u",
 		Short:     "Add user timeline page",
 		Long: `Add user timeline page.
+
 The @ in the user name can be omitted.
 If no user name is specified, the currently logged-in user is specified.`,
 		UsageArgs: "[user name]",
@@ -105,6 +106,7 @@ func (a *App) newSearchCmd() *cli.Command {
 		Shorthand: "s",
 		Short:     "Add seaech result page",
 		Long: `Add seaech result page.
+
 If the query contains spaces, enclose it in double quotes.`,
 		UsageArgs: "<query>",
 		Example:   "search golang",

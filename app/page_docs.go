@@ -16,7 +16,6 @@ func newDocsPage(name, text string) *docsPage {
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
 	textView := tview.NewTextView().
-		SetDynamicColors(true).
 		SetWordWrap(true).
 		SetText(text)
 
