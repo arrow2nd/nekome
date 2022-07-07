@@ -23,7 +23,7 @@ feature:
   loadtweetscount: 25
   # 1ページにおけるツイートの最大蓄積数
   tweetmaxaccumulationnum: 250
-  # 実行環境のロケールが CJK かどうか（tviewの表示乱れ対策）
+  # 実行環境のロケール設定が CJK かどうか（tviewの表示乱れ対策）
   islocalecjk: true
   # 確認モーダルを表示するか
   confirm:
@@ -76,17 +76,17 @@ texts:
   loading: Loading...
   # ツイートが無い場合の表示
   notweets: No tweets ฅ^-ω-^ฅ
-  # タブ : ホームタイムラインページ
+  # ホームタイムラインページのタブ文字列
   tabhome: Home
-  # タブ : メンションタイムラインページ
+  # メンションタイムラインページのタブ文字列
   tabmention: Mention
-  # タブ : リストタイムラインページ
+  # リストタイムラインページのタブ文字列
   tablist: "List: {name}"
-  # タブ : ユーザページ
+  # ユーザページのタブ文字列
   tabuser: "User: @{name}"
-  # タブ : 検索結果ページ
+  # 検索結果ページのタブ文字列
   tabsearch: "Search: {query}"
-  # タブ : ドキュメントページ
+  # ドキュメントページのタブ文字列
   tabdocs: "Docs: {name}"
 
 # アイコン
