@@ -1,8 +1,17 @@
-# 設定ファイル
+# 設定ファイルについて
+
+以下の様な形で作成・保存されます。
+
+```
+$HOME/.config/nekome
+├── .cred
+├── default.yml
+└── settings.yml
+```
 
 ## 環境設定
 
-### 日付・時刻のフォーマット形式について
+### 日付・時刻のフォーマット形式
 
 [time パッケージ](https://pkg.go.dev/time#pkg-constants) と同じ書式を使用しています。
 
@@ -105,11 +114,11 @@ icon:
 
 ## スタイル
 
-### 構文について
+### スタイル構文
 
 末尾が `bg` 以外の項目については [tview の Color tag の構文](https://pkg.go.dev/github.com/rivo/tview#hdr-Colors) を使用しています。
 
-### 末尾が `bg` の項目について
+### 末尾が `bg` の項目の構文
 
 `#` から始まる、16 進数カラーコードのみが使用できます。
 
