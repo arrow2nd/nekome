@@ -19,7 +19,7 @@ func addAccount(setMain bool) error {
 	return shared.conf.SaveAll()
 }
 
-// loginAccount : ログイン
+// loginAccount : ログイン処理
 func loginAccount(u string) error {
 	// ログインするユーザを取得
 	user, err := shared.conf.Cred.Get(u)

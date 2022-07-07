@@ -11,7 +11,6 @@ type docsPage struct {
 	textView *tview.TextView
 }
 
-// newDocsPage : ドキュメントページ生成
 func newDocsPage(name, text string) *docsPage {
 	tabName := shared.conf.Settings.Texts.TabDocs
 	tabName = strings.Replace(tabName, "{name}", name, 1)

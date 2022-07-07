@@ -11,7 +11,6 @@ type listPage struct {
 	listID string
 }
 
-// newListPage : リストページを作成
 func newListPage(name, id string) *listPage {
 	tabName := shared.conf.Settings.Texts.TabList
 	tabName = strings.Replace(tabName, "{name}", name, 1)

@@ -18,7 +18,6 @@ type timelinePage struct {
 	tlType timelineType
 }
 
-// newTimelinePage : タイムラインページを作成
 func newTimelinePage(tt timelineType) *timelinePage {
 	tabName := shared.conf.Settings.Texts.TabHome
 	if tt == mentionTL {

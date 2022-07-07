@@ -12,7 +12,6 @@ type searchPage struct {
 	query string
 }
 
-// newSearchPage : 検索ページを作成
 func newSearchPage(query string) *searchPage {
 	tabName := shared.conf.Settings.Texts.TabSearch
 	tabName = strings.Replace(tabName, "{query}", query, 1)

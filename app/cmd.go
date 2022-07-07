@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// newCmd : コマンド生成
 func newCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "nekome",
@@ -31,7 +30,6 @@ func newCmd() *cli.Command {
 	}
 }
 
-// initCmd : コマンド初期化
 func (a *App) initCmd() {
 	// コマンド追加
 	a.cmd.AddCommand(

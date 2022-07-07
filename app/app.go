@@ -21,7 +21,7 @@ type App struct {
 	commandLine *commandLine
 }
 
-// New : 生成
+// New : 新規作成
 func New() *App {
 	return &App{
 		app:         tview.NewApplication(),
@@ -159,7 +159,7 @@ func (a *App) initAutocomplate() {
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
 	for _, c := range shared.conf.Settings.Feature.Startup {
-		if err := a.RunCommand(c); err != nil {
+		if err := a.ExecCommnad(c); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
 	}
@@ -176,8 +176,8 @@ func (a *App) Run() error {
 	return a.app.Run()
 }
 
-// RunCommand : コマンドを実行
-func (a *App) RunCommand(cmd string) error {
+// ExecCommnad : コマンドを実行
+func (a *App) ExecCommnad(cmd string) error {
 	args, err := split(cmd)
 	if err != nil {
 		return err
@@ -214,7 +214,7 @@ func (a *App) eventReciever() {
 			a.view.PopupModal(opt)
 			a.app.Draw()
 		case cmd := <-shared.chExecCommand:
-			if err := a.RunCommand(cmd); err != nil {
+			if err := a.ExecCommnad(cmd); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
 		case cmd := <-shared.chInputCommand:

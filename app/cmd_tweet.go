@@ -16,7 +16,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// newTweetCmd : tweetコマンド生成
 func (a *App) newTweetCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "tweet",
@@ -39,7 +38,6 @@ You may not tweet only images.`,
 	}
 }
 
-// execTweetCmd : tweetコマンド処理
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	text := f.Arg(0)
 
@@ -103,7 +101,6 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	return nil
 }
 
-// uploadImages : 画像をアップロード
 func (a *App) uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
@@ -170,7 +167,6 @@ func (a *App) uploadImages(images []string) ([]string, error) {
 	return mediaIds, nil
 }
 
-// editTweet : エディタを起動してツイートを編集
 func (a *App) editTweet(editor string) (string, error) {
 	dir, err := config.GetConfigDir()
 	if err != nil {
