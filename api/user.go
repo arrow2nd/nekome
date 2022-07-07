@@ -25,7 +25,7 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 		return []*UserDictionary{}, nil
 	}
 
-	ok, users := createUserDictionarySlice(res.Raw)
+	ok, users := createUserSlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, e
 	}
