@@ -61,7 +61,7 @@ Please refer to [Commands List](./docs/en/commands.md) or `nekome -h` .
 
 ### Shortcuts
 
-You can find the shortcuts in the [Shortcuts List](./docs/en/shortcuts.md) or by typing `? ` for help.
+Please refer to [Shortcuts List](./docs/en/shortcuts.md) or typing `?` for help.
 
 ### Configuration
 
