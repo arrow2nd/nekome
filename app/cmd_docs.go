@@ -23,7 +23,7 @@ func (a *App) newDocShortcutsCmd() *cli.Command {
 	text := `System:
   ctrl+l   Redraw screen (window width changes are not reflected)
   ctrl+w   Close current page
-  ctrl+q   Exit Application
+  ctrl+q   Quit application
 
 Navigation:
   j up      Focus the next tweet
