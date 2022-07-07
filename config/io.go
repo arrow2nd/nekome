@@ -15,26 +15,26 @@ const (
 	setingsFileName = "settings.yml"
 )
 
-// GetConfigDir : Configディレクトリを取得
+// GetConfigDir : 設定ディレクトリを取得
 func GetConfigDir() (string, error) {
-	path, err := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", errors.New("failed to get config directory")
+		return "", errors.New("failed to get home directory")
 	}
 
-	path = filepath.Join(path, ".nekome")
+	homeDir = filepath.Join(homeDir, ".config", "nekome")
 
 	// ディレクトリが無いなら作成
-	if _, err := os.Stat(path); err != nil {
-		if err := os.Mkdir(path, 0777); err != nil {
-			return "", fmt.Errorf("failed to create configuration directory: %v", err)
+	if _, err := os.Stat(homeDir); err != nil {
+		if err := os.MkdirAll(homeDir, os.ModePerm); err != nil {
+			return "", fmt.Errorf("failed to create config directory: %w", err)
 		}
 	}
 
-	return path, nil
+	return homeDir, nil
 }
 
-// GetConfigFileNames : configディレクトリ以下のファイル名を取得
+// GetConfigFileNames : 設定ディレクトリ以下のファイル名を取得
 func GetConfigFileNames() ([]string, error) {
 	path, err := GetConfigDir()
 	if err != nil {
@@ -67,7 +67,7 @@ func (c *Config) LoadCred() (bool, error) {
 	return true, nil
 }
 
-// LoadSettings : 設定を読込む
+// LoadSettings : 環境設定を読込む
 func (c *Config) LoadSettings() error {
 	if !c.hasFileExists(setingsFileName) {
 		if err := c.SaveSettings(); err != nil {
@@ -96,7 +96,7 @@ func (c *Config) SaveCred() error {
 	return c.save(credFileName, c.Cred.users)
 }
 
-// SaveSettings : 設定を保存
+// SaveSettings : 環境設定を保存
 func (c *Config) SaveSettings() error {
 	return c.save(setingsFileName, c.Settings)
 }

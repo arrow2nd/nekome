@@ -17,14 +17,14 @@ func (c *Command) GenHelpText() string {
 	desc += newLine
 
 	// Usage
-	usage := fmt.Sprintf("Usage:\n  %s", c.Name)
+	usage := fmt.Sprintf("Usage:\n  %s [flags]", c.Name)
 	if c.UsageArgs != "" {
 		usage += " " + c.UsageArgs
 	}
 	if c.children != nil {
 		usage += " [command]"
 	}
-	usage += " [flags]" + newLine
+	usage += newLine
 
 	// Shorthand
 	alias := ""

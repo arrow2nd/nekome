@@ -20,43 +20,43 @@ func (a *App) newDocsCmd() *cli.Command {
 }
 
 func (a *App) newDocShortcutsCmd() *cli.Command {
-	text := `[-:-:b]System
-[black:gray:-] ctrl+l [-:-:-] Redraw screen (window width changes are not reflected)
-[black:gray:-] ctrl+w [-:-:-] Close current page
-[black:gray:-] ctrl+q [-:-:-] Exit Application
+	text := `System:
+  ctrl+l   Redraw screen (window width changes are not reflected)
+  ctrl+w   Close current page
+  ctrl+q   Quit application
 
-[-:-:b]Navigation
-[black:gray:-] j [-:-:-] [black:gray:-] up [-:-:-]    Focus the next tweet
-[black:gray:-] k [-:-:-] [black:gray:-] down [-:-:-]  Focus the previous tweet
-[black:gray:-] g [-:-:-] [black:gray:-] home [-:-:-]  Focus the top tweet
-[black:gray:-] G [-:-:-] [black:gray:-] end [-:-:-]   Focus the bottom tweet
-[black:gray:-] h [-:-:-] [black:gray:-] left [-:-:-]  Focus the previous tab
-[black:gray:-] l [-:-:-] [black:gray:-] right [-:-:-] Focus the next tab
-[black:gray:-] : [-:-:-]         Focus the command line
+Navigation:
+  j up      Focus the next tweet
+  k down    Focus the previous tweet
+  g home    Focus the top tweet
+  G end     Focus the bottom tweet
+  h left    Focus the previous tab
+  l right   Focus the next tab
+  :         Focus the command line
 
-[-:-:b]Scrolling
-[black:gray:-] ctrl+j [-:-:-] [black:gray:-] page up [-:-:-]   Scroll up
-[black:gray:-] ctrl+k [-:-:-] [black:gray:-] page down [-:-:-] Scroll down
+Scrolling:
+  ctrl+j page up     Scroll up
+  ctrl+k page down   Scroll down
 
-[-:-:b]Tweet Navigation
-[black:gray:-] f [-:-:-] Like a tweet
-[black:gray:-] F [-:-:-] Unlike a tweet
-[black:gray:-] t [-:-:-] Retweet a tweet
-[black:gray:-] T [-:-:-] Unretweet a tweet
-[black:gray:-] q [-:-:-] Quote tweet
-[black:gray:-] r [-:-:-] Reply to
-[black:gray:-] D [-:-:-] Delete a tweet
-[black:gray:-] o [-:-:-] Open in browser
-[black:gray:-] i [-:-:-] Open author's user timeline page
-[black:gray:-] c [-:-:-] Copy link to clipboard
+Tweet Navigation:
+  f   Like a tweet
+  F   Unlike a tweet
+  t   Retweet a tweet
+  T   Unretweet a tweet
+  q   Quote tweet
+  r   Reply to
+  D   Delete a tweet
+  o   Open in browser
+  i   Open author's user timeline page
+  c   Copy link to clipboard
 
-[-:-:b]User Navigation
-[black:gray:-] w [-:-:-] Follow a user
-[black:gray:-] W [-:-:-] Unfollow a user
-[black:gray:-] u [-:-:-] Mute a user
-[black:gray:-] U [-:-:-] Unmute a user
-[black:gray:-] x [-:-:-] Block a user
-[black:gray:-] X [-:-:-] Unblock a user
+User Navigation:
+  w   Follow a user
+  W   Unfollow a user
+  u   Mute a user
+  U   Unmute a user
+  x   Block a user
+  X   Unblock a user
 `
 	return &cli.Command{
 		Name:      "shortcuts",

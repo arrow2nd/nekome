@@ -16,13 +16,13 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// newTweetCmd : tweetコマンド生成
 func (a *App) newTweetCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "tweet",
 		Shorthand: "t",
 		Short:     "Post a tweet",
 		Long: `Post a tweet.
+
 If you omit the tweet statement, the editor will be activated.
 When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.
@@ -33,13 +33,12 @@ You may not tweet only images.`,
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
 			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
-			f.StringSliceP("image", "i", nil, "image to be attached (if there is more than one comma separated)")
+			f.StringSliceP("image", "i", nil, "specify the image to attach (if there is more than one comma separated)")
 		},
 		Run: a.execTweetCmd,
 	}
 }
 
-// execTweetCmd : tweetコマンド処理
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	text := f.Arg(0)
 
@@ -103,7 +102,6 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	return nil
 }
 
-// uploadImages : 画像をアップロード
 func (a *App) uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
@@ -170,7 +168,6 @@ func (a *App) uploadImages(images []string) ([]string, error) {
 	return mediaIds, nil
 }
 
-// editTweet : エディタを起動してツイートを編集
 func (a *App) editTweet(editor string) (string, error) {
 	dir, err := config.GetConfigDir()
 	if err != nil {

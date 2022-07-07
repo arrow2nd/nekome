@@ -26,7 +26,7 @@ func TestHelp(t *testing.T) {
 			`root command
 
 Usage:
-  root [command] [flags]
+  root [flags] [command]
 
 Shorthand:
   r

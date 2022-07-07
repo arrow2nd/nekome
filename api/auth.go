@@ -10,7 +10,7 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// Auth : アプリケーション認証を行う
+// Auth : アプリケーション認証を行なって、ユーザ情報とトークンを取得
 func (a *API) Auth(client *oauth1.Token) (*User, error) {
 	ct, err := getConsumerToken(client)
 	if err != nil {

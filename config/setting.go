@@ -76,16 +76,12 @@ type icon struct {
 	Private string
 }
 
-// Settings : 設定
+// Settings : 環境設定
 type Settings struct {
-	// Feature : 機能に関する設定
-	Feature feature
-	// Appearance : 外観に関する設定
+	Feature    feature
 	Appearance appearance
-	// Texts : 各種文字列
-	Texts texts
-	// Icon : 各種アイコン
-	Icon icon
+	Texts      texts
+	Icon       icon
 }
 
 func defaultSettings() *Settings {

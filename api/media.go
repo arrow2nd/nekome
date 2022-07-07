@@ -28,7 +28,7 @@ type UploadImageResponse struct {
 	Image            Image  `json:"image"`
 }
 
-// UploadImage : 画像をアップロードする
+// UploadImage : 画像をアップロード
 func (a *API) UploadImage(base64Image string) (*UploadImageResponse, error) {
 	v := url.Values{}
 	v.Add("media_data", base64Image)

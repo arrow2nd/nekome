@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// newQuitCmd : quitコマンド生成
 func (a *App) newQuitCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "quit",

@@ -52,7 +52,8 @@ func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 	}, nil
 }
 
-func createTweetDictionarySlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
+// createTweetSlice : TweetDictionary のスライスを作成
+func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
 	// データがあるかチェック
 	if len(raw.Tweets) == 0 || raw.Tweets[0] == nil {
 		return false, nil
@@ -68,13 +69,14 @@ func createTweetDictionarySlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDi
 	return true, contents
 }
 
-// UserDictionary : 独自の twitter.UserDictionary 型
+// UserDictionary : twitter.UserDictionary の独自実装
 type UserDictionary struct {
 	User        *twitter.UserObj
 	PinnedTweet *twitter.TweetDictionary
 }
 
-func createUserDictionarySlice(raw *twitter.UserRaw) (bool, []*UserDictionary) {
+// createUserSlice : UserDictionary のスライスを作成
+func createUserSlice(raw *twitter.UserRaw) (bool, []*UserDictionary) {
 	// データがあるかチェック
 	if len(raw.Users) == 0 || raw.Users[0] == nil {
 		return false, nil

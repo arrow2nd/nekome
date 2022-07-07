@@ -8,12 +8,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// setUnfocusFlagc : unfocusフラグを設定
 func setUnfocusFlag(f *pflag.FlagSet) {
 	f.BoolP("unfocus", "u", false, "no focus on page")
 }
 
-// newHomeCmd : homeコマンド生成
 func (a *App) newHomeCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "home",
@@ -29,7 +27,6 @@ func (a *App) newHomeCmd() *cli.Command {
 	}
 }
 
-// newMentionCmd : mentionコマンド生成
 func (a *App) newMentionCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "mention",
@@ -45,7 +42,6 @@ func (a *App) newMentionCmd() *cli.Command {
 	}
 }
 
-// newListCmd : listコマンド生成
 func (a *App) newListCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "list",
@@ -73,13 +69,13 @@ func (a *App) newListCmd() *cli.Command {
 	}
 }
 
-// newUserCmd : userコマンド生成
 func (a *App) newUserCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "user",
 		Shorthand: "u",
 		Short:     "Add user timeline page",
 		Long: `Add user timeline page.
+
 The @ in the user name can be omitted.
 If no user name is specified, the currently logged-in user is specified.`,
 		UsageArgs: "[user name]",
@@ -104,13 +100,13 @@ If no user name is specified, the currently logged-in user is specified.`,
 	}
 }
 
-// newSearchCmd : searchコマンド生成
 func (a *App) newSearchCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "search",
 		Shorthand: "s",
 		Short:     "Add seaech result page",
 		Long: `Add seaech result page.
+
 If the query contains spaces, enclose it in double quotes.`,
 		UsageArgs: "<query>",
 		Example:   "search golang",

@@ -24,8 +24,8 @@ const (
 	ExitCodeErrFileIO
 )
 
-// LogExit : ログを出力して終了
-func LogExit(s string) {
+// Exit : ログを出力して終了
+func Exit(s string) {
 	fmt.Println(s)
 	os.Exit(ExitCodeOK.GetInt())
 }

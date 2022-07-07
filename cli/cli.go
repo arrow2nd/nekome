@@ -153,15 +153,13 @@ func (c *Command) Execute(args []string) error {
 		cmd, args = fCmd, fArgs
 	}
 
-	// フラグを初期化
-	f := cmd.NewFlagSet()
-
 	// パース
+	f := cmd.NewFlagSet()
 	if err := f.Parse(args); err != nil {
 		return err
 	}
 
-	// ヘルプ
+	// ヘルプフラグが指定されているなら、ヘルプを表示
 	if help, _ := f.GetBool("help"); help {
 		c.help(cmd)
 		return nil

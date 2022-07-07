@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// newCmd : コマンド生成
 func newCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "nekome",
@@ -23,7 +22,7 @@ func newCmd() *cli.Command {
 
 			// バージョンを表示
 			if shared.isCommandLineMode && ver {
-				log.LogExit(fmt.Sprintf("🐈 nekome for v.%s", version))
+				log.Exit(fmt.Sprintf("🐈 nekome for v.%s", version))
 			}
 
 			return nil
@@ -31,7 +30,6 @@ func newCmd() *cli.Command {
 	}
 }
 
-// initCmd : コマンド初期化
 func (a *App) initCmd() {
 	// コマンド追加
 	a.cmd.AddCommand(

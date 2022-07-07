@@ -27,7 +27,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	return res.Raw.Lists, nil
 }
 
-// FetchListTweets : リストのツイートを取得
+// FetchListTweets : リスト内のツイートを取得
 func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
@@ -45,7 +45,7 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDicti
 		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
-	ok, tweets := createTweetDictionarySlice(res.Raw)
+	ok, tweets := createTweetSlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
