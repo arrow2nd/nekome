@@ -132,14 +132,14 @@ func (a *App) parseRuntimeArgs() (string, error) {
 	f := a.cmd.NewFlagSet()
 	f.Parse(os.Args[1:])
 
-	// ヘルプ, バージョンフラグがあるか
-	helpOrVersionFlagExists := f.Changed("help") || f.Changed("version")
+	// ログイン処理をスキップするか
+	skipLogin := f.Changed("help") || f.Changed("version") || f.Arg(0) == "e" || f.Arg(0) == "edit"
 
-	// コマンドラインモードかどうか
-	shared.isCommandLineMode = f.NArg() > 0 || helpOrVersionFlagExists
+	// コマンドラインモードか
+	shared.isCommandLineMode = f.NArg() > 0 || skipLogin
 
 	// ログインしない
-	if helpOrVersionFlagExists {
+	if skipLogin {
 		return "", nil
 	}
 
