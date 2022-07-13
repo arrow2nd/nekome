@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/dghubble/oauth1 v0.7.1
-	github.com/g8rswimmer/go-twitter/v2 v2.1.0
+	github.com/g8rswimmer/go-twitter/v2 v2.1.1
 	github.com/goccy/go-yaml v1.9.5
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-runewidth v0.0.13
