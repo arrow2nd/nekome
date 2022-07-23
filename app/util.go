@@ -11,7 +11,6 @@ import (
 	"math"
 	"os"
 	"os/exec"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -194,7 +193,10 @@ func createTweetSummary(t *twitter.TweetDictionary) string {
 
 // createTweetURL : ツイートのURLを作成
 func createTweetURL(t *twitter.TweetDictionary) string {
-	return path.Join("https://twitter.com", t.Author.UserName, "status", t.Tweet.ID)
+	// TODO: url.JoinPath が使える様になったら置き換えたいね...
+	// https://github.com/golang/go/commit/604140d93111f89911e17cb147dcf6a02d2700d0
+
+	return fmt.Sprintf("https://twitter.com/%s/status/%s", t.Author.UserName, t.Tweet.ID)
 }
 
 // createStatusMessage : ラベル付きステータスメッセージを作成

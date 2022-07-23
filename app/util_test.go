@@ -392,5 +392,5 @@ func TestCreateTweetURL(t *testing.T) {
 		},
 	})
 
-	assert.Contains(t, url, "/test/status/0123456789", "URLが作成できるか")
+	assert.Equal(t, url, "https://twitter.com/test/status/0123456789", "URLが作成できるか")
 }
