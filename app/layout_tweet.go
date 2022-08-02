@@ -209,8 +209,9 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 
 		for ; start > end; start-- {
 			e := start + textLength
-			if l := len(runes); e > l {
-				e = l
+
+			if e > len(runes) {
+				continue
 			}
 
 			if string(runes[start:e]) == hashtagText {
