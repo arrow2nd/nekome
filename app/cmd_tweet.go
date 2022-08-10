@@ -9,11 +9,13 @@ import (
 	"os"
 	"path"
 	"strings"
+	"syscall"
 
 	"github.com/arrow2nd/nekome/cli"
 	"github.com/arrow2nd/nekome/config"
 	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/term"
 )
 
 func (a *App) newTweetCmd() *cli.Command {
@@ -41,6 +43,12 @@ You may not tweet only images.`,
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	text := f.Arg(0)
+
+	// 標準入力を受け取る
+	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
+		stdin, _ := ioutil.ReadAll(os.Stdin)
+		text = string(stdin)
+	}
 
 	// ツイート文が無いなら、エディタを起動
 	if text == "" {
