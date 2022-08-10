@@ -12,7 +12,7 @@ import (
 type page interface {
 	GetName() string
 	GetPrimivite() tview.Primitive
-	Load()
+	Load(bool)
 	OnVisible()
 }
 
@@ -22,7 +22,7 @@ func handleCommonPageKeyEvent(p page, event *tcell.EventKey) *tcell.EventKey {
 
 	// リロード
 	if keyRune == '.' {
-		go p.Load()
+		go p.Load(true)
 		return nil
 	}
 
@@ -80,9 +80,12 @@ func newTweetsBasePage(name string) *tweetsBasePage {
 }
 
 // updateIndicator : インジケータを更新
-func (t *tweetsBasePage) updateIndicator(s string, r *twitter.RateLimit) {
+func (t *tweetsBasePage) updateIndicator(s string, r *twitter.RateLimit, write bool) {
 	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
-	shared.SetIndicator(t.indicator)
+
+	if write {
+		shared.SetIndicator(t.indicator)
+	}
 }
 
 // updateLoadedStatus : ステータスメッセージを更新

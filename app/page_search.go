@@ -28,7 +28,7 @@ func newSearchPage(query string) *searchPage {
 }
 
 // Load : 検索結果読み込み
-func (s *searchPage) Load() {
+func (s *searchPage) Load(focus bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -49,7 +49,7 @@ func (s *searchPage) Load() {
 	s.tweets.Register(tweets)
 	s.tweets.Draw()
 
-	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query), rateLimit)
+	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query), rateLimit, focus)
 	s.updateLoadedStatus(len(tweets))
 }
 

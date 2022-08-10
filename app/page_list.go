@@ -27,7 +27,7 @@ func newListPage(name, id string) *listPage {
 }
 
 // Load : リスト読み込み
-func (l *listPage) Load() {
+func (l *listPage) Load(focus bool) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
@@ -59,7 +59,7 @@ func (l *listPage) Load() {
 
 	l.tweets.Draw()
 
-	l.updateIndicator("", rateLimit)
+	l.updateIndicator("", rateLimit, focus)
 	l.updateLoadedStatus(newTweetsCount)
 }
 

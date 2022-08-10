@@ -36,7 +36,7 @@ func newTimelinePage(tt timelineType) *timelinePage {
 }
 
 // Load : タイムライン読み込み
-func (t *timelinePage) Load() {
+func (t *timelinePage) Load(focus bool) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -68,7 +68,7 @@ func (t *timelinePage) Load() {
 	t.tweets.Register(tweets)
 	t.tweets.Draw()
 
-	t.updateIndicator("", rateLimit)
+	t.updateIndicator("", rateLimit, focus)
 	t.updateLoadedStatus(len(tweets))
 }
 

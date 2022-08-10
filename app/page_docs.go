@@ -30,4 +30,4 @@ func newDocsPage(name, text string) *docsPage {
 }
 
 // Load : pageのインターフェースを満たすためのダミー
-func (d *docsPage) Load() {}
+func (d *docsPage) Load(_ bool) {}

@@ -81,7 +81,7 @@ func createMetricsView(color tcell.Color) *tview.TextView {
 }
 
 // Load : ユーザタイムライン読み込み
-func (u *userPage) Load() {
+func (u *userPage) Load(focus bool) {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
@@ -118,7 +118,7 @@ func (u *userPage) Load() {
 	u.tweets.Register(tweets)
 	u.tweets.Draw()
 
-	u.updateIndicator("", rateLimit)
+	u.updateIndicator("", rateLimit, focus)
 	u.updateLoadedStatus(len(tweets))
 }
 

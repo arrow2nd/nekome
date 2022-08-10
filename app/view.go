@@ -117,7 +117,7 @@ func (v *view) AddPage(p page, focus bool) error {
 	v.tabs = append(v.tabs, newTab)
 	v.drawTab()
 
-	go p.Load()
+	go p.Load(focus)
 
 	return nil
 }
