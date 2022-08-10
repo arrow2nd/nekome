@@ -30,7 +30,8 @@ When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.
 You may not tweet only images.`,
 		UsageArgs: "[text]",
-		Example:   "tweet にゃーん --image cute_cat.png,very_cute_cat.png",
+		Example: `tweet にゃーん --image cute_cat.png,very_cute_cat.png
+  echo "にゃーん" | nekome tweet`,
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
