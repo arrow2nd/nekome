@@ -1,6 +1,9 @@
 package app
 
 import (
+	"context"
+	"time"
+
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 )
@@ -16,6 +19,7 @@ const (
 type timelinePage struct {
 	*tweetsBasePage
 	tlType timelineType
+	cancel context.CancelFunc
 }
 
 func newTimelinePage(tt timelineType) *timelinePage {
@@ -46,7 +50,10 @@ func (t *timelinePage) Load(focus bool) {
 		err       error
 	)
 
-	shared.SetStatus(t.name, shared.conf.Settings.Texts.Loading)
+	// 読み込み中表示
+	if !t.isStreamMode() {
+		shared.SetStatus(t.name, shared.conf.Settings.Texts.Loading)
+	}
 
 	// タイムラインを取得
 	id := shared.api.CurrentUser.ID
@@ -65,14 +72,85 @@ func (t *timelinePage) Load(focus bool) {
 		return
 	}
 
-	t.tweets.Register(tweets)
+	t.tweets.Register(tweets, rateLimit)
 	t.tweets.Draw()
 
-	t.updateIndicator("", rateLimit, focus)
-	t.updateLoadedStatus(len(tweets))
+	t.updateIndicator(t.getStreamStatus(), focus)
+
+	// 読み込み完了表示
+	if !t.isStreamMode() {
+		t.updateLoadedStatus(len(tweets))
+	}
+}
+
+// getStreamStatus : ストリームモードのステータスを取得
+func (t *timelinePage) getStreamStatus() string {
+	if t.isStreamMode() {
+		return "Stream Mode | "
+	}
+
+	return ""
+}
+
+// isStreamMode : ストリームモードが有効かどうか
+func (t *timelinePage) isStreamMode() bool {
+	return t.cancel != nil
+}
+
+// startStream : ストリームモード開始
+func (t *timelinePage) startStream() {
+	if t.isStreamMode() {
+		return
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.cancel = cancel
+
+	go t.stream(ctx, (15*60)/150)
+
+	t.updateIndicator(t.getStreamStatus(), true)
+}
+
+// stopStream : ストリームモード停止
+func (t *timelinePage) stopStream() {
+	if !t.isStreamMode() {
+		return
+	}
+
+	t.cancel()
+	t.cancel = nil
+
+	t.updateIndicator(t.getStreamStatus(), true)
+}
+
+// stream : ストリームモード
+func (t *timelinePage) stream(ctx context.Context, intervalSec time.Duration) {
+	ticker := time.NewTicker(intervalSec * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			t.Load(true)
+		}
+	}
 }
 
 // handleKeyEvents : タイムラインページのキーハンドラ
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	keyRune := event.Rune()
+
+	if keyRune == 's' {
+		t.startStream()
+		return nil
+	}
+
+	if keyRune == 'S' {
+		t.stopStream()
+		return nil
+	}
+
 	return handleCommonPageKeyEvent(t, event)
 }
