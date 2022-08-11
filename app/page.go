@@ -11,8 +11,9 @@ import (
 type page interface {
 	GetName() string
 	GetPrimivite() tview.Primitive
-	Load(bool)
-	OnVisible()
+	Load()
+	OnActive()
+	OnInactive()
 }
 
 // handleCommonPageKeyEvent : ページ共通のキーハンドラ
@@ -21,7 +22,7 @@ func handleCommonPageKeyEvent(p page, event *tcell.EventKey) *tcell.EventKey {
 
 	// リロード
 	if keyRune == '.' {
-		go p.Load(true)
+		go p.Load()
 		return nil
 	}
 
@@ -33,6 +34,7 @@ type basePage struct {
 	name      string
 	indicator string
 	frame     *tview.Frame
+	isActive  bool
 }
 
 func newBasePage(name string) *basePage {
@@ -40,6 +42,7 @@ func newBasePage(name string) *basePage {
 		name:      truncate(name, shared.conf.Settings.Appearance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
+		isActive:  false,
 	}
 }
 
@@ -59,10 +62,17 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
-// OnVisible : ページが表示された際に呼ばれるコールバック
-func (b *basePage) OnVisible() {
+// OnActive : ページが表示された
+func (b *basePage) OnActive() {
+	b.isActive = true
+
 	// 以前のインジケータの内容を反映
 	shared.SetIndicator(b.indicator)
+}
+
+// OnInactive : ページが非表示にされた
+func (b *basePage) OnInactive() {
+	b.isActive = false
 }
 
 type tweetsBasePage struct {
@@ -79,10 +89,17 @@ func newTweetsBasePage(name string) *tweetsBasePage {
 }
 
 // updateIndicator : インジケータを更新
-func (t *tweetsBasePage) updateIndicator(s string, write bool) {
-	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, t.tweets.rateLimit.Remaining, t.tweets.rateLimit.Limit)
+func (t *tweetsBasePage) updateIndicator(s string) {
+	// APIリミット
+	apiLimit := "unknown"
+	if t.tweets.rateLimit != nil {
+		apiLimit = fmt.Sprintf("%d / %d", t.tweets.rateLimit.Remaining, t.tweets.rateLimit.Limit)
+	}
 
-	if write {
+	t.indicator = s + fmt.Sprintf("API limit: %s", apiLimit)
+
+	// ページがアクティブなら表示を更新する
+	if t.isActive {
 		shared.SetIndicator(t.indicator)
 	}
 }

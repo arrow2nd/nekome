@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/g8rswimmer/go-twitter/v2"
@@ -40,7 +41,7 @@ func newTimelinePage(tt timelineType) *timelinePage {
 }
 
 // Load : タイムライン読み込み
-func (t *timelinePage) Load(focus bool) {
+func (t *timelinePage) Load() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -72,10 +73,11 @@ func (t *timelinePage) Load(focus bool) {
 		return
 	}
 
-	t.tweets.Register(tweets, rateLimit)
+	t.tweets.Register(tweets)
+	t.tweets.UpdateRateLimit(rateLimit)
 	t.tweets.Draw()
 
-	t.updateIndicator(t.getStreamStatus(), focus)
+	t.updateIndicator(t.getStreamIndicator())
 
 	// 読み込み完了表示
 	if !t.isStreamMode() {
@@ -83,13 +85,13 @@ func (t *timelinePage) Load(focus bool) {
 	}
 }
 
-// getStreamStatus : ストリームモードのステータスを取得
-func (t *timelinePage) getStreamStatus() string {
-	if t.isStreamMode() {
-		return "Stream Mode | "
+// getStreamIndicator : ストリームモードのインジケータを取得
+func (t *timelinePage) getStreamIndicator() string {
+	if !t.isStreamMode() {
+		return ""
 	}
 
-	return ""
+	return "Stream Mode | "
 }
 
 // isStreamMode : ストリームモードが有効かどうか
@@ -100,27 +102,38 @@ func (t *timelinePage) isStreamMode() bool {
 // startStream : ストリームモード開始
 func (t *timelinePage) startStream() {
 	if t.isStreamMode() {
+		shared.SetErrorStatus(t.name, "stream mode has already started")
 		return
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	t.cancel = cancel
 
-	go t.stream(ctx, (15*60)/150)
+	// 更新間隔を決定
+	nextRefreshSpan := t.tweets.rateLimit.Reset.Time().Unix() - time.Now().Unix()
+	bufferSec := nextRefreshSpan / int64(t.tweets.rateLimit.Remaining)
+	if bufferSec < 5 {
+		bufferSec = 5
+	}
 
-	t.updateIndicator(t.getStreamStatus(), true)
+	shared.SetStatus(t.name, fmt.Sprintf("Span: %ds", bufferSec))
+
+	go t.stream(ctx, time.Duration(bufferSec))
+
+	t.updateIndicator(t.getStreamIndicator())
 }
 
-// stopStream : ストリームモード停止
-func (t *timelinePage) stopStream() {
+// endStream : ストリームモード終了
+func (t *timelinePage) endStream() {
 	if !t.isStreamMode() {
+		shared.SetErrorStatus(t.name, "stream mode has not been started")
 		return
 	}
 
 	t.cancel()
 	t.cancel = nil
 
-	t.updateIndicator(t.getStreamStatus(), true)
+	t.updateIndicator(t.getStreamIndicator())
 }
 
 // stream : ストリームモード
@@ -133,7 +146,7 @@ func (t *timelinePage) stream(ctx context.Context, intervalSec time.Duration) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			t.Load(true)
+			t.Load()
 		}
 	}
 }
@@ -142,13 +155,15 @@ func (t *timelinePage) stream(ctx context.Context, intervalSec time.Duration) {
 func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
+	// ストリームモード開始
 	if keyRune == 's' {
 		t.startStream()
 		return nil
 	}
 
+	// ストリームモード終了
 	if keyRune == 'S' {
-		t.stopStream()
+		t.endStream()
 		return nil
 	}
 

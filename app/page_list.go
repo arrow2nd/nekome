@@ -27,7 +27,7 @@ func newListPage(name, id string) *listPage {
 }
 
 // Load : リスト読み込み
-func (l *listPage) Load(focus bool) {
+func (l *listPage) Load() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
@@ -54,12 +54,13 @@ func (l *listPage) Load(focus bool) {
 
 	// 新規ツイートのみを登録
 	if newTweetsCount > 0 {
-		l.tweets.Register(tweets[0:newTweetsCount], rateLimit)
+		l.tweets.Register(tweets[0:newTweetsCount])
 	}
 
+	l.tweets.UpdateRateLimit(rateLimit)
 	l.tweets.Draw()
 
-	l.updateIndicator("", focus)
+	l.updateIndicator("")
 	l.updateLoadedStatus(newTweetsCount)
 }
 

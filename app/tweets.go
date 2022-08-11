@@ -92,7 +92,7 @@ func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 }
 
 // Register : ツイートを登録
-func (t *tweets) Register(tweets []*twitter.TweetDictionary, rateLimit *twitter.RateLimit) {
+func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -106,12 +106,18 @@ func (t *tweets) Register(tweets []*twitter.TweetDictionary, rateLimit *twitter.
 	}
 
 	t.contents = append(tweets, t.contents[:size]...)
-	t.rateLimit = rateLimit
 }
 
 // RegisterPinned : ピン留めツイートを登録
 func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
 	t.pinned = tweet
+}
+
+// UpdateRateLimit : レート制限を更新
+func (t *tweets) UpdateRateLimit(r *twitter.RateLimit) {
+	if r != nil {
+		t.rateLimit = r
+	}
 }
 
 // Draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
