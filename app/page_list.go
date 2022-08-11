@@ -52,13 +52,12 @@ func (l *listPage) Load() {
 		}
 	}
 
-	// 新規ツイートのみを登録
+	// 新規ツイートがある場合のみ画面を更新
 	if newTweetsCount > 0 {
-		l.tweets.Register(tweets[0:newTweetsCount])
+		l.tweets.Update(tweets[0:newTweetsCount])
 	}
 
 	l.tweets.UpdateRateLimit(rateLimit)
-	l.tweets.Draw()
 
 	l.updateIndicator("")
 	l.updateLoadedStatus(newTweetsCount)

@@ -46,9 +46,8 @@ func (s *searchPage) Load() {
 		return
 	}
 
-	s.tweets.Register(tweets)
+	s.tweets.Update(tweets)
 	s.tweets.UpdateRateLimit(rateLimit)
-	s.tweets.Draw()
 
 	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query))
 	s.updateLoadedStatus(len(tweets))

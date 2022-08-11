@@ -73,9 +73,8 @@ func (t *timelinePage) Load() {
 		return
 	}
 
-	t.tweets.Register(tweets)
+	t.tweets.Update(tweets)
 	t.tweets.UpdateRateLimit(rateLimit)
-	t.tweets.Draw()
 
 	t.updateIndicator(t.getStreamIndicator())
 
@@ -110,6 +109,7 @@ func (t *timelinePage) startStream() {
 	t.cancel = cancel
 
 	// 更新間隔を決定
+	// TODO: stream() 内で制限がリセットされたら5s毎に自動で変更するようにしたい
 	nextRefreshSpan := t.tweets.rateLimit.Reset.Time().Unix() - time.Now().Unix()
 	bufferSec := nextRefreshSpan / int64(t.tweets.rateLimit.Remaining)
 	if bufferSec < 5 {
@@ -164,6 +164,12 @@ func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	// ストリームモード終了
 	if keyRune == 'S' {
 		t.endStream()
+		return nil
+	}
+
+	// ストリームモード中の手動リロードを禁止
+	if t.isStreamMode() && keyRune == '.' {
+		shared.SetErrorStatus(t.name, "manual reloading is not possible while in stream mode")
 		return nil
 	}
 
