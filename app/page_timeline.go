@@ -2,11 +2,19 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
+)
+
+// 読み込み間隔
+const (
+	reloadIntervalMin     = 5
+	reloadIntervalDefault = 10
 )
 
 // timelineType : タイムラインの種類
@@ -19,8 +27,9 @@ const (
 
 type timelinePage struct {
 	*tweetsBasePage
-	tlType timelineType
-	cancel context.CancelFunc
+	tlType         timelineType
+	reloadInterval time.Duration
+	cancel         context.CancelFunc
 }
 
 func newTimelinePage(tt timelineType) *timelinePage {
@@ -32,6 +41,8 @@ func newTimelinePage(tt timelineType) *timelinePage {
 	page := &timelinePage{
 		tweetsBasePage: newTweetsBasePage(tabName),
 		tlType:         tt,
+		reloadInterval: 0,
+		cancel:         nil,
 	}
 
 	page.SetFrame(page.tweets.view)
@@ -69,7 +80,7 @@ func (t *timelinePage) Load() {
 
 	if err != nil {
 		t.tweets.DrawMessage(err.Error())
-		shared.SetErrorStatus(t.name, err.Error())
+		shared.SetErrorStatus(t.name, "failed to retrieve timeline")
 		return
 	}
 
@@ -90,7 +101,7 @@ func (t *timelinePage) getStreamIndicator() string {
 		return ""
 	}
 
-	return "Stream Mode | "
+	return fmt.Sprintf("Stream Mode | Interval: %ds | ", t.reloadInterval)
 }
 
 // isStreamMode : ストリームモードが有効かどうか
@@ -105,21 +116,20 @@ func (t *timelinePage) startStream() {
 		return
 	}
 
+	// 読み込み間隔を決定
+	if interval, err := t.calcReloadInterval(); err != nil {
+		shared.SetErrorStatus(t.name, err.Error())
+		return
+	} else {
+		t.reloadInterval = interval
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	t.cancel = cancel
 
-	// 更新間隔を決定
-	// TODO: stream() 内で制限がリセットされたら5s毎に自動で変更するようにしたい
-	nextRefreshSpan := t.tweets.rateLimit.Reset.Time().Unix() - time.Now().Unix()
-	bufferSec := nextRefreshSpan / int64(t.tweets.rateLimit.Remaining)
-	if bufferSec < 5 {
-		bufferSec = 5
-	}
+	go t.stream(ctx)
 
-	shared.SetStatus(t.name, fmt.Sprintf("Span: %ds", bufferSec))
-
-	go t.stream(ctx, time.Duration(bufferSec))
-
+	shared.SetStatus(t.name, "stream mode started")
 	t.updateIndicator(t.getStreamIndicator())
 }
 
@@ -136,9 +146,33 @@ func (t *timelinePage) endStream() {
 	t.updateIndicator(t.getStreamIndicator())
 }
 
+// calcReloadInterval : 読み込み間隔を計算
+func (t *timelinePage) calcReloadInterval() (time.Duration, error) {
+	// レート制限が取得できない
+	if t.tweets.rateLimit == nil {
+		return 0, errors.New("failed to obtain rate limit")
+	}
+
+	remainingSec := time.Until(t.tweets.rateLimit.Reset.Time()).Seconds()
+
+	// レート制限を超えている場合、デフォルト値を返す
+	if remainingSec <= 0 || t.tweets.rateLimit.Remaining <= 0 {
+		return reloadIntervalDefault, nil
+	}
+
+	newInterval := math.Round(remainingSec / float64(t.tweets.rateLimit.Remaining))
+
+	// 最小間隔は5秒
+	if newInterval < reloadIntervalMin {
+		return reloadIntervalMin, nil
+	}
+
+	return time.Duration(newInterval), nil
+}
+
 // stream : ストリームモード
-func (t *timelinePage) stream(ctx context.Context, intervalSec time.Duration) {
-	ticker := time.NewTicker(intervalSec * time.Second)
+func (t *timelinePage) stream(ctx context.Context) {
+	ticker := time.NewTicker(t.reloadInterval * time.Second)
 	defer ticker.Stop()
 
 	for {
@@ -146,8 +180,32 @@ func (t *timelinePage) stream(ctx context.Context, intervalSec time.Duration) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			t.Load()
+			t.reloadStream(ticker)
 		}
+	}
+}
+
+// reloadStream : ストリームを再読み込み
+func (t *timelinePage) reloadStream(ticker *time.Ticker) {
+	// レート制限情報が無い場合は不正な状態なので終了させる
+	if t.tweets.rateLimit == nil {
+		t.endStream()
+		shared.SetErrorStatus(t.name, "unable to start stream mode due to failure to obtain rate limit")
+		return
+	}
+
+	prevRemaining := t.tweets.rateLimit.Remaining
+
+	t.Load()
+
+	if t.tweets.rateLimit.Remaining <= prevRemaining {
+		return
+	}
+
+	// レート制限がリセットされたら、読み込み間隔を再計算する
+	if nextInterval, _ := t.calcReloadInterval(); t.reloadInterval != nextInterval {
+		t.reloadInterval = nextInterval
+		ticker.Reset(nextInterval * time.Second)
 	}
 }
 
