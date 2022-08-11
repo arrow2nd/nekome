@@ -38,6 +38,10 @@ Scrolling:
   ctrl+j page up     Scroll up
   ctrl+k page down   Scroll down
 
+Home Timeline Page:
+  s   Start stream mode (similar to UserStream)
+  S   Exit stream mode
+
 Tweet Navigation:
   f   Like a tweet
   F   Unlike a tweet
