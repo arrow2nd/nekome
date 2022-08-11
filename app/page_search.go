@@ -46,10 +46,10 @@ func (s *searchPage) Load(focus bool) {
 		return
 	}
 
-	s.tweets.Register(tweets)
+	s.tweets.Register(tweets, rateLimit)
 	s.tweets.Draw()
 
-	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query), rateLimit, focus)
+	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query), focus)
 	s.updateLoadedStatus(len(tweets))
 }
 

@@ -10,17 +10,19 @@ import (
 )
 
 type tweets struct {
-	view     *tview.TextView
-	pinned   *twitter.TweetDictionary
-	contents []*twitter.TweetDictionary
-	mu       sync.Mutex
+	view      *tview.TextView
+	pinned    *twitter.TweetDictionary
+	contents  []*twitter.TweetDictionary
+	rateLimit *twitter.RateLimit
+	mu        sync.Mutex
 }
 
 func newTweets() *tweets {
 	t := &tweets{
-		view:     tview.NewTextView(),
-		pinned:   nil,
-		contents: []*twitter.TweetDictionary{},
+		view:      tview.NewTextView(),
+		pinned:    nil,
+		rateLimit: nil,
+		contents:  []*twitter.TweetDictionary{},
 	}
 
 	t.view.
@@ -90,7 +92,7 @@ func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 }
 
 // Register : ツイートを登録
-func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
+func (t *tweets) Register(tweets []*twitter.TweetDictionary, rateLimit *twitter.RateLimit) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -104,6 +106,7 @@ func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	}
 
 	t.contents = append(tweets, t.contents[:size]...)
+	t.rateLimit = rateLimit
 }
 
 // RegisterPinned : ピン留めツイートを登録

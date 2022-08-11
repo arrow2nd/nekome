@@ -115,10 +115,10 @@ func (u *userPage) Load(focus bool) {
 		u.tweets.RegisterPinned(u.userDic.PinnedTweet)
 	}
 
-	u.tweets.Register(tweets)
+	u.tweets.Register(tweets, rateLimit)
 	u.tweets.Draw()
 
-	u.updateIndicator("", rateLimit, focus)
+	u.updateIndicator("", focus)
 	u.updateLoadedStatus(len(tweets))
 }
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -80,8 +79,8 @@ func newTweetsBasePage(name string) *tweetsBasePage {
 }
 
 // updateIndicator : インジケータを更新
-func (t *tweetsBasePage) updateIndicator(s string, r *twitter.RateLimit, write bool) {
-	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
+func (t *tweetsBasePage) updateIndicator(s string, write bool) {
+	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, t.tweets.rateLimit.Remaining, t.tweets.rateLimit.Limit)
 
 	if write {
 		shared.SetIndicator(t.indicator)
