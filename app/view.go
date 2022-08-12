@@ -16,11 +16,13 @@ type ModalOpt struct {
 	onDone func()
 }
 
+// tab : タブ
 type tab struct {
 	id   string
 	name string
 }
 
+// view : ページの表示域
 type view struct {
 	pageView *tview.Pages
 	tabView  *tview.TextView
@@ -71,6 +73,7 @@ func (v *view) drawTab() {
 	for i, tab := range v.tabs {
 		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, t, tab.id, tab.name)
 
+		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabs)-1 {
 			fmt.Fprint(v.tabView, shared.conf.Settings.Appearance.TabSeparate)
 		}
@@ -108,6 +111,7 @@ func (v *view) AddPage(p page, focus bool) error {
 	v.pages[newTab.id] = p
 	v.pageView.AddPage(newTab.id, p.GetPrimivite(), true, focus)
 
+	// フォーカスが当たっているならタブをハイライト
 	if focus {
 		v.tabView.Highlight(newTab.id)
 		v.tabIndex = v.pageView.GetPageCount() - 1
@@ -163,11 +167,11 @@ func (v *view) RemoveCurrentPage() {
 
 	// ページを削除
 	v.pageView.RemovePage(id)
+	v.pages[id].OnDelete()
 	delete(v.pages, id)
 
 	// 1つ前のタブを選択
-	v.tabIndex--
-	if v.tabIndex < 0 {
+	if v.tabIndex--; v.tabIndex < 0 {
 		v.tabIndex = 0
 	}
 
@@ -198,10 +202,15 @@ func (v *view) PopupModal(o *ModalOpt) {
 
 // selectPrevTab : 前のタブを選択
 func (v *view) selectPrevTab() {
+	prevTabIndex := v.tabIndex
 	pageCount := v.pageView.GetPageCount()
 
 	if v.tabIndex--; v.tabIndex < 0 {
 		v.tabIndex = pageCount - 1
+	}
+
+	if v.tabIndex == prevTabIndex {
+		return
 	}
 
 	v.tabView.Highlight(v.tabs[v.tabIndex].id)
@@ -209,9 +218,14 @@ func (v *view) selectPrevTab() {
 
 // selectNextTab : 次のタブを選択
 func (v *view) selectNextTab() {
+	prevTabIndex := v.tabIndex
 	pageCount := v.pageView.GetPageCount()
 
 	v.tabIndex = (v.tabIndex + 1) % pageCount
+
+	if v.tabIndex == prevTabIndex {
+		return
+	}
 
 	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
@@ -221,9 +235,16 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ハイライトされたタブまでスクロール
 	v.tabView.ScrollToHighlight()
 
+	// 前のページを非アクティブにする
+	if len(removed) > 0 {
+		if page, ok := v.pages[removed[0]]; ok {
+			page.OnInactive()
+		}
+	}
+
 	// ページを切り替え
 	v.pageView.SwitchToPage(added[0])
-	v.pages[added[0]].OnVisible()
+	v.pages[added[0]].OnActive()
 }
 
 // handleModalKeyEvent : モーダルのキーイベントハンドラ

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -13,7 +12,9 @@ type page interface {
 	GetName() string
 	GetPrimivite() tview.Primitive
 	Load()
-	OnVisible()
+	OnActive()
+	OnInactive()
+	OnDelete()
 }
 
 // handleCommonPageKeyEvent : ページ共通のキーハンドラ
@@ -34,6 +35,7 @@ type basePage struct {
 	name      string
 	indicator string
 	frame     *tview.Frame
+	isActive  bool
 }
 
 func newBasePage(name string) *basePage {
@@ -41,6 +43,7 @@ func newBasePage(name string) *basePage {
 		name:      truncate(name, shared.conf.Settings.Appearance.TabMaxWidth),
 		indicator: "",
 		frame:     nil,
+		isActive:  false,
 	}
 }
 
@@ -60,11 +63,24 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
-// OnVisible : ページが表示された際に呼ばれるコールバック
-func (b *basePage) OnVisible() {
+// Load : 読み込み
+func (b *basePage) Load() {}
+
+// OnActive : ページがアクティブになった
+func (b *basePage) OnActive() {
+	b.isActive = true
+
 	// 以前のインジケータの内容を反映
 	shared.SetIndicator(b.indicator)
 }
+
+// OnInactive : ページが非アクティブになった
+func (b *basePage) OnInactive() {
+	b.isActive = false
+}
+
+// OnDelete : ページが破棄された
+func (b *basePage) OnDelete() {}
 
 type tweetsBasePage struct {
 	*basePage
@@ -80,9 +96,19 @@ func newTweetsBasePage(name string) *tweetsBasePage {
 }
 
 // updateIndicator : インジケータを更新
-func (t *tweetsBasePage) updateIndicator(s string, r *twitter.RateLimit) {
-	t.indicator = fmt.Sprintf("%sAPI limit: %d / %d", s, r.Remaining, r.Limit)
-	shared.SetIndicator(t.indicator)
+func (t *tweetsBasePage) updateIndicator(s string) {
+	// APIリミット
+	apiLimit := "unknown"
+	if t.tweets.rateLimit != nil {
+		apiLimit = fmt.Sprintf("%d / %d", t.tweets.rateLimit.Remaining, t.tweets.rateLimit.Limit)
+	}
+
+	t.indicator = s + fmt.Sprintf("API limit: %s", apiLimit)
+
+	// ページがアクティブなら表示を更新する
+	if t.isActive {
+		shared.SetIndicator(t.indicator)
+	}
 }
 
 // updateLoadedStatus : ステータスメッセージを更新

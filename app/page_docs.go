@@ -28,6 +28,3 @@ func newDocsPage(name, text string) *docsPage {
 
 	return p
 }
-
-// Load : pageのインターフェースを満たすためのダミー
-func (d *docsPage) Load() {}

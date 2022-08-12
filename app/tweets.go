@@ -9,18 +9,29 @@ import (
 	"github.com/rivo/tview"
 )
 
+// cursor : カーソルの移動量
+type cursor int
+
+const (
+	cursorUp   cursor = -1
+	cursorDown cursor = 1
+)
+
+// tweets : ツイートの表示管理
 type tweets struct {
-	view     *tview.TextView
-	pinned   *twitter.TweetDictionary
-	contents []*twitter.TweetDictionary
-	mu       sync.Mutex
+	view      *tview.TextView
+	pinned    *twitter.TweetDictionary
+	contents  []*twitter.TweetDictionary
+	rateLimit *twitter.RateLimit
+	mu        sync.Mutex
 }
 
 func newTweets() *tweets {
 	t := &tweets{
-		view:     tview.NewTextView(),
-		pinned:   nil,
-		contents: []*twitter.TweetDictionary{},
+		view:      tview.NewTextView(),
+		pinned:    nil,
+		rateLimit: nil,
+		contents:  []*twitter.TweetDictionary{},
 	}
 
 	t.view.
@@ -89,13 +100,14 @@ func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 	return c
 }
 
-// Register : ツイートを登録
-func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
+// register : ツイートを登録
+func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
 	size := len(t.contents)
-	allSize := size + len(tweets)
+	addSize := len(tweets)
+	allSize := size + addSize
 	maxSize := shared.conf.Settings.Feature.TweetMaxAccumulationNum
 
 	// 最大蓄積数を超えていたら古いものから削除
@@ -104,6 +116,8 @@ func (t *tweets) Register(tweets []*twitter.TweetDictionary) {
 	}
 
 	t.contents = append(tweets, t.contents[:size]...)
+
+	return addSize
 }
 
 // RegisterPinned : ピン留めツイートを登録
@@ -111,8 +125,34 @@ func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
 	t.pinned = tweet
 }
 
-// Draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
-func (t *tweets) Draw() {
+// UpdateRateLimit : レート制限を更新
+func (t *tweets) UpdateRateLimit(r *twitter.RateLimit) {
+	if r != nil {
+		t.rateLimit = r
+	}
+}
+
+// Update : ツイートを更新
+func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
+	addedTweetsCount := t.register(tweets)
+
+	// カーソル位置を決定
+	cursorPos := getHighlightId(t.view.GetHighlights())
+	if cursorPos == -1 {
+		cursorPos = 0
+	}
+
+	// 先頭以外のツイートを選択中の場合、更新後もそのツイートを選択したままにする
+	// NOTE: "先頭以外" なのは、ストリームモードで放置した時にカーソルが段々下に下がってしまうのを防ぐため
+	if cursorPos != 0 {
+		cursorPos += addedTweetsCount
+	}
+
+	t.draw(cursorPos)
+}
+
+// draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
+func (t *tweets) draw(cursorPos int) {
 	width := getWindowWidth()
 
 	// ビューの初期化
@@ -172,10 +212,10 @@ func (t *tweets) Draw() {
 		}
 	}
 
-	t.scrollToTweet(0)
+	t.scrollToTweet(cursorPos)
 }
 
-// DrawMessage : ビューにメッセージを表示
+// DrawMessage : Viewにメッセージを表示
 func (t *tweets) DrawMessage(s string) {
 	t.view.Clear().
 		SetTextAlign(tview.AlignCenter).
@@ -184,33 +224,24 @@ func (t *tweets) DrawMessage(s string) {
 
 // scrollToTweet : 指定ツイートまでスクロール
 func (t *tweets) scrollToTweet(i int) {
+	// 範囲内に丸める
+	if max := t.GetTweetsCount(); i < 0 {
+		i = max - 1
+	} else if i >= max {
+		i = 0
+	}
+
 	t.view.Highlight(createTweetTag(i))
 }
 
-// cursorUp : カーソルを上に移動
-func (t *tweets) cursorUp() {
+// moveCursor : カーソルを移動
+func (t *tweets) moveCursor(c cursor) {
 	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
 		return
 	}
 
-	if idx--; idx < 0 {
-		idx = t.GetTweetsCount() - 1
-	}
-
-	t.scrollToTweet(idx)
-}
-
-// cursorDown : カーソルを下に移動
-func (t *tweets) cursorDown() {
-	idx := getHighlightId(t.view.GetHighlights())
-	if idx == -1 {
-		return
-	}
-
-	idx = (idx + 1) % t.GetTweetsCount()
-
-	t.scrollToTweet(idx)
+	t.scrollToTweet(idx + int(c))
 }
 
 // handleKeyEvents : ツイートビューのキーイベントハンドラ
@@ -234,13 +265,13 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// カーソルを上に移動
 	if key == tcell.KeyUp || keyRune == 'k' {
-		t.cursorUp()
+		t.moveCursor(cursorUp)
 		return nil
 	}
 
 	// カーソルを下に移動
 	if key == tcell.KeyDown || keyRune == 'j' {
-		t.cursorDown()
+		t.moveCursor(cursorDown)
 		return nil
 	}
 
