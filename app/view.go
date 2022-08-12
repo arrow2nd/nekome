@@ -167,6 +167,7 @@ func (v *view) RemoveCurrentPage() {
 
 	// ページを削除
 	v.pageView.RemovePage(id)
+	v.pages[id].OnDelete()
 	delete(v.pages, id)
 
 	// 1つ前のタブを選択
@@ -212,7 +213,6 @@ func (v *view) selectPrevTab() {
 		return
 	}
 
-	v.pages[v.tabs[prevTabIndex].id].OnInactive()
 	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
@@ -222,11 +222,11 @@ func (v *view) selectNextTab() {
 	pageCount := v.pageView.GetPageCount()
 
 	v.tabIndex = (v.tabIndex + 1) % pageCount
+
 	if v.tabIndex == prevTabIndex {
 		return
 	}
 
-	v.pages[v.tabs[prevTabIndex].id].OnInactive()
 	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
@@ -234,6 +234,13 @@ func (v *view) selectNextTab() {
 func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ハイライトされたタブまでスクロール
 	v.tabView.ScrollToHighlight()
+
+	// 前のページを非アクティブにする
+	if len(removed) > 0 {
+		if page, ok := v.pages[removed[0]]; ok {
+			page.OnInactive()
+		}
+	}
 
 	// ページを切り替え
 	v.pageView.SwitchToPage(added[0])

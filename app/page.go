@@ -14,6 +14,7 @@ type page interface {
 	Load()
 	OnActive()
 	OnInactive()
+	OnDelete()
 }
 
 // handleCommonPageKeyEvent : ページ共通のキーハンドラ
@@ -62,6 +63,9 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 	b.frame.SetBorders(1, 1, 0, 0, 1, 1)
 }
 
+// Load : 読み込み
+func (b *basePage) Load() {}
+
 // OnActive : ページが表示された
 func (b *basePage) OnActive() {
 	b.isActive = true
@@ -74,6 +78,9 @@ func (b *basePage) OnActive() {
 func (b *basePage) OnInactive() {
 	b.isActive = false
 }
+
+// OnDelete : ページが破棄された
+func (b *basePage) OnDelete() {}
 
 type tweetsBasePage struct {
 	*basePage
