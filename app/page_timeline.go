@@ -95,6 +95,14 @@ func (t *timelinePage) Load() {
 	}
 }
 
+// OnDelete : ページが破棄された
+func (t *timelinePage) OnDelete() {
+	// ストリームモードが有効なら終了する
+	if t.isStreamMode() {
+		t.closeStream()
+	}
+}
+
 // getStreamIndicator : ストリームモードのインジケータを取得
 func (t *timelinePage) getStreamIndicator() string {
 	if !t.isStreamMode() {
@@ -109,7 +117,7 @@ func (t *timelinePage) isStreamMode() bool {
 	return t.cancel != nil
 }
 
-// startStream : ストリームモード開始
+// startStream : ストリームモードを開始
 func (t *timelinePage) startStream() {
 	if t.isStreamMode() {
 		shared.SetErrorStatus(t.name, "stream mode has already started")
@@ -118,7 +126,7 @@ func (t *timelinePage) startStream() {
 
 	// 読み込み間隔を決定
 	if interval, err := t.calcReloadInterval(); err != nil {
-		shared.SetErrorStatus(t.name, err.Error())
+		shared.SetErrorStatus(t.name, fmt.Sprintf("stream mode cannot be started (%s)", err.Error()))
 		return
 	} else {
 		t.reloadInterval = interval
@@ -129,12 +137,12 @@ func (t *timelinePage) startStream() {
 
 	go t.stream(ctx)
 
-	shared.SetStatus(t.name, "stream mode started")
+	shared.SetStatus(t.name, "stream mode has been started")
 	t.updateIndicator(t.getStreamIndicator())
 }
 
-// endStream : ストリームモード終了
-func (t *timelinePage) endStream() {
+// closeStream : ストリームモードを終了
+func (t *timelinePage) closeStream() {
 	if !t.isStreamMode() {
 		shared.SetErrorStatus(t.name, "stream mode has not been started")
 		return
@@ -143,6 +151,7 @@ func (t *timelinePage) endStream() {
 	t.cancel()
 	t.cancel = nil
 
+	shared.SetStatus(t.name, "stream mode has been closed")
 	t.updateIndicator(t.getStreamIndicator())
 }
 
@@ -180,17 +189,17 @@ func (t *timelinePage) stream(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			t.reloadStream(ticker)
+			t.loadStream(ticker)
 		}
 	}
 }
 
-// reloadStream : ストリームを再読み込み
-func (t *timelinePage) reloadStream(ticker *time.Ticker) {
+// loadStream : ストリームを読み込み
+func (t *timelinePage) loadStream(ticker *time.Ticker) {
 	// レート制限情報が無い場合は不正な状態なので終了させる
 	if t.tweets.rateLimit == nil {
-		t.endStream()
-		shared.SetErrorStatus(t.name, "unable to start stream mode due to failure to obtain rate limit")
+		t.closeStream()
+		shared.SetErrorStatus(t.name, "stream mode has been interrupted (failed to obtain rate limit)")
 		return
 	}
 
@@ -221,7 +230,7 @@ func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// ストリームモード終了
 	if keyRune == 'S' {
-		t.endStream()
+		t.closeStream()
 		return nil
 	}
 
