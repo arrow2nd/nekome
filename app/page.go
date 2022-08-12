@@ -66,7 +66,7 @@ func (b *basePage) SetFrame(p tview.Primitive) {
 // Load : 読み込み
 func (b *basePage) Load() {}
 
-// OnActive : ページが表示された
+// OnActive : ページがアクティブになった
 func (b *basePage) OnActive() {
 	b.isActive = true
 
@@ -74,7 +74,7 @@ func (b *basePage) OnActive() {
 	shared.SetIndicator(b.indicator)
 }
 
-// OnInactive : ページが非表示にされた
+// OnInactive : ページが非アクティブになった
 func (b *basePage) OnInactive() {
 	b.isActive = false
 }
