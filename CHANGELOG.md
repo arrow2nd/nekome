@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.1.0] - 2022-08-13
+
 ### Added
 
 - `tweet` コマンドを標準入力に対応
@@ -37,7 +39,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v1.0.3...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/arrow2nd/nekome/compare/v1.0.3...v1.1.0
 [v1.0.3]: https://github.com/arrow2nd/nekome/compare/v1.0.2...v1.0.3
 [v1.0.2]: https://github.com/arrow2nd/nekome/compare/v1.0.1...v1.0.2
 [v1.0.1]: https://github.com/arrow2nd/nekome/compare/v1.0.0...v1.0.1
