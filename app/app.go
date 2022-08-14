@@ -254,15 +254,15 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()
 
-	// 左のタブを選択
+	// 前のタブを選択
 	if key == tcell.KeyLeft || keyRune == 'h' {
-		a.view.selectPrevTab()
+		a.view.MoveTab(TabMovePrev)
 		return nil
 	}
 
-	// 右のタブを選択
+	// 次のタブを選択
 	if key == tcell.KeyRight || keyRune == 'l' {
-		a.view.selectNextTab()
+		a.view.MoveTab(TabMoveNext)
 		return nil
 	}
 
