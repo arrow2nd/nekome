@@ -9,6 +9,14 @@ import (
 	"github.com/rivo/tview"
 )
 
+// tabMove : タブの移動量
+type tabMove int
+
+const (
+	TabMovePrev tabMove = -1
+	TabMoveNext tabMove = 1
+)
+
 // ModalOpt : モーダルの設定
 type ModalOpt struct {
 	title  string
@@ -170,7 +178,7 @@ func (v *view) RemoveCurrentPage() {
 	v.pages[id].OnDelete()
 	delete(v.pages, id)
 
-	// 1つ前のタブを選択
+	// 前のタブを選択
 	if v.tabIndex--; v.tabIndex < 0 {
 		v.tabIndex = 0
 	}
@@ -178,51 +186,19 @@ func (v *view) RemoveCurrentPage() {
 	v.tabView.Highlight(v.tabs[v.tabIndex].id)
 }
 
-// PopupModal : モーダルを表示
-func (v *view) PopupModal(o *ModalOpt) {
-	message := o.title
-
-	if o.text != "" {
-		hr := createSeparator("-", 4)
-		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
-	}
-
-	v.modal.
-		SetFocus(0).
-		SetText(message).
-		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-			if buttonLabel == "Yes" {
-				o.onDone()
-			}
-			v.pageView.RemovePage("modal")
-		})
-
-	v.pageView.AddPage("modal", v.modal, true, true)
-}
-
-// selectPrevTab : 前のタブを選択
-func (v *view) selectPrevTab() {
+// MoveTab : タブを移動する
+func (v *view) MoveTab(move tabMove) {
 	prevTabIndex := v.tabIndex
-	pageCount := v.pageView.GetPageCount()
+	v.tabIndex += int(move)
 
-	if v.tabIndex--; v.tabIndex < 0 {
-		v.tabIndex = pageCount - 1
+	// 範囲内に丸める
+	if max := v.pageView.GetPageCount(); v.tabIndex < 0 {
+		v.tabIndex = max - 1
+	} else if v.tabIndex >= max {
+		v.tabIndex = 0
 	}
 
-	if v.tabIndex == prevTabIndex {
-		return
-	}
-
-	v.tabView.Highlight(v.tabs[v.tabIndex].id)
-}
-
-// selectNextTab : 次のタブを選択
-func (v *view) selectNextTab() {
-	prevTabIndex := v.tabIndex
-	pageCount := v.pageView.GetPageCount()
-
-	v.tabIndex = (v.tabIndex + 1) % pageCount
-
+	// 移動前と同じなら中断
 	if v.tabIndex == prevTabIndex {
 		return
 	}
@@ -245,6 +221,28 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ページを切り替え
 	v.pageView.SwitchToPage(added[0])
 	v.pages[added[0]].OnActive()
+}
+
+// PopupModal : モーダルを表示
+func (v *view) PopupModal(o *ModalOpt) {
+	message := o.title
+
+	if o.text != "" {
+		hr := createSeparator("-", 4)
+		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
+	}
+
+	v.modal.
+		SetFocus(0).
+		SetText(message).
+		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+			if buttonLabel == "Yes" {
+				o.onDone()
+			}
+			v.pageView.RemovePage("modal")
+		})
+
+	v.pageView.AddPage("modal", v.modal, true, true)
 }
 
 // handleModalKeyEvent : モーダルのキーイベントハンドラ

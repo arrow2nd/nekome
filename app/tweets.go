@@ -9,12 +9,12 @@ import (
 	"github.com/rivo/tview"
 )
 
-// cursor : カーソルの移動量
-type cursor int
+// cursorMove : カーソルの移動量
+type cursorMove int
 
 const (
-	cursorUp   cursor = -1
-	cursorDown cursor = 1
+	cursorMoveUp   cursorMove = -1
+	cursorMoveDown cursorMove = 1
 )
 
 // tweets : ツイートの表示管理
@@ -235,7 +235,7 @@ func (t *tweets) scrollToTweet(i int) {
 }
 
 // moveCursor : カーソルを移動
-func (t *tweets) moveCursor(c cursor) {
+func (t *tweets) moveCursor(c cursorMove) {
 	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
 		return
@@ -265,13 +265,13 @@ func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// カーソルを上に移動
 	if key == tcell.KeyUp || keyRune == 'k' {
-		t.moveCursor(cursorUp)
+		t.moveCursor(cursorMoveUp)
 		return nil
 	}
 
 	// カーソルを下に移動
 	if key == tcell.KeyDown || keyRune == 'j' {
-		t.moveCursor(cursorDown)
+		t.moveCursor(cursorMoveDown)
 		return nil
 	}
 
