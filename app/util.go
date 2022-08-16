@@ -94,15 +94,15 @@ func getHighlightId(ids []string) int {
 	return id
 }
 
-// find : スライス内に任意の条件を満たす値があるか
-func find[T any](s []T, f func(T) bool) bool {
-	for _, v := range s {
+// find : スライス内から任意の条件を満たす値を探す
+func find[T any](s []T, f func(T) bool) (int, bool) {
+	for i, v := range s {
 		if f(v) {
-			return true
+			return i, true
 		}
 	}
 
-	return false
+	return -1, false
 }
 
 // truncate : 文字列を指定幅で丸める

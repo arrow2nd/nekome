@@ -114,7 +114,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 func (a *App) uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
-	containsGIF := find(images, func(v string) bool {
+	_, containsGIF := find(images, func(v string) bool {
 		return strings.HasSuffix(strings.ToLower(v), ".gif")
 	})
 
