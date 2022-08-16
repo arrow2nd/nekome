@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 
@@ -110,9 +109,17 @@ func (v *view) AddPage(p page, focus bool) error {
 		name: p.GetName(),
 	}
 
-	// ページの重複チェック
+	// ページが重複する場合、既にあるページに移動
 	if _, ok := v.pages[newTab.id]; ok {
-		return errors.New("this page already exists")
+		tabIndex, found := find(v.tabs, func(e *tab) bool { return e.id == newTab.id })
+		if !found {
+			return fmt.Errorf("Failed to add page (%s)", newTab.name)
+		}
+
+		v.tabView.Highlight(newTab.id)
+		v.tabIndex = tabIndex
+
+		return nil
 	}
 
 	// ページを追加
