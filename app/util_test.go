@@ -123,10 +123,11 @@ func TestGetHighlightId(t *testing.T) {
 
 func TestFind(t *testing.T) {
 	tests := []struct {
-		name string
-		s    []int
-		f    func(int) bool
-		want bool
+		name  string
+		s     []int
+		f     func(int) bool
+		want  int
+		found bool
 	}{
 		{
 			name: "条件を満たす",
@@ -134,7 +135,8 @@ func TestFind(t *testing.T) {
 			f: func(e int) bool {
 				return e == 1
 			},
-			want: true,
+			want:  0,
+			found: true,
 		},
 		{
 			name: "条件を満たさない",
@@ -142,13 +144,14 @@ func TestFind(t *testing.T) {
 			f: func(e int) bool {
 				return e > 4
 			},
-			want: false,
+			want:  -1,
+			found: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := find(tt.s, tt.f); got != tt.want {
-				t.Errorf("find() = %v, want %v", got, tt.want)
+			if index, got := find(tt.s, tt.f); index != tt.want || got != tt.found {
+				t.Errorf("find() = %v, %v, want &v, %v", got, tt.want, tt.found)
 			}
 		})
 	}
