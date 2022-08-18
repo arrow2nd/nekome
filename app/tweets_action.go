@@ -18,7 +18,7 @@ const (
 	tweetUnretweet tweetActionType = "Unretweet"
 	tweetDelete    tweetActionType = "Delete"
 	userFollow     userActionType  = "Follow"
-	userUnfollow   userActionType  = "UnFollow"
+	userUnfollow   userActionType  = "Unfollow"
 	userBlock      userActionType  = "Block"
 	userUnblock    userActionType  = "Unblock"
 	userMute       userActionType  = "Mute"
@@ -71,7 +71,7 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf("Are you sure you want to %s this tweet?", strings.ToLower(label)),
+		fmt.Sprintf("Do you want to [red:-:b]%s[-:-:-] this tweet?", strings.ToLower(label)),
 		"",
 		f,
 	})
@@ -125,7 +125,7 @@ func (t *tweets) actionForUser(a userActionType) {
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Are you sure you want to %s?`, strings.ToLower(label)),
+		fmt.Sprintf(`Do you want to [red:-:b]%s[-:-:-] this user?`, strings.ToLower(label)),
 		summary,
 		f,
 	})
