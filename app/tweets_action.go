@@ -18,7 +18,7 @@ const (
 	tweetUnretweet tweetActionType = "Unretweet"
 	tweetDelete    tweetActionType = "Delete"
 	userFollow     userActionType  = "Follow"
-	userUnfollow   userActionType  = "UnFollow"
+	userUnfollow   userActionType  = "Unfollow"
 	userBlock      userActionType  = "Block"
 	userUnblock    userActionType  = "Unblock"
 	userMute       userActionType  = "Mute"
