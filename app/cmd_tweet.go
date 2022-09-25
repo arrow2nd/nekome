@@ -26,6 +26,8 @@ func (a *App) newTweetCmd() *cli.Command {
 		Long: `Post a tweet.
 
 If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
+Tips: If 'Feature.UseTweetWhenExEditor' in 'settings.yml' is true, an external editor will be launched even from the TUI.
+
 When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.`,
 		UsageArgs: "[text]",
@@ -45,6 +47,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	isTerm := term.IsTerminal(int(syscall.Stdin))
 
 	text := f.Arg(0)
+	editor, _ := f.GetString("editor")
 	quoteId, _ := f.GetString("quote")
 	replyId, _ := f.GetString("reply")
 	images, _ := f.GetStringSlice("image")
@@ -57,20 +60,18 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if text == "" {
 		// テキストエリアを開く
-		if isTerm {
+		if isTerm && !shared.conf.Settings.Feature.UseTweetWhenExEditor {
 			a.view.ShowTextArea("What's happening?", func(s string) {
 				execPostTweet(s, quoteId, replyId, images)
 			})
 			return nil
 		}
 
-		var err error
-		editor, _ := f.GetString("editor")
-
 		// エディタを開く
-		text, err = a.editTweet(editor)
-		if err != nil {
+		if t, err := a.editTweet(editor); err != nil {
 			return err
+		} else {
+			text = t
 		}
 	}
 

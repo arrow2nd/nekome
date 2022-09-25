@@ -11,6 +11,8 @@ type feature struct {
 	LoadTweetsCount int
 	// TweetMaxAccumulationNum : ツイートの最大蓄積数
 	TweetMaxAccumulationNum int
+	// UseTweetWhenExEditor : ツイート時に外部エディタを使用するか
+	UseTweetWhenExEditor bool
 	// IsLocaleCJK : ロケールがCJKか
 	IsLocaleCJK bool
 	// Confirm : 確認ウィンドウの表示
@@ -91,6 +93,7 @@ func defaultSettings() *Settings {
 			MainUser:                "",
 			LoadTweetsCount:         25,
 			TweetMaxAccumulationNum: 250,
+			UseTweetWhenExEditor:    false,
 			IsLocaleCJK:             true,
 			Confirm: map[string]bool{
 				"Like":      true,
