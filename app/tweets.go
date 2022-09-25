@@ -244,7 +244,7 @@ func (t *tweets) moveCursor(c cursorMove) {
 	t.scrollToTweet(idx + int(c))
 }
 
-// handleKeyEvents : ツイートビューのキーイベントハンドラ
+// handleKeyEvents : ツイートビューのキーハンドラ
 func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	keyRune := event.Rune()

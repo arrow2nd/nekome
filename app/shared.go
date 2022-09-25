@@ -65,7 +65,7 @@ func (s *Shared) SetIndicator(indicator string) {
 	}()
 }
 
-// SetDisablePageKeyEvent : ページの共通キーイベントを無効化
+// SetDisablePageKeyEvent : ページの共通キーハンドラを無効化
 func (s *Shared) SetDisablePageKeyEvent(b bool) {
 	go func() {
 		s.chDisablePageKeyEvent <- b

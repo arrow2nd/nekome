@@ -70,7 +70,7 @@ func newView() *view {
 		AddButtons([]string{"No", "Yes"}).
 		SetTextColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault).
-		SetInputCapture(v.handleModalKeyEvent)
+		SetInputCapture(v.handleModalKeyEvents)
 
 	return v
 }
@@ -96,7 +96,7 @@ func (v *view) drawTab() {
 	}
 }
 
-// SetInputCapture : キーイベントハンドラを設定
+// SetInputCapture : キーハンドラを設定
 func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
 	v.mainView.SetInputCapture(f)
 }
@@ -257,8 +257,8 @@ func (v *view) PopupModal(o *ModalOpt) {
 	shared.SetDisablePageKeyEvent(true)
 }
 
-// handleModalKeyEvent : モーダルのキーイベントハンドラ
-func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+// handleModalKeyEvents : モーダルのキーハンドラ
+func (v *view) handleModalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// hjを左キーの入力イベントに置換
