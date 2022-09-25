@@ -70,6 +70,10 @@ func (a *App) Init() error {
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
 	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
 
+	// 文字色
+	tview.Styles.PrimaryTextColor = tcell.ColorDefault
+	tview.Styles.TitleColor = tcell.ColorDefault
+
 	// ページのキーハンドラを設定
 	a.view.SetInputCapture(a.handlePageKeyEvent)
 
