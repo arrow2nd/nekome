@@ -31,6 +31,8 @@ feature:
   loadtweetscount: 25
   # Maximum number of tweets accumulated on a page
   tweetmaxaccumulationnum: 250
+  # Whether to launch an external editor when editing tweets
+  usetweetwhenexeditor: false
   # Whether the locale setting of the execution environment is CJK or not (countermeasure for display disorder of tview)
   islocalecjk: true
   # Whether to display a confirmation modal or not

@@ -32,6 +32,8 @@ feature:
   loadtweetscount: 25
   # 1ページにおけるツイートの最大蓄積数
   tweetmaxaccumulationnum: 250
+  # ツイート編集時に外部エディタを起動するか
+  usetweetwhenexeditor: false
   # 実行環境のロケール設定が CJK かどうか（tviewの表示乱れ対策）
   islocalecjk: true
   # 確認モーダルを表示するか
