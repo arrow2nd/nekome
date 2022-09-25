@@ -119,7 +119,7 @@ func (a *App) execPostTweet(text, quoteId, replyId string, images []string) {
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		title:  fmt.Sprintf("Do you want to post a %s?", operationType),
+		title:  fmt.Sprintf("Do you want to post a [red:-:b]%s[-:-:-]?", operationType),
 		text:   text,
 		onDone: post,
 	})
