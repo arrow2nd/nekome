@@ -14,21 +14,23 @@ var version = "develop"
 
 // App : アプリケーション
 type App struct {
-	app         *tview.Application
-	cmd         *cli.Command
-	view        *view
-	statusBar   *statusBar
-	commandLine *commandLine
+	app                   *tview.Application
+	cmd                   *cli.Command
+	view                  *view
+	statusBar             *statusBar
+	commandLine           *commandLine
+	isDisablePageKeyEvent bool
 }
 
 // New : 新規作成
 func New() *App {
 	return &App{
-		app:         tview.NewApplication(),
-		cmd:         newCmd(),
-		view:        newView(),
-		statusBar:   newStatusBar(),
-		commandLine: newCommandLine(),
+		app:                   tview.NewApplication(),
+		cmd:                   newCmd(),
+		view:                  newView(),
+		statusBar:             newStatusBar(),
+		commandLine:           newCommandLine(),
+		isDisablePageKeyEvent: false,
 	}
 }
 
@@ -87,7 +89,7 @@ func (a *App) Init() error {
 		AddItem(a.view.tabView, 0, 0, 1, 1, 0, 0, false).
 		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
 		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
-		AddItem(a.view.pageView, 1, 0, 1, 1, 0, 0, true)
+		AddItem(a.view.mainView, 1, 0, 1, 1, 0, 0, true)
 
 	a.app.
 		SetRoot(layout, true).
@@ -210,6 +212,8 @@ func (a *App) eventReciever() {
 		case indicator := <-shared.chIndicator:
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
+		case b := <-shared.chDisablePageKeyEvent:
+			a.isDisablePageKeyEvent = b
 		case opt := <-shared.chPopupModal:
 			a.view.PopupModal(opt)
 			a.app.Draw()
@@ -221,8 +225,11 @@ func (a *App) eventReciever() {
 			a.app.SetFocus(a.commandLine.inputField)
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
-		case <-shared.chFocusPageView:
-			a.app.SetFocus(a.view.pageView)
+		case <-shared.chFocusMainView:
+			a.app.SetFocus(a.view.mainView)
+			a.app.Draw()
+		case p := <-shared.chFocusPrimitive:
+			a.app.SetFocus(*p)
 			a.app.Draw()
 		}
 	}
@@ -230,8 +237,12 @@ func (a *App) eventReciever() {
 
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
 func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	// ページの基本操作が無効化されている
+	if a.isDisablePageKeyEvent {
+		return event
+	}
+
 	key := event.Key()
-	keyRune := event.Rune()
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
@@ -240,17 +251,16 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	// ショートカットのヘルプ
-	if keyRune == '?' {
-		shared.RequestExecCommand("docs shortcuts")
-		return nil
-	}
-
 	return event
 }
 
 // handlePageKeyEvent : ページビューのキーハンドラ
 func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+	// ページの基本操作が無効化されている
+	if a.isDisablePageKeyEvent {
+		return event
+	}
+
 	key := event.Key()
 	keyRune := event.Rune()
 
@@ -275,6 +285,12 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	// コマンドラインへフォーカスを移動
 	if keyRune == ':' {
 		a.app.SetFocus(a.commandLine.inputField)
+		return nil
+	}
+
+	// ショートカットのヘルプ
+	if keyRune == '?' {
+		shared.RequestExecCommand("docs shortcuts")
 		return nil
 	}
 

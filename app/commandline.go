@@ -43,7 +43,7 @@ func (c *commandLine) Init() {
 		SetAutocompleteFunc(c.handleAutocomplete).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).
-		SetInputCapture(c.handleKeyEvent)
+		SetInputCapture(c.handleKeyEvents)
 }
 
 // SetText : テキストを設定
@@ -104,7 +104,7 @@ func (c *commandLine) Blur() {
 		SetLabel("").
 		SetText("")
 
-	shared.RequestFocusPageView()
+	shared.RequestFocusMainView()
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
@@ -144,8 +144,8 @@ func (c *commandLine) handleFocus() {
 		SetPlaceholder("")
 }
 
-// handleKeyEvent : キーイベントハンドラ
-func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+// handleKeyEvents : キーハンドラ
+func (c *commandLine) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	text := c.inputField.GetText()
 

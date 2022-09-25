@@ -31,8 +31,10 @@ type tab struct {
 
 // view : ページの表示域
 type view struct {
+	mainView *tview.Flex
 	pageView *tview.Pages
 	tabView  *tview.TextView
+	textArea *tview.TextArea
 	modal    *tview.Modal
 	pages    map[string]page
 	tabs     []*tab
@@ -42,13 +44,20 @@ type view struct {
 
 func newView() *view {
 	v := &view{
+		mainView: tview.NewFlex(),
 		pageView: tview.NewPages(),
 		tabView:  tview.NewTextView(),
+		textArea: tview.NewTextArea(),
 		modal:    tview.NewModal(),
 		pages:    map[string]page{},
 		tabs:     []*tab{},
 		tabIndex: 0,
 	}
+
+	v.mainView.
+		SetDirection(tview.FlexRow).
+		AddItem(v.pageView, 0, 1, true).
+		AddItem(v.textArea, 0, 0, false)
 
 	v.tabView.
 		SetDynamicColors(true).
@@ -61,7 +70,7 @@ func newView() *view {
 		AddButtons([]string{"No", "Yes"}).
 		SetTextColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault).
-		SetInputCapture(v.handleModalKeyEvent)
+		SetInputCapture(v.handleModalKeyEvents)
 
 	return v
 }
@@ -87,16 +96,9 @@ func (v *view) drawTab() {
 	}
 }
 
-// SetInputCapture : キーイベントハンドラを設定
+// SetInputCapture : キーハンドラを設定
 func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
-	v.pageView.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		// モーダル表示中は操作を受け付けない
-		if v.modal.HasFocus() {
-			return event
-		}
-
-		return f(event)
-	})
+	v.mainView.SetInputCapture(f)
 }
 
 // AddPage : ページを追加
@@ -247,13 +249,16 @@ func (v *view) PopupModal(o *ModalOpt) {
 				o.onDone()
 			}
 			v.pageView.RemovePage("modal")
+			shared.SetDisablePageKeyEvent(false)
 		})
 
 	v.pageView.AddPage("modal", v.modal, true, true)
+
+	shared.SetDisablePageKeyEvent(true)
 }
 
-// handleModalKeyEvent : モーダルのキーイベントハンドラ
-func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+// handleModalKeyEvents : モーダルのキーハンドラ
+func (v *view) handleModalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// hjを左キーの入力イベントに置換
@@ -267,4 +272,45 @@ func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	}
 
 	return event
+}
+
+// ShowTextArea : テキストエリアを表示
+func (v *view) ShowTextArea(title string, onSubmit func(s string)) {
+	v.textArea.
+		SetText("", false).
+		SetTitle(fmt.Sprintf(" %s (Press ESC to close, press Ctrl-P to post) ", title)).
+		SetTitleAlign(tview.AlignLeft).
+		SetBorderPadding(0, 0, 1, 1).
+		SetBorder(true).
+		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			key := event.Key()
+
+			// 閉じる
+			if key == tcell.KeyEsc {
+				v.HiddenTextArea()
+				return nil
+			}
+
+			// 送信
+			if key == tcell.KeyCtrlP {
+				v.HiddenTextArea()
+				onSubmit(v.textArea.GetText())
+				return nil
+			}
+
+			return event
+		})
+
+	v.mainView.ResizeItem(v.textArea, 0, 1)
+
+	shared.RequestFocusPrimitive(v.textArea)
+	shared.SetDisablePageKeyEvent(true)
+}
+
+// HiddenTextArea : テキストエリアを非表示
+func (v *view) HiddenTextArea() {
+	v.mainView.ResizeItem(v.textArea, 0, 0)
+
+	shared.RequestFocusPrimitive(v.pageView)
+	shared.SetDisablePageKeyEvent(false)
 }
