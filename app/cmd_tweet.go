@@ -25,10 +25,9 @@ func (a *App) newTweetCmd() *cli.Command {
 		Short:     "Post a tweet",
 		Long: `Post a tweet.
 
-If you omit the tweet statement, the editor will be activated.
+If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
 When specifying multiple images, please separate them with commas.
-You may attach up to four images at a time.
-You may not tweet only images.`,
+You may attach up to four images at a time.`,
 		UsageArgs: "[text]",
 		Example: `tweet にゃーん --image cute_cat.png,very_cute_cat.png
   echo "にゃーん" | nekome tweet`,
@@ -44,7 +43,11 @@ You may not tweet only images.`,
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	isTerm := term.IsTerminal(int(syscall.Stdin))
+
 	text := f.Arg(0)
+	quoteId, _ := f.GetString("quote")
+	replyId, _ := f.GetString("reply")
+	images, _ := f.GetStringSlice("image")
 
 	// 標準入力を受け取る
 	if f.NArg() == 0 && !isTerm {
@@ -52,42 +55,76 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 		text = string(stdin)
 	}
 
-	// ツイート文が無いなら、エディタを起動
 	if text == "" {
+		// テキストエリアを開く
+		if isTerm {
+			a.view.ShowTextArea("What's happening?", func(s string) {
+				execPostTweet(s, quoteId, replyId, images)
+			})
+			return nil
+		}
+
+		var err error
 		editor, _ := f.GetString("editor")
 
-		t, err := a.editTweet(editor)
+		// エディタを開く
+		text, err = a.editTweet(editor)
 		if err != nil {
 			return err
 		}
-
-		text = t
 	}
 
-	// 末尾の改行を削除
-	text = trimEndNewline(text)
-
-	if text == "" {
-		return nil
-	}
-
-	quoteId, _ := f.GetString("quote")
-	replyId, _ := f.GetString("reply")
-	images, _ := f.GetStringSlice("image")
-
-	a.execPostTweet(text, quoteId, replyId, images)
+	execPostTweet(text, quoteId, replyId, images)
 
 	return nil
 }
 
-func (a *App) execPostTweet(text, quoteId, replyId string, images []string) {
+func (a *App) editTweet(editor string) (string, error) {
+	dir, err := config.GetConfigDir()
+	if err != nil {
+		return "", err
+	}
+
+	tmpFile := path.Join(dir, ".tmp")
+	if _, err := os.Create(tmpFile); err != nil {
+		return "", err
+	}
+
+	// エディタを起動
+	if err := a.execEditor(editor, tmpFile); err != nil {
+		return "", err
+	}
+
+	// 一時ファイル読み込み
+	bytes, err := ioutil.ReadFile(tmpFile)
+	if err != nil {
+		return "", err
+	}
+
+	// 一時ファイル削除
+	if err := os.Remove(tmpFile); err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
+}
+
+// execPostTweet : ツイートを投稿
+func execPostTweet(text, quoteId, replyId string, images []string) {
+	// 末尾の改行を削除
+	text = trimEndNewline(text)
+
+	// 文章も画像もない場合キャンセル
+	if text == "" && len(images) == 0 {
+		return
+	}
+
 	post := func() {
 		var mediaIids []string
 
 		// 画像をアップロード
 		if images != nil {
-			ids, err := a.uploadImages(images)
-
+			ids, err := uploadImages(images)
 			if err != nil {
 				shared.SetErrorStatus("Upload Image", err.Error())
 				return
@@ -112,6 +149,7 @@ func (a *App) execPostTweet(text, quoteId, replyId string, images []string) {
 	}
 
 	operationType := "tweet"
+
 	if replyId != "" {
 		operationType = "reply"
 	} else if quoteId != "" {
@@ -125,7 +163,8 @@ func (a *App) execPostTweet(text, quoteId, replyId string, images []string) {
 	})
 }
 
-func (a *App) uploadImages(images []string) ([]string, error) {
+// uploadImages : 画像をアップロード
+func uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
 	_, containsGif := find(images, func(v string) bool {
@@ -189,34 +228,4 @@ func (a *App) uploadImages(images []string) ([]string, error) {
 	}
 
 	return mediaIds, nil
-}
-
-func (a *App) editTweet(editor string) (string, error) {
-	dir, err := config.GetConfigDir()
-	if err != nil {
-		return "", err
-	}
-
-	tmpFile := path.Join(dir, ".tmp")
-	if _, err := os.Create(tmpFile); err != nil {
-		return "", err
-	}
-
-	// エディタを起動
-	if err := a.execEditor(editor, tmpFile); err != nil {
-		return "", err
-	}
-
-	// 一時ファイル読み込み
-	bytes, err := ioutil.ReadFile(tmpFile)
-	if err != nil {
-		return "", err
-	}
-
-	// 一時ファイル削除
-	if err := os.Remove(tmpFile); err != nil {
-		return "", err
-	}
-
-	return string(bytes), nil
 }

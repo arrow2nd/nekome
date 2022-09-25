@@ -104,7 +104,7 @@ func (c *commandLine) Blur() {
 		SetLabel("").
 		SetText("")
 
-	shared.RequestFocusPageView()
+	shared.RequestFocusMainView()
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
