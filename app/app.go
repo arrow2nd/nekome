@@ -231,18 +231,11 @@ func (a *App) eventReciever() {
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
 func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
-	keyRune := event.Rune()
 
 	// アプリを終了
 	if key == tcell.KeyCtrlQ {
 		a.commandLine.Blur()
 		a.quitApp()
-		return nil
-	}
-
-	// ショートカットのヘルプ
-	if keyRune == '?' {
-		shared.RequestExecCommand("docs shortcuts")
 		return nil
 	}
 
@@ -275,6 +268,12 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	// コマンドラインへフォーカスを移動
 	if keyRune == ':' {
 		a.app.SetFocus(a.commandLine.inputField)
+		return nil
+	}
+
+	// ショートカットのヘルプ
+	if keyRune == '?' {
+		shared.RequestExecCommand("docs shortcuts")
 		return nil
 	}
 
