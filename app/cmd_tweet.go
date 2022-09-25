@@ -43,10 +43,11 @@ You may not tweet only images.`,
 }
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
+	isTerm := term.IsTerminal(int(syscall.Stdin))
 	text := f.Arg(0)
 
 	// 標準入力を受け取る
-	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
+	if f.NArg() == 0 && !isTerm {
 		stdin, _ := ioutil.ReadAll(os.Stdin)
 		text = string(stdin)
 	}
@@ -65,30 +66,38 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	// 末尾の改行を削除
 	text = trimEndNewline(text)
+
 	if text == "" {
 		return nil
 	}
 
-	quote, _ := f.GetString("quote")
-	reply, _ := f.GetString("reply")
+	quoteId, _ := f.GetString("quote")
+	replyId, _ := f.GetString("reply")
 	images, _ := f.GetStringSlice("image")
 
+	a.execPostTweet(text, quoteId, replyId, images)
+
+	return nil
+}
+
+func (a *App) execPostTweet(text, quoteId, replyId string, images []string) {
 	post := func() {
-		var mediaIDs []string
+		var mediaIids []string
 
 		// 画像をアップロード
 		if images != nil {
 			ids, err := a.uploadImages(images)
+
 			if err != nil {
 				shared.SetErrorStatus("Upload Image", err.Error())
 				return
 			}
 
-			mediaIDs = ids
+			mediaIids = ids
 		}
 
 		// 投稿
-		if err := shared.api.PostTweet(text, quote, reply, mediaIDs); err != nil {
+		if err := shared.api.PostTweet(text, quoteId, replyId, mediaIids); err != nil {
 			shared.SetErrorStatus("Tweet", err.Error())
 			return
 		}
@@ -99,27 +108,32 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	// 確認画面不要 or コマンドラインモードならそのまま実行
 	if shared.isCommandLineMode || !shared.conf.Settings.Feature.Confirm["Tweet"] {
 		post()
-		return nil
+		return
+	}
+
+	operationType := "tweet"
+	if replyId != "" {
+		operationType = "reply"
+	} else if quoteId != "" {
+		operationType = "quote tweet"
 	}
 
 	shared.ReqestPopupModal(&ModalOpt{
-		title:  "Do you want to tweet?",
+		title:  fmt.Sprintf("Do you want to post a %s?", operationType),
 		text:   text,
 		onDone: post,
 	})
-
-	return nil
 }
 
 func (a *App) uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
-	_, containsGIF := find(images, func(v string) bool {
+	_, containsGif := find(images, func(v string) bool {
 		return strings.HasSuffix(strings.ToLower(v), ".gif")
 	})
 
 	// 複数の画像と一緒にGIFをアップロードしようとしていないか
-	if containsGIF && imagesCount > 1 {
+	if containsGif && imagesCount > 1 {
 		return nil, errors.New("gif images cannot be attached with other images")
 	}
 
