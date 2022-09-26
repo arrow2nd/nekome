@@ -72,6 +72,15 @@ func newView() *view {
 		SetBackgroundColor(tcell.ColorDefault).
 		SetInputCapture(v.handleModalKeyEvents)
 
+	v.textArea.
+		SetTextStyle(tcell.StyleDefault).
+		SetTitleAlign(tview.AlignLeft).
+		SetBorderPadding(0, 0, 1, 1).
+		SetBorder(true).
+		SetTitleColor(tcell.ColorDefault).
+		SetBorderColor(tcell.ColorDefault).
+		SetBackgroundColor(tcell.ColorDefault)
+
 	return v
 }
 
@@ -244,6 +253,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 	v.modal.
 		SetFocus(0).
 		SetText(message).
+		SetButtonBackgroundColor(shared.conf.Style.Autocomplete.NormalBG.ToColor()).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Yes" {
 				o.onDone()
@@ -279,9 +289,6 @@ func (v *view) ShowTextArea(title string, onSubmit func(s string)) {
 	v.textArea.
 		SetText("", false).
 		SetTitle(fmt.Sprintf(" %s (Press ESC to close, press Ctrl-P to post) ", title)).
-		SetTitleAlign(tview.AlignLeft).
-		SetBorderPadding(0, 0, 1, 1).
-		SetBorder(true).
 		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			key := event.Key()
 
