@@ -253,7 +253,6 @@ func (v *view) PopupModal(o *ModalOpt) {
 	v.modal.
 		SetFocus(0).
 		SetText(message).
-		SetButtonBackgroundColor(shared.conf.Style.Autocomplete.NormalBG.ToColor()).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			if buttonLabel == "Yes" {
 				o.onDone()
