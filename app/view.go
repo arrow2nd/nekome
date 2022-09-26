@@ -250,7 +250,8 @@ func (v *view) PopupModal(o *ModalOpt) {
 			}
 			v.pageView.RemovePage("modal")
 			shared.SetDisablePageKeyEvent(false)
-		})
+		}).
+		SetButtonBackgroundColor(tcell.ColorDefault)
 
 	v.pageView.AddPage("modal", v.modal, true, true)
 
@@ -278,10 +279,14 @@ func (v *view) handleModalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 func (v *view) ShowTextArea(title string, onSubmit func(s string)) {
 	v.textArea.
 		SetText("", false).
+		SetTextStyle(tcell.StyleDefault).
 		SetTitle(fmt.Sprintf(" %s (Press ESC to close, press Ctrl-P to post) ", title)).
 		SetTitleAlign(tview.AlignLeft).
 		SetBorderPadding(0, 0, 1, 1).
 		SetBorder(true).
+		SetTitleColor(tcell.ColorDefault).
+		SetBorderColor(tcell.ColorDefault).
+		SetBackgroundColor(tcell.ColorDefault).
 		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			key := event.Key()
 
