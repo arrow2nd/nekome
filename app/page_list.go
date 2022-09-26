@@ -12,7 +12,7 @@ type listPage struct {
 }
 
 func newListPage(name, id string) *listPage {
-	tabName := shared.conf.Settings.Texts.TabList
+	tabName := shared.conf.Settings.Text.TabList
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
 	p := &listPage{
@@ -31,10 +31,10 @@ func (l *listPage) Load() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	shared.SetStatus(l.name, shared.conf.Settings.Texts.Loading)
+	shared.SetStatus(l.name, shared.conf.Settings.Text.Loading)
 
 	// リスト内のツイートを取得
-	count := shared.conf.Settings.Feature.LoadTweetsCount
+	count := shared.conf.Settings.Feature.LoadTweetsLimit
 	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, count)
 	if err != nil {
 		l.tweets.DrawMessage(err.Error())

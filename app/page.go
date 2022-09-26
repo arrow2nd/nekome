@@ -113,7 +113,7 @@ func (t *tweetsBasePage) updateIndicator(s string) {
 
 // updateLoadedStatus : ステータスメッセージを更新
 func (t *tweetsBasePage) updateLoadedStatus(count int) {
-	text := shared.conf.Settings.Texts.NoTweets
+	text := shared.conf.Settings.Text.NoTweets
 
 	if count > 0 {
 		text = fmt.Sprintf("%d tweets loaded", count)

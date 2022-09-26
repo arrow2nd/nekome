@@ -60,7 +60,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if text == "" {
 		// テキストエリアを開く
-		if isTerm && !shared.conf.Settings.Feature.UseTweetWhenExEditor {
+		if isTerm && !shared.conf.Settings.Feature.UseExternalEditor {
 			a.view.ShowTextArea("What's happening?", func(s string) {
 				execPostTweet(s, quoteId, replyId, images)
 			})
@@ -144,7 +144,7 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 	}
 
 	// 確認画面不要 or コマンドラインモードならそのまま実行
-	if shared.isCommandLineMode || !shared.conf.Settings.Feature.Confirm["Tweet"] {
+	if shared.isCommandLineMode || !shared.conf.Settings.Confirm["tweet"] {
 		post()
 		return
 	}

@@ -22,7 +22,7 @@ func newStatusBar() *statusBar {
 
 // Init : 初期化
 func (s *statusBar) Init() {
-	bgColor := shared.conf.Style.StatusBar.BG.ToColor()
+	bgColor := shared.conf.Style.StatusBar.BackgroundColor.ToColor()
 
 	s.accountInfo.
 		SetDynamicColors(true).

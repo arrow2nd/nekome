@@ -93,7 +93,7 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
-	t := shared.conf.Style.App.Tab
+	t := shared.conf.Style.App.TabText
 
 	for i, tab := range v.tabs {
 		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, t, tab.id, tab.name)

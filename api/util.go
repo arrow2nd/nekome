@@ -31,25 +31,24 @@ func inputPIN() (string, error) {
 
 // getConsumerToken : クライアントトークンを取得
 func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
-	token := consumerToken
-	secret := consumerSecret
+	consumer := &oauth1.Token{
+		Token:       consumerToken,
+		TokenSecret: consumerSecret,
+	}
 
 	if ct.Token != "" {
-		token = ct.Token
+		consumer.Token = ct.Token
 	}
 
 	if ct.TokenSecret != "" {
-		secret = ct.TokenSecret
+		consumer.TokenSecret = ct.TokenSecret
 	}
 
-	if token == "" || secret == "" {
-		return nil, errors.New("the client token/secret is not set correctly")
+	if consumer.Token == "" || consumer.TokenSecret == "" {
+		return nil, errors.New("no consumer key, please run 'nekome edit' and set it to .cred.toml")
 	}
 
-	return &oauth1.Token{
-		Token:       token,
-		TokenSecret: secret,
-	}, nil
+	return consumer, nil
 }
 
 // createTweetSlice : TweetDictionary のスライスを作成

@@ -22,12 +22,12 @@ type userPage struct {
 }
 
 func newUserPage(userName string) *userPage {
-	tabName := shared.conf.Settings.Texts.TabUser
+	tabName := shared.conf.Settings.Text.TabUser
 	tabName = strings.Replace(tabName, "{name}", userName, 1)
 
-	tweetsColor := shared.conf.Style.User.TweetsMetricsBG.ToColor()
-	followingColor := shared.conf.Style.User.FollowingMetricsBG.ToColor()
-	followersColor := shared.conf.Style.User.FollowersMetricsBG.ToColor()
+	tweetsColor := shared.conf.Style.Metrics.TweetsBackgroundColor.ToColor()
+	followingColor := shared.conf.Style.Metrics.FollowingBackgroundColor.ToColor()
+	followersColor := shared.conf.Style.Metrics.FollowersBackgroundColor.ToColor()
 
 	p := &userPage{
 		tweetsBasePage:   newTweetsBasePage(tabName),
@@ -85,7 +85,7 @@ func (u *userPage) Load() {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	shared.SetStatus(u.name, shared.conf.Settings.Texts.Loading)
+	shared.SetStatus(u.name, shared.conf.Settings.Text.Loading)
 
 	// ユーザの情報を取得
 	if u.userDic == nil {
@@ -100,7 +100,7 @@ func (u *userPage) Load() {
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(
 		u.userDic.User.ID,
 		u.tweets.GetSinceID(),
-		shared.conf.Settings.Feature.LoadTweetsCount,
+		shared.conf.Settings.Feature.LoadTweetsLimit,
 	)
 
 	if err != nil {
@@ -154,7 +154,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// ツイート数
 	tweets := fmt.Sprintf(
 		"[%s]%d Tweets[-:-:-]",
-		shared.conf.Style.User.TweetsMetricsText,
+		shared.conf.Style.Metrics.TweetsText,
 		ur.PublicMetrics.Tweets,
 	)
 	u.tweetsMetrics.SetText(tweets)
@@ -162,7 +162,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// フォロイー数
 	following := fmt.Sprintf(
 		"[%s]%d Following[-:-:-]",
-		shared.conf.Style.User.FollowingMetricsText,
+		shared.conf.Style.Metrics.FollowingText,
 		ur.PublicMetrics.Following,
 	)
 	u.followingMetrics.SetText(following)
@@ -170,7 +170,7 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// フォロワー数
 	followers := fmt.Sprintf(
 		"[%s]%d Followers[-:-:-]",
-		shared.conf.Style.User.FollowersMetricsText,
+		shared.conf.Style.Metrics.FollowersText,
 		ur.PublicMetrics.Followers,
 	)
 	u.followersMetrics.SetText(followers)

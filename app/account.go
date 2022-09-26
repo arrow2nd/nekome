@@ -5,7 +5,7 @@ import "github.com/arrow2nd/nekome/api"
 // addAccount : アカウントを追加
 func addAccount(setMain bool) error {
 	// 認証
-	authUser, err := shared.api.Auth(&shared.conf.Settings.Feature.Consumer)
+	authUser, err := shared.api.Auth(&shared.conf.Cred.Consumer)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func loginAccount(u string) error {
 	}
 
 	// 新しいユーザでクライアントを生成
-	api, err := api.New(&shared.conf.Settings.Feature.Consumer, user)
+	api, err := api.New(&shared.conf.Cred.Consumer, user)
 	if err != nil {
 		return err
 	}

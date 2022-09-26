@@ -119,16 +119,16 @@ func (a *App) loadConfig() error {
 	}
 
 	// 認証情報
-	ok, err := shared.conf.LoadCred()
+	existUser, err := shared.conf.LoadCred()
 	if err != nil {
 		return err
 	}
 
-	if ok {
+	if existUser {
 		return nil
 	}
 
-	// 認証情報が無い場合、新規追加
+	// ユーザ情報が無い場合、新規追加
 	return addAccount(true)
 }
 
@@ -164,7 +164,7 @@ func (a *App) initAutocomplate() {
 
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
-	for _, c := range shared.conf.Settings.Feature.Startup {
+	for _, c := range shared.conf.Settings.Feature.StartupCmds {
 		if err := a.ExecCommnad(c); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
@@ -195,7 +195,7 @@ func (a *App) ExecCommnad(cmd string) error {
 // quitApp : アプリを終了
 func (a *App) quitApp() {
 	// 確認画面が不要ならそのまま終了
-	if !shared.conf.Settings.Feature.Confirm["Quit"] {
+	if !shared.conf.Settings.Confirm["quit"] {
 		a.app.Stop()
 		return
 	}

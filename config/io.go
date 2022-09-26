@@ -1,18 +1,19 @@
 package config
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
-	"github.com/goccy/go-yaml"
+	"github.com/BurntSushi/toml"
 )
 
 const (
-	credFileName    = ".cred"
-	setingsFileName = "settings.yml"
+	credFileName    = ".cred.toml"
+	setingsFileName = "settings.toml"
 )
 
 // GetConfigDir : 設定ディレクトリを取得
@@ -57,14 +58,14 @@ func GetConfigFileNames() ([]string, error) {
 // LoadCred : 認証情報を読込む
 func (c *Config) LoadCred() (bool, error) {
 	if !c.hasFileExists(credFileName) {
-		return false, nil
+		return false, c.SaveCred()
 	}
 
-	if err := c.load(credFileName, &c.Cred.users); err != nil {
+	if err := c.load(credFileName, &c.Cred); err != nil {
 		return false, err
 	}
 
-	return true, nil
+	return len(c.Cred.User.Accounts) > 0, nil
 }
 
 // LoadSettings : 環境設定を読込む
@@ -80,7 +81,7 @@ func (c *Config) LoadSettings() error {
 
 // LoadStyle : スタイルを読込む
 func (c *Config) LoadStyle() error {
-	fileName := c.Settings.Appearance.StyleFile
+	fileName := c.Settings.Appearance.StyleFilePath
 
 	if !c.hasFileExists(fileName) {
 		if err := c.saveDefaultStyle(); err != nil {
@@ -93,7 +94,7 @@ func (c *Config) LoadStyle() error {
 
 // SaveCred : 認証情報を保存
 func (c *Config) SaveCred() error {
-	return c.save(credFileName, c.Cred.users)
+	return c.save(credFileName, c.Cred)
 }
 
 // SaveSettings : 環境設定を保存
@@ -103,7 +104,7 @@ func (c *Config) SaveSettings() error {
 
 // saveDefaultStyle : デフォルトのスタイルを保存
 func (c *Config) saveDefaultStyle() error {
-	return c.save(c.Settings.Appearance.StyleFile, c.Style)
+	return c.save(c.Settings.Appearance.StyleFilePath, c.Style)
 }
 
 // SaveAll : 一括保存
@@ -130,14 +131,15 @@ func (c *Config) hasFileExists(file string) bool {
 
 // save : 保存
 func (c *Config) save(fileName string, in interface{}) error {
-	buf, err := yaml.Marshal(in)
-	if err != nil {
+	buf := &bytes.Buffer{}
+
+	if err := toml.NewEncoder(buf).Encode(in); err != nil {
 		return fmt.Errorf("failed to marshal (%s): %w", fileName, err)
 	}
 
 	path := filepath.Join(c.dirPath, fileName)
 
-	if err := ioutil.WriteFile(path, buf, os.ModePerm); err != nil {
+	if err := ioutil.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
 		return fmt.Errorf("failed to save (%s): %w", path, err)
 	}
 
@@ -153,7 +155,7 @@ func (c *Config) load(fileName string, out interface{}) error {
 		return fmt.Errorf("failed to load (%s): %w", path, err)
 	}
 
-	if err := yaml.Unmarshal(buf, out); err != nil {
+	if err := toml.Unmarshal(buf, out); err != nil {
 		return fmt.Errorf("failed to unmarshal (%s): %w", path, err)
 	}
 

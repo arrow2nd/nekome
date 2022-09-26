@@ -132,7 +132,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	likes := tw.PublicMetrics.Likes
 	if likes != 0 {
 		metrics += createMetricsString(
-			shared.conf.Settings.Texts.Like,
+			shared.conf.Settings.Text.Like,
 			shared.conf.Style.Tweet.Like,
 			likes,
 			false,
@@ -143,8 +143,8 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	rts := tw.PublicMetrics.Retweets
 	if rts != 0 {
 		metrics += createMetricsString(
-			shared.conf.Settings.Texts.Retweet,
-			shared.conf.Style.Tweet.RT,
+			shared.conf.Settings.Text.Retweet,
+			shared.conf.Style.Tweet.Retweet,
 			rts,
 			false,
 		)

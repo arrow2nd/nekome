@@ -65,7 +65,7 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 	}
 
 	// 確認画面が不要ならそのまま実行
-	if !shared.conf.Settings.Feature.Confirm[label] {
+	if !shared.conf.Settings.Confirm[strings.ToLower(label)] {
 		f()
 		return
 	}
@@ -119,7 +119,7 @@ func (t *tweets) actionForUser(a userActionType) {
 	}
 
 	// 確認画面が不要ならそのまま実行
-	if !shared.conf.Settings.Feature.Confirm[label] {
+	if !shared.conf.Settings.Confirm[strings.ToLower(label)] {
 		f()
 		return
 	}

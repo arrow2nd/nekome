@@ -108,7 +108,7 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 	size := len(t.contents)
 	addSize := len(tweets)
 	allSize := size + addSize
-	maxSize := shared.conf.Settings.Feature.TweetMaxAccumulationNum
+	maxSize := shared.conf.Settings.Feature.AccmulateTweetsLimit
 
 	// 最大蓄積数を超えていたら古いものから削除
 	if allSize > maxSize {
@@ -162,7 +162,7 @@ func (t *tweets) draw(cursorPos int) {
 
 	// 表示するツイートが無いなら描画を中断
 	if t.GetTweetsCount() == 0 {
-		t.DrawMessage(shared.conf.Settings.Texts.NoTweets)
+		t.DrawMessage(shared.conf.Settings.Text.NoTweets)
 		return
 	}
 

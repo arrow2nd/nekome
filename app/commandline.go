@@ -26,15 +26,7 @@ func newCommandLine() *commandLine {
 
 // Init : 初期化
 func (c *commandLine) Init() {
-	normalBG := shared.conf.Style.Autocomplete.NormalBG.ToColor()
-	selectBG := shared.conf.Style.Autocomplete.SelectBG.ToColor()
-
 	c.inputField.
-		SetAutocompleteStyles(
-			normalBG,
-			tcell.StyleDefault,
-			tcell.StyleDefault.Background(selectBG),
-		).
 		SetPlaceholderStyle(tcell.StyleDefault).
 		SetFieldBackgroundColor(tcell.ColorDefault).
 		SetBackgroundColor(tcell.ColorDefault)
