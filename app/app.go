@@ -230,7 +230,9 @@ func (a *App) eventReciever() {
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
 		case <-shared.chFocusMainView:
-			a.app.SetFocus(a.view.mainView)
+			if a.app.GetFocus() != a.view.textArea {
+				a.app.SetFocus(a.view.mainView)
+			}
 			a.app.Draw()
 		case p := <-shared.chFocusPrimitive:
 			a.app.SetFocus(*p)
@@ -241,15 +243,12 @@ func (a *App) eventReciever() {
 
 // handleGlobalKeyEvents : アプリ全体のキーハンドラ
 func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	// ページの基本操作が無効化されている
 	if a.isDisablePageKeyEvent {
 		return event
 	}
 
-	key := event.Key()
-
 	// アプリを終了
-	if key == tcell.KeyCtrlQ {
+	if event.Key() == tcell.KeyCtrlQ {
 		a.commandLine.Blur()
 		a.quitApp()
 		return nil
@@ -260,7 +259,6 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 // handlePageKeyEvent : ページビューのキーハンドラ
 func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
-	// ページの基本操作が無効化されている
 	if a.isDisablePageKeyEvent {
 		return event
 	}
