@@ -70,8 +70,10 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		return
 	}
 
+	style := shared.conf.Style.App.EmphasisText
+
 	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf("Do you want to [red:-:b]%s[-:-:-] this tweet?", strings.ToLower(label)),
+		fmt.Sprintf("Do you want to [%s]%s[-:-:-] this tweet?", style, strings.ToLower(label)),
 		"",
 		f,
 	})
@@ -124,8 +126,10 @@ func (t *tweets) actionForUser(a userActionType) {
 		return
 	}
 
+	style := shared.conf.Style.App.EmphasisText
+
 	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Do you want to [red:-:b]%s[-:-:-] this user?`, strings.ToLower(label)),
+		fmt.Sprintf(`Do you want to [%s]%s[-:-:-] this user?`, style, strings.ToLower(label)),
 		summary,
 		f,
 	})

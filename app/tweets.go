@@ -38,8 +38,7 @@ func newTweets() *tweets {
 		SetDynamicColors(true).
 		SetScrollable(true).
 		SetWrap(true).
-		SetRegions(true).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetRegions(true)
 
 	t.view.
 		SetHighlightedFunc(func(added, removed, remaining []string) {

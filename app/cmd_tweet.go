@@ -68,10 +68,10 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 		}
 
 		// エディタを開く
-		if t, err := a.editTweet(editor); err != nil {
+		var err error
+		text, err = a.editTweetWithExEditor(editor)
+		if err != nil {
 			return err
-		} else {
-			text = t
 		}
 	}
 
@@ -80,7 +80,8 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	return nil
 }
 
-func (a *App) editTweet(editor string) (string, error) {
+// editTweetWithExEditor : 外部エディタでツイートを編集する
+func (a *App) editTweetWithExEditor(editor string) (string, error) {
 	dir, err := config.GetConfigDir()
 	if err != nil {
 		return "", err
@@ -157,8 +158,10 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 		operationType = "quote tweet"
 	}
 
+	style := shared.conf.Style.App.EmphasisText
+
 	shared.ReqestPopupModal(&ModalOpt{
-		title:  fmt.Sprintf("Do you want to post a [red:-:b]%s[-:-:-]?", operationType),
+		title:  fmt.Sprintf("Do you want to post a [%s]%s[-:-:-]?", style, operationType),
 		text:   text,
 		onDone: post,
 	})

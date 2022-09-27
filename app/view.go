@@ -64,22 +64,16 @@ func newView() *view {
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
 		SetHighlightedFunc(v.handleTabHighlight).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetBackgroundColor(shared.conf.Style.Tab.BackgroundColor.ToColor())
 
 	v.modal.
 		AddButtons([]string{"No", "Yes"}).
-		SetTextColor(tcell.ColorDefault).
-		SetBackgroundColor(tcell.ColorDefault).
 		SetInputCapture(v.handleModalKeyEvents)
 
 	v.textArea.
-		SetTextStyle(tcell.StyleDefault).
 		SetTitleAlign(tview.AlignLeft).
 		SetBorderPadding(0, 0, 1, 1).
-		SetBorder(true).
-		SetTitleColor(tcell.ColorDefault).
-		SetBorderColor(tcell.ColorDefault).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetBorder(true)
 
 	return v
 }
@@ -93,10 +87,8 @@ func createPageTag(id int) string {
 func (v *view) drawTab() {
 	v.tabView.Clear()
 
-	t := shared.conf.Style.App.TabText
-
 	for i, tab := range v.tabs {
-		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, t, tab.id, tab.name)
+		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
 
 		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabs)-1 {
@@ -263,6 +255,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 
 	v.pageView.AddPage("modal", v.modal, true, true)
 
+	shared.RequestFocusPrimitive(v.modal)
 	shared.SetDisablePageKeyEvent(true)
 }
 

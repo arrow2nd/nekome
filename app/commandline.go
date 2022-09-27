@@ -26,10 +26,14 @@ func newCommandLine() *commandLine {
 
 // Init : 初期化
 func (c *commandLine) Init() {
+	style := shared.conf.Style.Autocomplate
+
 	c.inputField.
-		SetPlaceholderStyle(tcell.StyleDefault).
-		SetFieldBackgroundColor(tcell.ColorDefault).
-		SetBackgroundColor(tcell.ColorDefault)
+		SetAutocompleteStyles(
+			style.BackgroundColor.ToColor(),
+			tcell.StyleDefault,
+			tcell.StyleDefault.Background(style.SelectedBackgroundColor.ToColor()),
+		)
 
 	c.inputField.
 		SetAutocompleteFunc(c.handleAutocomplete).
@@ -78,16 +82,12 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 
 // UpdateStatusMessage : ステータスメッセージを更新
 func (c *commandLine) UpdateStatusMessage(s string) {
-	color := tcell.ColorDefault
-
 	// エラーステータスなら文字色を赤に
 	if strings.HasPrefix(s, "[ERR") {
-		color = tcell.ColorRed
+		c.inputField.SetPlaceholderTextColor(tcell.ColorRed)
 	}
 
-	c.inputField.
-		SetPlaceholderTextColor(color).
-		SetPlaceholder(s)
+	c.inputField.SetPlaceholder(s)
 }
 
 // Blur : コマンドラインからフォーカスを外す
@@ -131,7 +131,6 @@ func (c *commandLine) handleDone(key tcell.Key) {
 // handleFocus : フォーカス時のイベントハンドラ
 func (c *commandLine) handleFocus() {
 	c.inputField.
-		SetLabelColor(tcell.ColorDefault).
 		SetLabel(":").
 		SetPlaceholder("")
 }

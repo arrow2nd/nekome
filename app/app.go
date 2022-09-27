@@ -27,9 +27,9 @@ func New() *App {
 	return &App{
 		app:                   tview.NewApplication(),
 		cmd:                   newCmd(),
-		view:                  newView(),
-		statusBar:             newStatusBar(),
-		commandLine:           newCommandLine(),
+		view:                  nil,
+		statusBar:             nil,
+		commandLine:           nil,
 		isDisablePageKeyEvent: false,
 	}
 }
@@ -62,17 +62,15 @@ func (a *App) Init() error {
 		return nil
 	}
 
+	// UI準備
+	a.setAppStyles()
+	a.view = newView()
+	a.statusBar = newStatusBar()
+	a.commandLine = newCommandLine()
+
 	// 日本語環境等での罫線の乱れ対策
-	// https://github.com/mattn/go-runewidth/issues/14
+	// LINK: https://github.com/mattn/go-runewidth/issues/14
 	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Settings.Feature.IsLocaleCJK
-
-	// 背景色
-	tview.Styles.PrimitiveBackgroundColor = tcell.ColorDefault
-	tview.Styles.ContrastBackgroundColor = tcell.ColorDefault
-
-	// 文字色
-	tview.Styles.PrimaryTextColor = tcell.ColorDefault
-	tview.Styles.TitleColor = tcell.ColorDefault
 
 	// ページのキーハンドラを設定
 	a.view.SetInputCapture(a.handlePageKeyEvent)
@@ -86,7 +84,6 @@ func (a *App) Init() error {
 	a.initAutocomplate()
 
 	// 画面レイアウト
-	// NOTE: 追加順がキーハンドラの優先順になるっぽい
 	layout := tview.NewGrid().
 		SetRows(1, 0, 1, 1).
 		SetBorders(false).
@@ -102,6 +99,27 @@ func (a *App) Init() error {
 	a.runStartupCommands()
 
 	return nil
+}
+
+// setAppStyles : アプリ全体のスタイルを設定
+func (a *App) setAppStyles() {
+	bgColor := shared.conf.Style.App.BackgroundColor.ToColor()
+	textColor := shared.conf.Style.App.TextColor.ToColor()
+	borderColor := shared.conf.Style.App.BorderColor.ToColor()
+
+	// 背景色
+	tview.Styles.PrimitiveBackgroundColor = bgColor
+	tview.Styles.ContrastBackgroundColor = bgColor
+	tview.Styles.MoreContrastBackgroundColor = shared.conf.Style.App.BackgroundColor.ToColor()
+
+	// テキスト色
+	tview.Styles.PrimaryTextColor = textColor
+	tview.Styles.ContrastSecondaryTextColor = textColor
+	tview.Styles.TitleColor = textColor
+
+	// ボーダー色
+	tview.Styles.BorderColor = borderColor
+	tview.Styles.GraphicsColor = borderColor
 }
 
 // loadConfig : 設定を読み込む
@@ -230,7 +248,8 @@ func (a *App) eventReciever() {
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
 		case <-shared.chFocusMainView:
-			if a.app.GetFocus() != a.view.textArea {
+			focus := a.app.GetFocus()
+			if focus != a.view.textArea {
 				a.app.SetFocus(a.view.mainView)
 			}
 			a.app.Draw()
@@ -249,7 +268,6 @@ func (a *App) handleGlobalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 
 	// アプリを終了
 	if event.Key() == tcell.KeyCtrlQ {
-		a.commandLine.Blur()
 		a.quitApp()
 		return nil
 	}

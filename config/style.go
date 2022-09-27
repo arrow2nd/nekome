@@ -17,19 +17,20 @@ func (c color) ToColor() tcell.Color {
 }
 
 type appStyle struct {
-	BackgroundColor             color  `toml:"background_color"`
-	ContrastBackgroundColor     color  `toml:"contrast_background_color"`
-	MoreContrastBackgroundColor color  `toml:"more_contrast_background_color"`
-	BorderColor                 color  `toml:"border_color"`
-	TitleColor                  color  `toml:"title_color"`
-	GraphicsColor               color  `toml:"graphics_color"`
-	TextColor                   color  `toml:"text_color"`
-	SecondaryTextColor          color  `toml:"secondary_text_color"`
-	TertiaryTextColor           color  `toml:"tertiary_text_color"`
-	InverseTextColor            color  `toml:"inverse_text_color"`
-	ContrastSecondaryTextColor  color  `toml:"contrast_secondary_text_color"`
-	TabText                     string `toml:"tab_text"`
-	Separator                   string `toml:"separator"`
+	BackgroundColor color  `toml:"background_color"`
+	BorderColor     color  `toml:"border_color"`
+	TextColor       color  `toml:"text_color"`
+	EmphasisText    string `toml:"emphasis_text"`
+}
+
+type tabStyle struct {
+	Text            string `toml:"text"`
+	BackgroundColor color  `toml:"background_color"`
+}
+
+type autocompleteStyle struct {
+	BackgroundColor         color `toml:"background_color"`
+	SelectedBackgroundColor color `toml:"selected_background_color"`
 }
 
 type statusBarStyle struct {
@@ -46,6 +47,7 @@ type tweetStyle struct {
 	Mention    string `toml:"mention"`
 	PollGraph  string `toml:"poll_graph"`
 	PollDetail string `toml:"poll_detail"`
+	Separator  string `toml:"separator"`
 }
 
 type userStyle struct {
@@ -67,44 +69,45 @@ type metricsStyle struct {
 
 // Style : スタイル
 type Style struct {
-	App       appStyle       `toml:"app"`
-	StatusBar statusBarStyle `toml:"statusbar"`
-	Tweet     tweetStyle     `toml:"tweet"`
-	User      userStyle      `toml:"user"`
-	Metrics   metricsStyle   `toml:"metrics"`
+	App          appStyle          `toml:"app"`
+	Tab          tabStyle          `toml:"tab"`
+	Autocomplate autocompleteStyle `toml:"autocomplete"`
+	StatusBar    statusBarStyle    `toml:"statusbar"`
+	Tweet        tweetStyle        `toml:"tweet"`
+	User         userStyle         `toml:"user"`
+	Metrics      metricsStyle      `toml:"metrics"`
 }
 
 func defaultStyle() *Style {
 	return &Style{
 		App: appStyle{
-			// TODO: どこに影響するのか調査する
-			BackgroundColor:             "#000000",
-			ContrastBackgroundColor:     "#606CB2",
-			MoreContrastBackgroundColor: "#01A860",
-			BorderColor:                 "#ffffff",
-			TitleColor:                  "#ffffff",
-			GraphicsColor:               "#ffffff",
-			TextColor:                   "#ffffff",
-			SecondaryTextColor:          "#FEE806",
-			TertiaryTextColor:           "#01A860",
-			InverseTextColor:            "#606CB2",
-			ContrastSecondaryTextColor:  "#144384",
-			TabText:                     "-:-:-",
-			Separator:                   "gray:-:-",
+			BackgroundColor: "#000000",
+			BorderColor:     "#ffffff",
+			TextColor:       "#ffffff",
+			EmphasisText:    "maroon:-:bi",
+		},
+		Tab: tabStyle{
+			Text:            "white:-:-",
+			BackgroundColor: "#000000",
+		},
+		Autocomplate: autocompleteStyle{
+			BackgroundColor:         "#808080",
+			SelectedBackgroundColor: "#C0C0C0",
 		},
 		StatusBar: statusBarStyle{
 			Text:            "black:-:-",
 			BackgroundColor: "#ffffff",
 		},
 		Tweet: tweetStyle{
-			Annotation: "blue:-:-",
+			Annotation: "teal:-:-",
 			Detail:     "gray:-:-",
 			Like:       "pink:-:-",
-			Retweet:    "green:-:-",
-			HashTag:    "blue:-:-",
-			Mention:    "blue:-:-",
-			PollGraph:  "blue:-:-",
+			Retweet:    "lime:-:-",
+			HashTag:    "aqua:-:-",
+			Mention:    "aqua:-:-",
+			PollGraph:  "aqua:-:-",
 			PollDetail: "gray:-:-",
+			Separator:  "gray:-:-",
 		},
 		User: userStyle{
 			Name:     "white:-:b",
