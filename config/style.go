@@ -67,7 +67,7 @@ type metricsStyle struct {
 	FollowersBackgroundColor color  `toml:"followers_background_color"`
 }
 
-// Style : スタイル
+// Style : スタイル定義
 type Style struct {
 	App          appStyle          `toml:"app"`
 	Tab          tabStyle          `toml:"tab"`
@@ -83,7 +83,7 @@ func defaultStyle() *Style {
 		App: appStyle{
 			BackgroundColor: "#000000",
 			BorderColor:     "#ffffff",
-			TextColor:       "#ffffff",
+			TextColor:       "#f9f9f9",
 			EmphasisText:    "maroon:-:bi",
 		},
 		Tab: tabStyle{
