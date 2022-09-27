@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"os"
 
 	"github.com/arrow2nd/nekome/cli"
@@ -52,6 +53,10 @@ func (a *App) Init() error {
 		if err := loginAccount(user); err != nil {
 			return err
 		}
+	} else {
+		return errors.New(
+			"main user is not set, please run 'nekome edit' and set it to 'feature.main_user' in settings.toml",
+		)
 	}
 
 	// コマンド初期化
@@ -155,9 +160,11 @@ func (a *App) loadConfig() error {
 
 // parseRuntimeArgs : 実行時の引数をパースして、ログインユーザを返す
 func (a *App) parseRuntimeArgs() (string, error) {
-	// フラグをパース
 	f := a.cmd.NewFlagSet()
-	f.Parse(os.Args[1:])
+
+	if err := f.Parse(os.Args[1:]); err != nil {
+		return "", err
+	}
 
 	// ログイン処理をスキップするか
 	skipLogin := f.Changed("help") || f.Changed("version") || f.Arg(0) == "e" || f.Arg(0) == "edit"
