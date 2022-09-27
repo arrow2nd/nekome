@@ -45,6 +45,8 @@ type text struct {
 	Loading string `toml:"loading"`
 	// NoTweets : ツイート無し
 	NoTweets string `toml:"no_tweets"`
+	// TweetTextAreaHint : ツイートエリアのヒント
+	TweetTextAreaHint string `toml:"tweet_textarea_hint"`
 	// TabHome : ホームタブ
 	TabHome string `toml:"tab_home"`
 	// TabMention : メンションタブ
@@ -110,7 +112,7 @@ func defaultSettings() *Settings {
 			"quit":      true,
 		},
 		Appearance: appearance{
-			StyleFilePath:       "default.toml",
+			StyleFilePath:       "style_default.toml",
 			DateFormat:          "2006/01/02",
 			TimeFormat:          "15:04:05",
 			UserBIOMaxRow:       3,
@@ -121,16 +123,17 @@ func defaultSettings() *Settings {
 			TabMaxWidth:         20,
 		},
 		Text: text{
-			Like:       "Like",
-			Retweet:    "RT",
-			Loading:    "Loading...",
-			NoTweets:   "No tweets ฅ^-ω-^ฅ",
-			TabHome:    "Home",
-			TabMention: "Mention",
-			TabList:    "List: {name}",
-			TabUser:    "User: @{name}",
-			TabSearch:  "Search: {query}",
-			TabDocs:    "Docs: {name}",
+			Like:              "Like",
+			Retweet:           "RT",
+			Loading:           "Loading...",
+			NoTweets:          "No tweets ฅ^-ω-^ฅ",
+			TweetTextAreaHint: "What's happening?",
+			TabHome:           "Home",
+			TabMention:        "Mention",
+			TabList:           "List: {name}",
+			TabUser:           "User: @{name}",
+			TabSearch:         "Search: {query}",
+			TabDocs:           "Docs: {name}",
 		},
 		Icon: icon{
 			Geo:      "📍",

@@ -242,16 +242,19 @@ func (v *view) PopupModal(o *ModalOpt) {
 		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
 	}
 
+	f := func(buttonIndex int, buttonLabel string) {
+		if buttonLabel == "Yes" {
+			o.onDone()
+		}
+
+		v.pageView.RemovePage("modal")
+		shared.SetDisablePageKeyEvent(false)
+	}
+
 	v.modal.
 		SetFocus(0).
 		SetText(message).
-		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-			if buttonLabel == "Yes" {
-				o.onDone()
-			}
-			v.pageView.RemovePage("modal")
-			shared.SetDisablePageKeyEvent(false)
-		})
+		SetDoneFunc(f)
 
 	v.pageView.AddPage("modal", v.modal, true, true)
 
@@ -277,28 +280,31 @@ func (v *view) handleModalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 }
 
 // ShowTextArea : テキストエリアを表示
-func (v *view) ShowTextArea(title string, onSubmit func(s string)) {
+func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
+	f := func(event *tcell.EventKey) *tcell.EventKey {
+		key := event.Key()
+
+		// 閉じる
+		if key == tcell.KeyEsc {
+			v.HiddenTextArea()
+			return nil
+		}
+
+		// 入力確定
+		if key == tcell.KeyCtrlP {
+			v.HiddenTextArea()
+			onSubmit(v.textArea.GetText())
+			return nil
+		}
+
+		return event
+	}
+
 	v.textArea.
 		SetText("", false).
-		SetTitle(fmt.Sprintf(" %s (Press ESC to close, press Ctrl-P to post) ", title)).
-		SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			key := event.Key()
-
-			// 閉じる
-			if key == tcell.KeyEsc {
-				v.HiddenTextArea()
-				return nil
-			}
-
-			// 送信
-			if key == tcell.KeyCtrlP {
-				v.HiddenTextArea()
-				onSubmit(v.textArea.GetText())
-				return nil
-			}
-
-			return event
-		})
+		SetPlaceholder(hint).
+		SetTitle(" Press ESC to close, press Ctrl-p to post ").
+		SetInputCapture(f)
 
 	v.mainView.ResizeItem(v.textArea, 0, 1)
 

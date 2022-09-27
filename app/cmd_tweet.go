@@ -12,7 +12,6 @@ import (
 	"syscall"
 
 	"github.com/arrow2nd/nekome/cli"
-	"github.com/arrow2nd/nekome/config"
 	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
@@ -45,12 +44,7 @@ You may attach up to four images at a time.`,
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	isTerm := term.IsTerminal(int(syscall.Stdin))
-
 	text := f.Arg(0)
-	editor, _ := f.GetString("editor")
-	quoteId, _ := f.GetString("quote")
-	replyId, _ := f.GetString("reply")
-	images, _ := f.GetStringSlice("image")
 
 	// 標準入力を受け取る
 	if f.NArg() == 0 && !isTerm {
@@ -58,10 +52,17 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 		text = string(stdin)
 	}
 
+	settings := shared.conf.Settings
+
+	editor, _ := f.GetString("editor")
+	quoteId, _ := f.GetString("quote")
+	replyId, _ := f.GetString("reply")
+	images, _ := f.GetStringSlice("image")
+
 	if text == "" {
 		// テキストエリアを開く
-		if isTerm && !shared.conf.Settings.Feature.UseExternalEditor {
-			a.view.ShowTextArea("What's happening?", func(s string) {
+		if isTerm && !settings.Feature.UseExternalEditor {
+			a.view.ShowTextArea(settings.Text.TweetTextAreaHint, func(s string) {
 				execPostTweet(s, quoteId, replyId, images)
 			})
 			return nil
@@ -82,29 +83,24 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 // editTweetWithExEditor : 外部エディタでツイートを編集する
 func (a *App) editTweetWithExEditor(editor string) (string, error) {
-	dir, err := config.GetConfigDir()
-	if err != nil {
-		return "", err
-	}
-
-	tmpFile := path.Join(dir, ".tmp")
-	if _, err := os.Create(tmpFile); err != nil {
+	tmpFilePath := path.Join(os.TempDir(), ".nekome_tweet_tmp")
+	if _, err := os.Create(tmpFilePath); err != nil {
 		return "", err
 	}
 
 	// エディタを起動
-	if err := a.execEditor(editor, tmpFile); err != nil {
+	if err := a.execEditor(editor, tmpFilePath); err != nil {
 		return "", err
 	}
 
 	// 一時ファイル読み込み
-	bytes, err := ioutil.ReadFile(tmpFile)
+	bytes, err := ioutil.ReadFile(tmpFilePath)
 	if err != nil {
 		return "", err
 	}
 
 	// 一時ファイル削除
-	if err := os.Remove(tmpFile); err != nil {
+	if err := os.Remove(tmpFilePath); err != nil {
 		return "", err
 	}
 

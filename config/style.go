@@ -20,6 +20,7 @@ type appStyle struct {
 	BackgroundColor color  `toml:"background_color"`
 	BorderColor     color  `toml:"border_color"`
 	TextColor       color  `toml:"text_color"`
+	SubTextColor    color  `toml:"sub_text_color"`
 	EmphasisText    string `toml:"emphasis_text"`
 }
 
@@ -29,6 +30,7 @@ type tabStyle struct {
 }
 
 type autocompleteStyle struct {
+	TextColor               color `toml:"text_color"`
 	BackgroundColor         color `toml:"background_color"`
 	SelectedBackgroundColor color `toml:"selected_background_color"`
 }
@@ -84,6 +86,7 @@ func defaultStyle() *Style {
 			BackgroundColor: "#000000",
 			BorderColor:     "#ffffff",
 			TextColor:       "#f9f9f9",
+			SubTextColor:    "#979797",
 			EmphasisText:    "maroon:-:bi",
 		},
 		Tab: tabStyle{
@@ -91,6 +94,7 @@ func defaultStyle() *Style {
 			BackgroundColor: "#000000",
 		},
 		Autocomplate: autocompleteStyle{
+			TextColor:               "#000000",
 			BackgroundColor:         "#808080",
 			SelectedBackgroundColor: "#C0C0C0",
 		},

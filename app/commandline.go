@@ -31,11 +31,12 @@ func (c *commandLine) Init() {
 	c.inputField.
 		SetAutocompleteStyles(
 			style.BackgroundColor.ToColor(),
-			tcell.StyleDefault,
-			tcell.StyleDefault.Background(style.SelectedBackgroundColor.ToColor()),
-		)
-
-	c.inputField.
+			tcell.StyleDefault.
+				Foreground(style.TextColor.ToColor()),
+			tcell.StyleDefault.
+				Foreground(style.TextColor.ToColor()).
+				Background(style.SelectedBackgroundColor.ToColor()),
+		).
 		SetAutocompleteFunc(c.handleAutocomplete).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).

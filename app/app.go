@@ -103,19 +103,22 @@ func (a *App) Init() error {
 
 // setAppStyles : アプリ全体のスタイルを設定
 func (a *App) setAppStyles() {
-	bgColor := shared.conf.Style.App.BackgroundColor.ToColor()
-	textColor := shared.conf.Style.App.TextColor.ToColor()
-	borderColor := shared.conf.Style.App.BorderColor.ToColor()
+	app := shared.conf.Style.App
+
+	bgColor := app.BackgroundColor.ToColor()
+	textColor := app.TextColor.ToColor()
+	borderColor := app.BorderColor.ToColor()
 
 	// 背景色
 	tview.Styles.PrimitiveBackgroundColor = bgColor
 	tview.Styles.ContrastBackgroundColor = bgColor
-	tview.Styles.MoreContrastBackgroundColor = shared.conf.Style.App.BackgroundColor.ToColor()
+	tview.Styles.MoreContrastBackgroundColor = app.BackgroundColor.ToColor()
 
 	// テキスト色
 	tview.Styles.PrimaryTextColor = textColor
 	tview.Styles.ContrastSecondaryTextColor = textColor
 	tview.Styles.TitleColor = textColor
+	tview.Styles.TertiaryTextColor = app.SubTextColor.ToColor()
 
 	// ボーダー色
 	tview.Styles.BorderColor = borderColor
