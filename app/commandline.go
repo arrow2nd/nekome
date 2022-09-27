@@ -11,7 +11,7 @@ import (
 
 type commandLine struct {
 	inputField        *tview.InputField
-	autoComplateItems []string
+	autocomplateItems []string
 	backspaceCount    int
 	mu                sync.Mutex
 }
@@ -20,7 +20,7 @@ func newCommandLine() *commandLine {
 	return &commandLine{
 		inputField:        tview.NewInputField(),
 		backspaceCount:    0,
-		autoComplateItems: []string{},
+		autocomplateItems: []string{},
 	}
 }
 
@@ -53,11 +53,11 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.autoComplateItems = []string{}
+	c.autocomplateItems = []string{}
 
 	// 基本のコマンドを追加
 	for _, cmd := range cmds {
-		c.autoComplateItems = append(c.autoComplateItems, cmd)
+		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
 
 	// ユーザが所有しているリストを取得
@@ -69,13 +69,13 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 	// フラグ指定済みのlistコマンドを追加
 	for _, l := range lists {
 		cmd := fmt.Sprintf("list %s %s", l.Name, l.ID)
-		c.autoComplateItems = append(c.autoComplateItems, cmd)
+		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
 
 	// ユーザ指定済みのaccount switchコマンドを追加
 	for _, u := range shared.conf.Cred.GetAllNames() {
 		cmd := fmt.Sprintf("account switch %s", u)
-		c.autoComplateItems = append(c.autoComplateItems, cmd)
+		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
 
 	return nil
@@ -108,7 +108,7 @@ func (c *commandLine) handleAutocomplete(currentText string) []string {
 		return nil
 	}
 
-	for _, cmd := range c.autoComplateItems {
+	for _, cmd := range c.autocomplateItems {
 		if strings.HasPrefix(strings.ToLower(cmd), strings.ToLower(currentText)) {
 			entries = append(entries, cmd)
 		}

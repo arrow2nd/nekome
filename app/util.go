@@ -161,8 +161,11 @@ func convertDateString(createAt string) string {
 
 // createSeparator : 指定幅のセパレータ文字列を作成
 func createSeparator(s string, width int) string {
-	style := shared.conf.Style.Tweet.Separator
-	return fmt.Sprintf("[%s]%s[-:-:-]", style, strings.Repeat(s, width))
+	return fmt.Sprintf(
+		"[%s]%s[-:-:-]",
+		shared.conf.Style.Tweet.Separator,
+		strings.Repeat(s, width),
+	)
 }
 
 // createMetricsString : ツイートのリアクション数文字列を作成

@@ -42,19 +42,21 @@ func newUserPage(userName string) *userPage {
 
 	padding := shared.conf.Settings.Appearance.UserProfilePaddingX
 
+	// プロフィール表示域
 	p.profile.
 		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignCenter).
 		SetBorderPadding(0, 1, padding, padding)
 
-	p.tweets.view.SetBorderPadding(1, 0, 0, 0)
-
+	// メトリクス表示域
 	metrics := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
 		AddItem(p.tweetsMetrics, 0, 1, false).
 		AddItem(p.followingMetrics, 0, 1, false).
 		AddItem(p.followersMetrics, 0, 1, false)
+
+	p.tweets.view.SetBorderPadding(1, 0, 0, 0)
 
 	p.flex.
 		SetDirection(tview.FlexRow).
@@ -151,29 +153,28 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	// プロフィールの行数に合わせて表示域をリサイズ（+1 は下辺の padding 分）
 	u.flex.ResizeItem(u.profile, row+1, 1)
 
+	style := shared.conf.Style.Metrics
+
 	// ツイート数
-	tweets := fmt.Sprintf(
+	u.tweetsMetrics.SetText(fmt.Sprintf(
 		"[%s]%d Tweets[-:-:-]",
-		shared.conf.Style.Metrics.TweetsText,
+		style.TweetsText,
 		ur.PublicMetrics.Tweets,
-	)
-	u.tweetsMetrics.SetText(tweets)
+	))
 
 	// フォロイー数
-	following := fmt.Sprintf(
+	u.followingMetrics.SetText(fmt.Sprintf(
 		"[%s]%d Following[-:-:-]",
-		shared.conf.Style.Metrics.FollowingText,
+		style.FollowingText,
 		ur.PublicMetrics.Following,
-	)
-	u.followingMetrics.SetText(following)
+	))
 
 	// フォロワー数
-	followers := fmt.Sprintf(
+	u.followersMetrics.SetText(fmt.Sprintf(
 		"[%s]%d Followers[-:-:-]",
-		shared.conf.Style.Metrics.FollowersText,
+		style.FollowersText,
 		ur.PublicMetrics.Followers,
-	)
-	u.followersMetrics.SetText(followers)
+	))
 }
 
 // handleKeyEvents : ユーザページのキーハンドラ

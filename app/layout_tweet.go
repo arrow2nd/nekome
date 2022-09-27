@@ -37,31 +37,26 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 		name = fmt.Sprintf(`["%s"]%s[""]`, createTweetTag(i), name)
 	}
 
+	style := shared.conf.Style
+	icon := shared.conf.Settings.Icon
+
 	// ニックネーム・ユーザ名
 	header := fmt.Sprintf(
 		`[%s]%s [%s]%s[-:-:-]`,
-		shared.conf.Style.User.Name,
+		style.User.Name,
 		name,
-		shared.conf.Style.User.UserName,
+		style.User.UserName,
 		userName,
 	)
 
 	// 認証済みアカウント
 	if u.Verified {
-		header += fmt.Sprintf(
-			"[%s] %s[-:-:-]",
-			shared.conf.Style.User.Verified,
-			shared.conf.Settings.Icon.Verified,
-		)
+		header += fmt.Sprintf("[%s] %s[-:-:-]", style.User.Verified, icon.Verified)
 	}
 
 	// 非公開アカウント
 	if u.Protected {
-		header += fmt.Sprintf(
-			"[%s] %s[-:-:-]",
-			shared.conf.Style.User.Private,
-			shared.conf.Settings.Icon.Private,
-		)
+		header += fmt.Sprintf("[%s] %s[-:-:-]", style.User.Private, icon.Private)
 	}
 
 	return header + "\n"
