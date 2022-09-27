@@ -9,7 +9,7 @@ func (a *App) newDocsCmd() *cli.Command {
 	cmd := &cli.Command{
 		Name:      "docs",
 		Shorthand: "d",
-		Short:     "Show the document",
+		Short:     "Show documentation",
 		Hidden:    shared.isCommandLineMode,
 		Validate:  cli.NoArgs(),
 	}
