@@ -53,10 +53,6 @@ func (a *App) Init() error {
 		if err := loginAccount(user); err != nil {
 			return err
 		}
-	} else {
-		return errors.New(
-			"main user is not set, please run 'nekome edit' and set it to 'feature.main_user' in settings.toml",
-		)
 	}
 
 	// コマンド初期化
@@ -178,6 +174,12 @@ func (a *App) parseRuntimeArgs() (string, error) {
 	}
 
 	user, _ := f.GetString("user")
+	if user == "" {
+		return "", errors.New(
+			"feature.main_user is not set, please run 'nekome edit' and set in settings.toml",
+		)
+	}
+
 	return user, nil
 }
 
