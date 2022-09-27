@@ -14,16 +14,17 @@ func (a *App) newDocsCmd() *cli.Command {
 		Validate:  cli.NoArgs(),
 	}
 
-	cmd.AddCommand(a.newDocShortcutsCmd())
+	cmd.AddCommand(a.newDocsKeybindingsCmd())
 
 	return cmd
 }
 
-func (a *App) newDocShortcutsCmd() *cli.Command {
-	text := `System:
-  ctrl+l   Redraw screen (window width changes are not reflected)
-  ctrl+w   Close current page
-  ctrl+q   Quit application
+func (a *App) newDocsKeybindingsCmd() *cli.Command {
+	// TODO: カスタムしたキーバインドを反映するようにする
+	text := `Global:
+  ctrl-l   Redraw screen (window width changes are not reflected)
+  ctrl-w   Close current page
+  ctrl-q   Quit application
 
 Navigation:
   j up      Focus the next tweet
@@ -35,8 +36,8 @@ Navigation:
   :         Focus the command line
 
 Scrolling:
-  ctrl+j page up     Scroll up
-  ctrl+k page down   Scroll down
+  ctrl-j page up     Scroll up
+  ctrl-k page down   Scroll down
 
 Home Timeline Page:
   s   Start stream mode (similar to UserStream)
@@ -63,14 +64,14 @@ User Navigation:
   X   Unblock a user
 `
 	return &cli.Command{
-		Name:      "shortcuts",
-		Shorthand: "s",
-		Short:     "Documentation for shortcut keys",
+		Name:      "keybindings",
+		Shorthand: "k",
+		Short:     "Documentation for keybindings",
 		Validate:  cli.NoArgs(),
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newDocsPage("Shortcuts", text), !unfocus)
+			return a.view.AddPage(newDocsPage("Keybindings", text), !unfocus)
 		},
 	}
 }

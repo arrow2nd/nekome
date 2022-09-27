@@ -60,9 +60,9 @@ Download the appropriate file for your environment from [Releases](https://githu
 
 Please refer to [Commands List](./docs/en/commands.md) or `nekome -h` .
 
-### Shortcuts
+### Keybindings
 
-Please refer to [Shortcuts List](./docs/en/shortcuts.md) or typing `?` for help.
+Please refer to [Keybindings](./docs/en/keybindings.md) or typing `?` for help.
 
 ### Configuration
 

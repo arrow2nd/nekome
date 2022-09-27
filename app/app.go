@@ -290,9 +290,9 @@ func (a *App) handlePageKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	// ショートカットのヘルプ
+	// キーバインドのヘルプ
 	if keyRune == '?' {
-		shared.RequestExecCommand("docs shortcuts")
+		shared.RequestExecCommand("docs keybindings")
 		return nil
 	}
 

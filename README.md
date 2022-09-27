@@ -60,9 +60,9 @@ scoop install arrow2nd/nekome
 
 [コマンド一覧](./docs/ja/commands.md)、もしくは `nekome -h` をご覧ください。
 
-### ショートカット
+### キーバインド
 
-[ショートカット一覧](./docs/ja/shortcuts.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
+[キーバインド一覧](./docs/ja/keybindings.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください。
 
 ### 設定
 

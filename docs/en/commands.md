@@ -167,12 +167,12 @@ Show the document
 :docs [command]
 ```
 
-#### shortcuts
+#### keybindings
 
-Documentation for shortcut keys
+Documentation for keybindings
 
 ```
-:docs shortcuts [flags]
+:docs keybindings [flags]
 ```
 
 #### flags

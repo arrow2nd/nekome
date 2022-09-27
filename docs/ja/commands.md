@@ -167,12 +167,12 @@ nekome edit [フラグ]
 :docs [コマンド]
 ```
 
-#### shortcuts
+#### keybindings
 
-ショートカットキーのドキュメントを表示します
+キーバインドのドキュメントを表示します
 
 ```
-:docs shortcuts [フラグ]
+:docs keybindings [フラグ]
 ```
 
 ##### フラグ
