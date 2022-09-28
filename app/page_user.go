@@ -176,8 +176,3 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 		ur.PublicMetrics.Followers,
 	))
 }
-
-// handleKeyEvents : ユーザページのキーハンドラ
-func (u *userPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	return handleCommonPageKeyEvent(u, event)
-}

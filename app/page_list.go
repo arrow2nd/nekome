@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"github.com/gdamore/tcell/v2"
-)
+import "strings"
 
 type listPage struct {
 	*tweetsBasePage
@@ -61,9 +57,4 @@ func (l *listPage) Load() {
 
 	l.updateIndicator("")
 	l.updateLoadedStatus(newTweetsCount)
-}
-
-// handleKeyEvents : リストページのキーハンドラ
-func (l *listPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	return handleCommonPageKeyEvent(l, event)
 }

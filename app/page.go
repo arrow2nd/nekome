@@ -17,19 +17,6 @@ type page interface {
 	OnDelete()
 }
 
-// handleCommonPageKeyEvent : ページ共通のキーハンドラ
-func handleCommonPageKeyEvent(p page, event *tcell.EventKey) *tcell.EventKey {
-	keyRune := event.Rune()
-
-	// リロード
-	if keyRune == '.' {
-		go p.Load()
-		return nil
-	}
-
-	return event
-}
-
 type basePage struct {
 	page
 	name      string
@@ -120,4 +107,17 @@ func (t *tweetsBasePage) updateLoadedStatus(count int) {
 	}
 
 	shared.SetStatus(t.name, text)
+}
+
+// handleKeyEvents : キーハンドラ
+func (t *tweetsBasePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	keyRune := event.Rune()
+
+	// リロード
+	if keyRune == '.' {
+		go t.Load()
+		return nil
+	}
+
+	return event
 }

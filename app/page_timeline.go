@@ -46,7 +46,7 @@ func newTimelinePage(tt timelineType) *timelinePage {
 	}
 
 	page.SetFrame(page.tweets.view)
-	page.frame.SetInputCapture(page.handleKeyEvents)
+	page.frame.SetInputCapture(page.handleTimelinePageKeyEvents)
 
 	return page
 }
@@ -219,7 +219,7 @@ func (t *timelinePage) loadStream(ticker *time.Ticker) {
 }
 
 // handleKeyEvents : タイムラインページのキーハンドラ
-func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// ストリームモード開始
@@ -240,5 +240,5 @@ func (t *timelinePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	return handleCommonPageKeyEvent(t, event)
+	return t.handleKeyEvents(event)
 }

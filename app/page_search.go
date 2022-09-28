@@ -3,8 +3,6 @@ package app
 import (
 	"fmt"
 	"strings"
-
-	"github.com/gdamore/tcell/v2"
 )
 
 type searchPage struct {
@@ -51,9 +49,4 @@ func (s *searchPage) Load() {
 
 	s.updateIndicator(fmt.Sprintf("Query: %s | ", s.query))
 	s.updateLoadedStatus(len(tweets))
-}
-
-// handleKeyEvents : 検索ページのキーハンドラ
-func (s *searchPage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	return handleCommonPageKeyEvent(s, event)
 }
