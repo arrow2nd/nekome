@@ -29,28 +29,3 @@ func newCmd() *cli.Command {
 		},
 	}
 }
-
-func (a *App) initCmd() {
-	// コマンド追加
-	a.cmd.AddCommand(
-		a.newHomeCmd(),
-		a.newMentionCmd(),
-		a.newListCmd(),
-		a.newUserCmd(),
-		a.newSearchCmd(),
-		a.newTweetCmd(),
-		a.newQuitCmd(),
-		a.newDocsCmd(),
-		a.newAccountCmd(),
-		a.newEditCmd(),
-	)
-
-	if shared.isCommandLineMode {
-		return
-	}
-
-	// ヘルプの出力を新規ページに割り当てる
-	a.cmd.Help = func(c *cli.Command, h string) {
-		a.view.AddPage(newDocsPage(c.Name, h), true)
-	}
-}

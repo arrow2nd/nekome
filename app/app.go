@@ -220,7 +220,7 @@ func (a *App) setViewKeybindings() error {
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.Main.MappingEventHandler(handlers)
+	c, err := shared.conf.Pref.Keybindings.View.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}

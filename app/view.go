@@ -8,11 +8,12 @@ import (
 	"github.com/rivo/tview"
 )
 
-// tabMove : タブの移動量
 type tabMove int
 
 const (
+	// TabMovePrev : 前のタブに移動
 	TabMovePrev tabMove = -1
+	// TabMoveNext : 次のタブに移動
 	TabMoveNext tabMove = 1
 )
 
@@ -23,7 +24,7 @@ type ModalOpt struct {
 	onDone func()
 }
 
-// tab : タブ
+// tab : タブアイテム
 type tab struct {
 	id   string
 	name string
@@ -31,35 +32,35 @@ type tab struct {
 
 // view : ページの表示域
 type view struct {
-	mainView *tview.Flex
-	pageView *tview.Pages
-	tabView  *tview.TextView
-	textArea *tview.TextArea
-	modal    *tview.Modal
-	pages    map[string]page
-	tabs     []*tab
-	tabIndex int
-	mu       sync.Mutex
+	mainFlex  *tview.Flex
+	pages     *tview.Pages
+	tabArea   *tview.TextView
+	textArea  *tview.TextArea
+	modal     *tview.Modal
+	pageItems map[string]page
+	tabItems  []*tab
+	tabIndex  int
+	mu        sync.Mutex
 }
 
 func newView() *view {
 	v := &view{
-		mainView: tview.NewFlex(),
-		pageView: tview.NewPages(),
-		tabView:  tview.NewTextView(),
-		textArea: tview.NewTextArea(),
-		modal:    tview.NewModal(),
-		pages:    map[string]page{},
-		tabs:     []*tab{},
-		tabIndex: 0,
+		mainFlex:  tview.NewFlex(),
+		pages:     tview.NewPages(),
+		tabArea:   tview.NewTextView(),
+		textArea:  tview.NewTextArea(),
+		modal:     tview.NewModal(),
+		pageItems: map[string]page{},
+		tabItems:  []*tab{},
+		tabIndex:  0,
 	}
 
-	v.mainView.
+	v.mainFlex.
 		SetDirection(tview.FlexRow).
-		AddItem(v.pageView, 0, 1, true).
+		AddItem(v.pages, 0, 1, true).
 		AddItem(v.textArea, 0, 0, false)
 
-	v.tabView.
+	v.tabArea.
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
@@ -85,21 +86,21 @@ func createPageTag(id int) string {
 
 // drawTab : タブを描画
 func (v *view) drawTab() {
-	v.tabView.Clear()
+	v.tabArea.Clear()
 
-	for i, tab := range v.tabs {
-		fmt.Fprintf(v.tabView, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
+	for i, tab := range v.tabItems {
+		fmt.Fprintf(v.tabArea, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
 
 		// タブが2個以上あるならセパレータを挿入
-		if i < len(v.tabs)-1 {
-			fmt.Fprint(v.tabView, shared.conf.Pref.Appearance.TabSeparate)
+		if i < len(v.tabItems)-1 {
+			fmt.Fprint(v.tabArea, shared.conf.Pref.Appearance.TabSeparate)
 		}
 	}
 }
 
 // SetInputCapture : キーハンドラを設定
 func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
-	v.mainView.SetInputCapture(f)
+	v.mainFlex.SetInputCapture(f)
 }
 
 // AddPage : ページを追加
@@ -113,30 +114,30 @@ func (v *view) AddPage(p page, focus bool) error {
 	}
 
 	// ページが重複する場合、既にあるページに移動
-	if _, ok := v.pages[newTab.id]; ok {
-		tabIndex, found := find(v.tabs, func(e *tab) bool { return e.id == newTab.id })
+	if _, ok := v.pageItems[newTab.id]; ok {
+		tabIndex, found := find(v.tabItems, func(e *tab) bool { return e.id == newTab.id })
 		if !found {
 			return fmt.Errorf("Failed to add page (%s)", newTab.name)
 		}
 
-		v.tabView.Highlight(newTab.id)
+		v.tabArea.Highlight(newTab.id)
 		v.tabIndex = tabIndex
 
 		return nil
 	}
 
 	// ページを追加
-	v.pages[newTab.id] = p
-	v.pageView.AddPage(newTab.id, p.GetPrimivite(), true, focus)
+	v.pageItems[newTab.id] = p
+	v.pages.AddPage(newTab.id, p.GetPrimivite(), true, focus)
 
 	// フォーカスが当たっているならタブをハイライト
 	if focus {
-		v.tabView.Highlight(newTab.id)
-		v.tabIndex = v.pageView.GetPageCount() - 1
+		v.tabArea.Highlight(newTab.id)
+		v.tabIndex = v.pages.GetPageCount() - 1
 	}
 
 	// タブを追加
-	v.tabs = append(v.tabs, newTab)
+	v.tabItems = append(v.tabItems, newTab)
 	v.drawTab()
 
 	go p.Load()
@@ -147,53 +148,53 @@ func (v *view) AddPage(p page, focus bool) error {
 // Reset : リセット
 func (v *view) Reset() {
 	// ページを削除
-	for id := range v.pages {
-		v.pageView.RemovePage(id)
+	for id := range v.pageItems {
+		v.pages.RemovePage(id)
 	}
-	v.pages = map[string]page{}
+	v.pageItems = map[string]page{}
 
 	// タブを削除
-	v.tabs = []*tab{}
-	v.tabView.SetText("")
+	v.tabItems = []*tab{}
+	v.tabArea.SetText("")
 	v.tabIndex = 0
 }
 
 // RemoveCurrentPage : 現在のページを削除
 func (v *view) RemoveCurrentPage() {
 	// ページが1つのみなら削除しない
-	if v.pageView.GetPageCount() == 1 {
+	if v.pages.GetPageCount() == 1 {
 		shared.SetErrorStatus("App", "last page cannot be deleted")
 		return
 	}
 
-	id, _ := v.pageView.GetFrontPage()
-	name := v.pages[id].GetName()
+	id, _ := v.pages.GetFrontPage()
+	name := v.pageItems[id].GetName()
 
-	// タブを削除
 	newTabs := []*tab{}
 
-	for _, tab := range v.tabs {
+	// タブを削除
+	for _, tab := range v.tabItems {
 		if tab.name != name {
 			newTabs = append(newTabs, tab)
 		}
 	}
 
-	v.tabs = newTabs
+	v.tabItems = newTabs
 
 	// 再描画して反映
 	v.drawTab()
 
 	// ページを削除
-	v.pageView.RemovePage(id)
-	v.pages[id].OnDelete()
-	delete(v.pages, id)
+	v.pages.RemovePage(id)
+	v.pageItems[id].OnDelete()
+	delete(v.pageItems, id)
 
 	// 前のタブを選択
 	if v.tabIndex--; v.tabIndex < 0 {
 		v.tabIndex = 0
 	}
 
-	v.tabView.Highlight(v.tabs[v.tabIndex].id)
+	v.tabArea.Highlight(v.tabItems[v.tabIndex].id)
 }
 
 // MoveTab : タブを移動する
@@ -202,7 +203,7 @@ func (v *view) MoveTab(move tabMove) {
 	v.tabIndex += int(move)
 
 	// 範囲内に丸める
-	if max := v.pageView.GetPageCount(); v.tabIndex < 0 {
+	if max := v.pages.GetPageCount(); v.tabIndex < 0 {
 		v.tabIndex = max - 1
 	} else if v.tabIndex >= max {
 		v.tabIndex = 0
@@ -213,30 +214,31 @@ func (v *view) MoveTab(move tabMove) {
 		return
 	}
 
-	v.tabView.Highlight(v.tabs[v.tabIndex].id)
+	v.tabArea.Highlight(v.tabItems[v.tabIndex].id)
 }
 
 // handleTabHighlight : タブがハイライトされたときのコールバック
 func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ハイライトされたタブまでスクロール
-	v.tabView.ScrollToHighlight()
+	v.tabArea.ScrollToHighlight()
 
 	// 前のページを非アクティブにする
 	if len(removed) > 0 {
-		if page, ok := v.pages[removed[0]]; ok {
+		if page, ok := v.pageItems[removed[0]]; ok {
 			page.OnInactive()
 		}
 	}
 
 	// ページを切り替え
-	v.pageView.SwitchToPage(added[0])
-	v.pages[added[0]].OnActive()
+	v.pages.SwitchToPage(added[0])
+	v.pageItems[added[0]].OnActive()
 }
 
 // PopupModal : モーダルを表示
 func (v *view) PopupModal(o *ModalOpt) {
 	message := o.title
 
+	// メッセージがあるなら表示
 	if o.text != "" {
 		hr := createSeparator("-", 4)
 		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
@@ -247,7 +249,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 			o.onDone()
 		}
 
-		v.pageView.RemovePage("modal")
+		v.pages.RemovePage("modal")
 		shared.SetDisablePageKeyEvent(false)
 	}
 
@@ -256,7 +258,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 		SetText(message).
 		SetDoneFunc(f)
 
-	v.pageView.AddPage("modal", v.modal, true, true)
+	v.pages.AddPage("modal", v.modal, true, true)
 
 	shared.RequestFocusPrimitive(v.modal)
 	shared.SetDisablePageKeyEvent(true)
@@ -306,7 +308,7 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 		SetTitle(" Press ESC to close, press Ctrl-p to post ").
 		SetInputCapture(f)
 
-	v.mainView.ResizeItem(v.textArea, 0, 1)
+	v.mainFlex.ResizeItem(v.textArea, 0, 1)
 
 	shared.RequestFocusPrimitive(v.textArea)
 	shared.SetDisablePageKeyEvent(true)
@@ -314,8 +316,8 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 
 // HiddenTextArea : テキストエリアを非表示
 func (v *view) HiddenTextArea() {
-	v.mainView.ResizeItem(v.textArea, 0, 0)
+	v.mainFlex.ResizeItem(v.textArea, 0, 0)
 
-	shared.RequestFocusPrimitive(v.pageView)
+	shared.RequestFocusPrimitive(v.pages)
 	shared.SetDisablePageKeyEvent(false)
 }

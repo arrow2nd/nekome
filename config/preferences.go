@@ -77,14 +77,14 @@ type icon struct {
 type keybindings struct {
 	// Global : アプリ全体のキーバインド
 	Global keybinding `toml:"global"`
-	// Main : メインビューのキーバインド
-	Main keybinding `toml:"main_view"`
+	// View : メインビューのキーバインド
+	View keybinding `toml:"view"`
 	// Page : ページ共通のキーバインド
 	Page keybinding `toml:"page"`
 	// HomeTimeline : ホームタイムラインページのキーバインド
 	HomeTimeline keybinding `toml:"home_timeline"`
 	// Tweet : ツイートビューのキーバインド
-	Tweet keybinding `toml:"tweet_view"`
+	Tweet keybinding `toml:"tweet"`
 }
 
 // Preferences : 環境設定
@@ -161,7 +161,7 @@ func defaultPreferences() *Preferences {
 			Global: map[string][]string{
 				ActionQuit: {"ctrl+q"},
 			},
-			Main: map[string][]string{
+			View: map[string][]string{
 				ActionSelectPrevTab: {"h", "Left"},
 				ActionSelectNextTab: {"l", "Right"},
 				ActionRemovePage:    {"ctrl+w"},

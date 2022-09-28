@@ -58,13 +58,18 @@ func (k *keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Con
 	c := cbind.NewConfiguration()
 
 	for action, keys := range *k {
-		handler, ok := handlers[action]
+		f, ok := handlers[action]
 		if !ok {
 			return nil, fmt.Errorf("unknown action: %s", action)
 		}
 
+		handler := func(_ *tcell.EventKey) *tcell.EventKey {
+			f()
+			return nil
+		}
+
 		for _, key := range keys {
-			if err := c.Set(key, wrapEventHandler(handler)); err != nil {
+			if err := c.Set(key, handler); err != nil {
 				return nil, fmt.Errorf("failed to set key bindings: %w", err)
 			}
 		}
@@ -72,12 +77,4 @@ func (k *keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Con
 	}
 
 	return c, nil
-}
-
-// wrapEventHandler : 戻り値無しの関数を設定するためのラップ関数
-func wrapEventHandler(f func()) func(*tcell.EventKey) *tcell.EventKey {
-	return func(_ *tcell.EventKey) *tcell.EventKey {
-		f()
-		return nil
-	}
 }

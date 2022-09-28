@@ -69,6 +69,19 @@ func (b *basePage) OnInactive() {
 // OnDelete : ページが破棄された
 func (b *basePage) OnDelete() {}
 
+// handleKeyEvents : キーハンドラ
+func (b *basePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+	keyRune := event.Rune()
+
+	// リロード
+	if keyRune == '.' {
+		go b.Load()
+		return nil
+	}
+
+	return event
+}
+
 type tweetsBasePage struct {
 	*basePage
 	tweets *tweets
@@ -107,17 +120,4 @@ func (t *tweetsBasePage) updateLoadedStatus(count int) {
 	}
 
 	shared.SetStatus(t.name, text)
-}
-
-// handleKeyEvents : キーハンドラ
-func (t *tweetsBasePage) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	keyRune := event.Rune()
-
-	// リロード
-	if keyRune == '.' {
-		go t.Load()
-		return nil
-	}
-
-	return event
 }

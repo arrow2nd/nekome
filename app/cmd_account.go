@@ -140,7 +140,7 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 			a.view.Reset()
 			a.statusBar.DrawAccountInfo()
 			a.initAutocomplate()
-			a.runStartupCommands()
+			a.execStartupCommands()
 
 			return nil
 		},
