@@ -211,7 +211,7 @@ $HOME/.config/nekome
   name = "white:-:b"
   # ユーザ名（@arrow_2nd みたいなの）
   user_name = "gray:-:i"
-  # ユーザ詳細（BIO）
+  # ユーザ詳細（位置情報, URL）
   detaill = "gray:-:-"
   # 認証済みバッジ
   verified = "blue:-:-"

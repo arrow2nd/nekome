@@ -206,7 +206,7 @@ Hexadecimal color codes beginning with `#` can be used
   name = "white:-:b"
   # Username (starting with @)
   user_name = "gray:-:i"
-  # User detail (BIO)
+  # User detail (Geo, URL)
   detaill = "gray:-:-"
   # Verified badge
   verified = "blue:-:-"
