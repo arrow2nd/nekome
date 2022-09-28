@@ -25,7 +25,7 @@
 >
 > If you install the software in a manner other than the following, the consumer key is not built into the software
 >
-> Get your Twitter API v2 API key from [ Twitter Developer Portal ](https://developer.twitter.com/en/portal/projects-and-apps) and add it to the [.cred.toml](./docs/en/config.md#.cred.toml) generated after startup
+> Get your Twitter API v2 API key from [ Twitter Developer Portal ](https://developer.twitter.com/en/portal/projects-and-apps) and add it to the [.cred.toml](./docs/en/config.md#credtoml) generated after startup
 
 ### Homebrew
 

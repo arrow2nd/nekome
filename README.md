@@ -25,7 +25,7 @@
 >
 > 以下の方法以外でインストールした場合、コンシューマキーが内蔵されていません
 >
-> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) から Twitter API v2 の API キーを取得して、起動後に生成される [.cred.toml](./docs/ja/config.md#.cred.toml) に追加してください
+> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) から Twitter API v2 の API キーを取得して、起動後に生成される [.cred.toml](./docs/ja/config.md#credtoml) に追加してください
 
 ### Homebrew
 
