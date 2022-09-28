@@ -4,184 +4,226 @@ The configuration file is created and saved as follows
 
 ```
 $HOME/.config/nekome
-├── .cred
-├── default.yml
-└── settings.yml
+├── .cred.toml
+├── style_default.toml
+└── settings.toml
 ```
 
-## Preferences
+## .cred.toml
 
-### Date and time formatting format
-
-Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants).
+Credential data file
 
 ### Example
 
-> settings.yml
+```toml
+# Twitter API consumer key
+[consumer]
+  Token = ""
+  TokenSecret = ""
 
-```yaml
-feature:
-  # Consumer key (if empty, the built-in consumer key is used)
-  consumer:
-    token: ""
-    tokensecret: ""
+# CAUTION :
+# DO NOT EDIT THE FOLLOWING MANUALLY
+# Use `nekome account` to manipulate user information
+
+# User credentials
+[user]
+
+  [[user.accounts]]
+    UserName = "user_name"
+    ID = "0123456789"
+    [user.accounts.Token]
+      Token = "hoge"
+      TokenSecret = "fuga"
+```
+
+## settings.toml
+
+Preferences file
+
+### About date and time formats
+
+Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
+
+### Example
+
+```toml
+[feature]
   # User used by default
-  mainuser: "arrow_2nd"
+  main_user = "user_name"
   # Number of tweets read at one time
-  loadtweetscount: 25
+  load_tweets_limit = 25
   # Maximum number of tweets accumulated on a page
-  tweetmaxaccumulationnum: 250
+  accmulate_tweets_limit = 250
   # Whether to launch an external editor when editing tweets
-  usetweetwhenexeditor: false
-  # Whether the locale setting of the execution environment is CJK or not (countermeasure for display disorder of tview)
-  islocalecjk: true
-  # Whether to display a confirmation modal or not
-  confirm:
-    Block: true
-    Delete: true
-    Follow: true
-    Like: true
-    Mute: true
-    Quit: true
-    Retweet: true
-    Tweet: true
-    Unblock: true
-    Unfollow: true
-    Unlike: true
-    Unmute: true
-    Unretweet: true
+  use_external_editor = false
+  # Whether the locale setting of the execution environment is CJK or not
+  # (countermeasure for display disorder of tview)
+  is_locale_cjk = true
   # Commands to be executed at startup
-  startup:
-    - home
-    - mention --unfocus
+  startup_cmds = ["home", "mention --unfocus"]
 
-appearance:
+# Whether to display a confirmation modal or not
+[comfirm]
+  block = true
+  delete = true
+  follow = true
+  like = true
+  mute = true
+  quit = true
+  retweet = true
+  tweet = true
+  unblock = true
+  unfollow = true
+  unlike = true
+  unmute = true
+  unretweet = true
+
+[appearance]
   # Style files to load
-  stylefile: default.yml
-  # Date Format
-  dateformat: 2006/01/02
-  # Time Format
-  timeformat: "15:04:05"
+  style_file = "style_default.toml"
+  # Date format
+  date_fmt = "2006/01/02"
+  # Time format
+  time_fmt = "15:04:05"
   # Maximum number of lines of BIO on user page
-  userbiomaxrow: 3
+  user_bio_max_row = 3
   # Padding on left and right side of user page profile display area
-  userprofilepaddingx: 4
+  user_profile_padding_x = 4
   # Characters used to display the graph
-  graphchar: █
+  graph_char = "█"
   # Maximum width of graph
-  graphmaxwidth: 30
+  graph_max_width = 30
   # Tab separator
-  tabseparate: "|"
+  tab_separate = "|"
   # Tab maximum width
-  tabmaxwidth: 20
+  tab_max_width = 20
 
-texts:
-  # Unit of Like
-  like: Like
-  # Unit of retweet
-  retweet: RT
-  # Loading display
-  loading: Loading...
+[text]
+  # Unit of likes
+  like = "Like"
+  # Unit of retweets
+  retweet = "RT"
+  # Display loading
+  loading = "Loading..."
   # Display when there are no tweets
-  notweets: No tweets ฅ^-ω-^ฅ
-  # Tab String on Home Timeline Page
-  tabhome: Home
-  # Tab String on Mention Timeline Page
-  tabmention: Mention
-  # Tab String on List Timeline Page
-  tablist: "List: {name}"
-  # Tab String on User Page
-  tabuser: "User: @{name}"
-  # Tab String on Search Result Page
-  tabsearch: "Search: {query}"
-  # Tab String on Documentation Page
-  tabdocs: "Docs: {name}"
+  no_tweets = "No tweets ฅ^-ω-^ฅ"
+  # Display tab text
+  tab_home = "Home"
+  tab_mention = "Mention"
+  tab_list = "List: {name}"
+  tab_user = "User: @{name}"
+  tab_search = "Search: {query}"
+  tab_docs = "Docs: {name}"
 
-icon:
-  # Profile Location
-  geo: 📍
-  # Profile Website
-  link: 🔗
-  # Pinned Tweet
-  pinned: 📌
-  # Verified User
-  verified: ✅
-  # Private User
-  private: 🔒
+[icon]
+  # Profile location
+  geo = "📍"
+  # Profile website
+  link = "🔗"
+  # Pinned tweet
+  pinned = "📌"
+  # Verified badge
+  verified = "✅"
+  # Private badge
+  private = "🔒"
 ```
 
-## Style
+## style_default.toml
 
-### Style syntax
+The default style definition file.
 
-For items not ending in `bg`, use [syntax for Color tag in tview](https://pkg.go.dev/github.com/rivo/tview#hdr-Colors).
+The file specified in `appearance.style_file` in `settings.toml` is loaded.
 
-### Syntax for items ending in `bg`
+### Syntax of configuration items
 
-Only hexadecimal color codes beginning with `#` are allowed.
+#### Items ending with `_color`
+
+Hexadecimal color codes beginning with `#` can be used
+
+#### Other items
+
+[Color tag for tview](https://pkg.go.dev/github.com/rivo/tview#hdr-Colors) can be used
+
+> Syntax: `<foreground>:<background>:<flags>`
 
 ### Example
 
-> default.yml
-
-```yaml
-app:
-  # Page Tabs
-  tab: -:-:-
-  # Separator
-  separator: gray:-:-
-
-statusbar:
+```toml
+[app]
+  # Background color of the entire app
+  background_color = "#000000"
+  # Border
+  border_color = "#ffffff"
   # Text
-  text: black:-:-
+  text_color = "#f9f9f9"
+  # Placeholder
+  sub_text_color = "#979797"
+  # Caution and warning text
+  emphasis_text = "maroon:-:bi"
+
+[tab]
+  # Text
+  text = "white:-:-"
   # Background
-  bg: "#ffffff"
+  background_color = "#000000"
 
-autocomplete:
-  # Unselected Item
-  normalbg: "#3e4359"
-  # Selecting Item
-  selectbg: "#5c6586"
+[autocomplete]
+  # Item Text
+  text_color = "#000000"
+  # Unselected item background
+  background_color = "#808080"
+  # Selecting item background
+  selected_background_color = "#C0C0C0"
 
-tweet:
+[statusbar]
+  # Text
+  text = "black:-:-"
+  # Background
+  background_color = "#ffffff"
+
+[tweet]
   # Annotation (RT by ...)
-  annotation: blue:-:-
+  annotation = "teal:-:-"
   # Detail (date, via)
-  detail: gray:-:-
+  detail = "gray:-:-"
   # Likes
-  like: pink:-:-
+  like = "pink:-:-"
   # Retweets
-  rt: green:-:-
+  retweet = "lime:-:-"
   # Hashtag
-  hashtag: blue:-:-
+  hashtag = "aqua:-:-"
   # Mention
-  mention: blue:-:-
+  mention = "aqua:-:-"
   # Graph
-  pollgraph: blue:-:-
-  # Poll Detail (status, total votes, end date)
-  polldetail: gray:-:-
+  poll_graph = "aqua:-:-"
+  # Poll detail (status, total votes, end date)
+  poll_detail = "gray:-:-"
+  # Separator
+  separator = "gray:-:-"
 
-user:
+[user]
   # Nickname
-  name: lightgray:-:b
+  name = "white:-:b"
   # Username (starting with @)
-  username: gray:-:i
-  # Verified Badge
-  verified: blue:-:-
-  # Private Badge
-  private: gray:-:-
-  # Detail (location, website)
-  detail: gray:-:-
-  # Tweets Metrics : Text
-  tweetsmetricstext: black:-:-
-  # Tweets Metrics : Background
-  tweetsmetricsbg: "#a094c7"
-  # Following Metrics : Text
-  followingmetricstext: black:-:-
-  # Following Metrics : Background
-  followingmetricsbg: "#84a0c6"
-  # Followers Metrics : Text
-  followersmetricstext: black:-:-
-  # Followers Metrics : Background
-  followersmetricsbg: "#89b8c2"
+  user_name = "gray:-:i"
+  # User detail (BIO)
+  detaill = "gray:-:-"
+  # Verified badge
+  verified = "blue:-:-"
+  # Private badge
+  private = "gray:-:-"
+
+[metrics]
+  # Tweets / Text
+  tweets_text = "black:-:-"
+  # Tweets / Background
+  tweets_background_color = "#a094c7"
+  # Following / Text
+  following_text = "black:-:-"
+  # Following / Background
+  following_background_color = "#84a0c6"
+  # Followers / Text
+  followers_text = "black:-:-"
+  # Followers / Background
+  followers_background_color = "#89b8c2"
 ```
