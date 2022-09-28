@@ -71,6 +71,9 @@ func (a *App) Init() error {
 	// LINK: https://github.com/mattn/go-runewidth/issues/14
 	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Pref.Feature.IsLocaleCJK
 
+	// Ctrl+K/Jの再マッピングを無効化
+	cbind.UnifyEnterKeys = false
+
 	// キーハンドラを設定
 	if err := a.setGlobalKeybindings(); err != nil {
 		return err

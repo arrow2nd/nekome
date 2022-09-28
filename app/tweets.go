@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/arrow2nd/nekome/config"
 	"github.com/g8rswimmer/go-twitter/v2"
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -26,7 +26,7 @@ type tweets struct {
 	mu        sync.Mutex
 }
 
-func newTweets() *tweets {
+func newTweets() (*tweets, error) {
 	t := &tweets{
 		view:      tview.NewTextView(),
 		pinned:    nil,
@@ -40,13 +40,99 @@ func newTweets() *tweets {
 		SetWrap(true).
 		SetRegions(true)
 
-	t.view.
-		SetHighlightedFunc(func(added, removed, remaining []string) {
-			t.view.ScrollToHighlight()
-		}).
-		SetInputCapture(t.handleKeyEvents)
+	t.view.SetHighlightedFunc(func(added, removed, remaining []string) {
+		t.view.ScrollToHighlight()
+	})
 
-	return t
+	if err := t.setKeyEventHandler(); err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
+// setKeyEventHandler : キーハンドラを設定
+func (t *tweets) setKeyEventHandler() error {
+	handler := map[string]func(){
+		config.ActionScrollUp: func() {
+			r, c := t.view.GetScrollOffset()
+			t.view.ScrollTo(r+1, c)
+		},
+		config.ActionScrollDown: func() {
+			r, c := t.view.GetScrollOffset()
+			t.view.ScrollTo(r-1, c)
+		},
+		config.ActionCursorUp: func() {
+			t.moveCursor(cursorMoveUp)
+		},
+		config.ActionCursorDown: func() {
+			t.moveCursor(cursorMoveDown)
+		},
+		config.ActionCursorTop: func() {
+			t.scrollToTweet(0)
+		},
+		config.ActionCursorBottom: func() {
+			lastIndex := t.GetTweetsCount() - 1
+			t.scrollToTweet(lastIndex)
+		},
+		config.ActionTweetLike: func() {
+			t.actionForTweet(tweetLike)
+		},
+		config.ActionTweetUnlike: func() {
+			t.actionForTweet(tweetUnlike)
+		},
+		config.ActionTweetRetweet: func() {
+			t.actionForTweet(tweetRetweet)
+		},
+		config.ActionTweetUnretweet: func() {
+			t.actionForTweet(tweetUnretweet)
+		},
+		config.ActionTweetRemove: func() {
+			t.actionForTweet(tweetDelete)
+		},
+		config.ActionUserFollow: func() {
+			t.actionForUser(userFollow)
+		},
+		config.ActionUserUnfollow: func() {
+			t.actionForUser(userUnfollow)
+		},
+		config.ActionUserBlock: func() {
+			t.actionForUser(userBlock)
+		},
+		config.ActionUserUnblock: func() {
+			t.actionForUser(userUnblock)
+		},
+		config.ActionUserMute: func() {
+			t.actionForUser(userMute)
+		},
+		config.ActionUserUnmute: func() {
+			t.actionForUser(userUnmute)
+		},
+		config.ActionOpenUserPage: func() {
+			t.openUserPage()
+		},
+		config.ActionQuote: func() {
+			t.postQuoteTweet()
+		},
+		config.ActionReply: func() {
+			t.postReply()
+		},
+		config.ActionOpenBrowser: func() {
+			t.openBrower()
+		},
+		config.ActionCopyUrl: func() {
+			t.copyLinkToClipBoard()
+		},
+	}
+
+	c, err := shared.conf.Pref.Keybindings.Tweet.MappingEventHandler(handler)
+	if err != nil {
+		return err
+	}
+
+	t.view.SetInputCapture(c.Capture)
+
+	return nil
 }
 
 // GetSinceID : 一番新しいツイートIDを取得
@@ -241,147 +327,4 @@ func (t *tweets) moveCursor(c cursorMove) {
 	}
 
 	t.scrollToTweet(idx + int(c))
-}
-
-// handleKeyEvents : ツイートビューのキーハンドラ
-func (t *tweets) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	key := event.Key()
-	keyRune := event.Rune()
-
-	// 上にスクロール
-	if key == tcell.KeyPgUp || key == tcell.KeyCtrlJ {
-		r, c := t.view.GetScrollOffset()
-		t.view.ScrollTo(r+1, c)
-		return nil
-	}
-
-	// 下にスクロール
-	if key == tcell.KeyPgDn || key == tcell.KeyCtrlK {
-		r, c := t.view.GetScrollOffset()
-		t.view.ScrollTo(r-1, c)
-		return nil
-	}
-
-	// カーソルを上に移動
-	if key == tcell.KeyUp || keyRune == 'k' {
-		t.moveCursor(cursorMoveUp)
-		return nil
-	}
-
-	// カーソルを下に移動
-	if key == tcell.KeyDown || keyRune == 'j' {
-		t.moveCursor(cursorMoveDown)
-		return nil
-	}
-
-	// カーソルを先頭に移動
-	if key == tcell.KeyHome || keyRune == 'g' {
-		t.scrollToTweet(0)
-		return nil
-	}
-
-	// カーソルを末尾に移動
-	if key == tcell.KeyEnd || keyRune == 'G' {
-		lastIndex := t.GetTweetsCount() - 1
-		t.scrollToTweet(lastIndex)
-		return nil
-	}
-
-	// いいね
-	if keyRune == 'f' {
-		t.actionForTweet(tweetLike)
-		return nil
-	}
-
-	// いいね解除
-	if keyRune == 'F' {
-		t.actionForTweet(tweetUnlike)
-		return nil
-	}
-
-	// リツイート
-	if keyRune == 't' {
-		t.actionForTweet(tweetRetweet)
-		return nil
-	}
-
-	// リツイート解除
-	if keyRune == 'T' {
-		t.actionForTweet(tweetUnretweet)
-		return nil
-	}
-
-	// ツイートを削除
-	if keyRune == 'D' {
-		t.actionForTweet(tweetDelete)
-		return nil
-	}
-
-	// フォロー
-	if keyRune == 'w' {
-		t.actionForUser(userFollow)
-		return nil
-	}
-
-	// フォロー解除
-	if keyRune == 'W' {
-		t.actionForUser(userUnfollow)
-		return nil
-	}
-
-	// ブロック
-	if keyRune == 'x' {
-		t.actionForUser(userBlock)
-		return nil
-	}
-
-	// ブロック解除
-	if keyRune == 'X' {
-		t.actionForUser(userUnblock)
-		return nil
-	}
-
-	// ミュート
-	if keyRune == 'u' {
-		t.actionForUser(userMute)
-		return nil
-	}
-
-	// ミュート解除
-	if keyRune == 'U' {
-		t.actionForUser(userUnmute)
-		return nil
-	}
-
-	// ユーザページを開く
-	if keyRune == 'i' {
-		t.openUserPage()
-		return nil
-	}
-
-	// 引用ツイート
-	if keyRune == 'q' {
-		t.postQuoteTweet()
-		return nil
-	}
-
-	// リプライ
-	if keyRune == 'r' {
-		t.postReply()
-		return nil
-	}
-
-	// ブラウザで開く
-	if keyRune == 'o' {
-		t.openBrower()
-		return nil
-	}
-
-	// リンクをコピー
-	if keyRune == 'c' {
-		t.copyLinkToClipBoard()
-		return nil
-	}
-
-	return event
 }

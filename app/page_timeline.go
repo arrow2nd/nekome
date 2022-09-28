@@ -39,8 +39,13 @@ func newTimelinePage(t timelineType) (*timelinePage, error) {
 		tabName = shared.conf.Pref.Text.TabMention
 	}
 
+	basePage, err := newTweetsBasePage(tabName)
+	if err != nil {
+		return nil, err
+	}
+
 	p := &timelinePage{
-		tweetsBasePage: newTweetsBasePage(tabName),
+		tweetsBasePage: basePage,
 		tlType:         t,
 		reloadInterval: 0,
 		cancel:         nil,

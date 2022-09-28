@@ -11,8 +11,13 @@ func newListPage(name, id string) (*listPage, error) {
 	tabName := shared.conf.Pref.Text.TabList
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
+	basePage, err := newTweetsBasePage(tabName)
+	if err != nil {
+		return nil, err
+	}
+
 	p := &listPage{
-		tweetsBasePage: newTweetsBasePage(tabName),
+		tweetsBasePage: basePage,
 		listID:         id,
 	}
 

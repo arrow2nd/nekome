@@ -13,8 +13,12 @@ type searchPage struct {
 func newSearchPage(query string) (*searchPage, error) {
 	tabName := strings.Replace(shared.conf.Pref.Text.TabSearch, "{query}", query, 1)
 
+	basePage, err := newTweetsBasePage(tabName)
+	if err != nil {
+		return nil, err
+	}
 	p := &searchPage{
-		tweetsBasePage: newTweetsBasePage(tabName),
+		tweetsBasePage: basePage,
 		query:          query,
 	}
 

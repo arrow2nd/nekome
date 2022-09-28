@@ -92,11 +92,16 @@ type tweetsBasePage struct {
 	mu     sync.Mutex
 }
 
-func newTweetsBasePage(name string) *tweetsBasePage {
+func newTweetsBasePage(name string) (*tweetsBasePage, error) {
+	tweets, err := newTweets()
+	if err != nil {
+		return nil, err
+	}
+
 	return &tweetsBasePage{
 		basePage: newBasePage(name),
-		tweets:   newTweets(),
-	}
+		tweets:   tweets,
+	}, nil
 }
 
 // updateIndicator : インジケータを更新

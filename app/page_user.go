@@ -30,8 +30,13 @@ func newUserPage(userName string) (*userPage, error) {
 	followingColor := style.Metrics.FollowingBackgroundColor.ToColor()
 	followersColor := style.Metrics.FollowersBackgroundColor.ToColor()
 
+	basePage, err := newTweetsBasePage(tabName)
+	if err != nil {
+		return nil, err
+	}
+
 	p := &userPage{
-		tweetsBasePage:   newTweetsBasePage(tabName),
+		tweetsBasePage:   basePage,
 		flex:             tview.NewFlex(),
 		profile:          tview.NewTextView(),
 		tweetsMetrics:    createMetricsView(tweetsColor),
