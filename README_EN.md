@@ -1,4 +1,4 @@
-# nekome
+# nekome v2
 
 🐈 TUI Twitter client for cats
 
@@ -23,9 +23,9 @@
 
 > **Warning**
 >
-> If you install the software in a manner other than the following, the consumer key is not built into the software.
+> If you install the software in a manner other than the following, the consumer key is not built into the software
 >
-> Obtain the Twitter API v2 API key from the [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps) and set it in `settings.yml` .
+> Get your Twitter API v2 API key from [ Twitter Developer Portal ](https://developer.twitter.com/en/portal/projects-and-apps) and add it to the [.cred.toml](./docs/en/config.md#.cred.toml) generated after startup
 
 ### Homebrew
 
@@ -41,9 +41,15 @@ scoop bucket add arrow2nd https://github.com/arrow2nd/scoop-bucket.git
 scoop install arrow2nd/nekome
 ```
 
+### Go install
+
+```
+go install github.com/arrow2nd/nekome/v2@latest
+```
+
 ### Binary
 
-Download the appropriate file for your environment from [Releases](https://github.com/arrow2nd/nekome/releases) .
+Download the appropriate file for your environment from [Releases](https://github.com/arrow2nd/nekome/releases)
 
 ## Usage
 
@@ -58,18 +64,18 @@ Download the appropriate file for your environment from [Releases](https://githu
 
 ### Commands
 
-Please refer to [Commands List](./docs/en/commands.md) or `nekome -h` .
+Please refer to [Commands List](./docs/en/commands.md) or `nekome -h`
 
 ### Keybindings
 
-Please refer to [Keybindings](./docs/en/keybindings.md) or typing `?` for help.
+Please refer to [Keybindings](./docs/en/keybindings.md) or typing `?` for help
 
 ### Configuration
 
-Please refer to [About Configuration File](./docs/en/config.md) .
+Please refer to [About Configuration File](./docs/en/config.md)
 
 ## Origin of name
 
-The name comes from the Japanese word "猫の目 (neko no me)" which means "the eye of a cat" and refers to things changing at a dizzying pace.
+The name comes from the Japanese word "猫の目 (neko no me)" which means "the eye of a cat" and refers to things changing at a dizzying pace
 
 > https://nekojiten.com/wp/nekonome/
