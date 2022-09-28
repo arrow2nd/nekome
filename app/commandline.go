@@ -83,12 +83,16 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 
 // UpdateStatusMessage : ステータスメッセージを更新
 func (c *commandLine) UpdateStatusMessage(s string) {
+  color := tview.Styles.PrimaryTextColor
+
 	// エラーステータスなら文字色を赤に
 	if strings.HasPrefix(s, "[ERR") {
-		c.inputField.SetPlaceholderTextColor(tcell.ColorRed)
+    color = tcell.ColorRed
 	}
 
-	c.inputField.SetPlaceholder(s)
+	c.inputField.
+    SetPlaceholderTextColor(color).
+    SetPlaceholder(s)
 }
 
 // Blur : コマンドラインからフォーカスを外す
