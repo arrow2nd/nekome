@@ -74,13 +74,27 @@ type icon struct {
 	Private string `toml:"private"`
 }
 
+type keybindings struct {
+	// Global : アプリ全体のキーバインド
+	Global keybinding `toml:"global"`
+	// Main : メインビューのキーバインド
+	Main keybinding `toml:"main_view"`
+	// Page : ページ共通のキーバインド
+	Page keybinding `toml:"page"`
+	// HomeTimeline : ホームタイムラインページのキーバインド
+	HomeTimeline keybinding `toml:"home_timeline"`
+	// Tweet : ツイートビューのキーバインド
+	Tweet keybinding `toml:"tweet_view"`
+}
+
 // Preferences : 環境設定
 type Preferences struct {
-	Feature    feature         `toml:"feature"`
-	Confirm    map[string]bool `toml:"comfirm"`
-	Appearance appearance      `toml:"appearance"`
-	Text       text            `toml:"text"`
-	Icon       icon            `toml:"icon"`
+	Feature     feature         `toml:"feature"`
+	Confirm     map[string]bool `toml:"comfirm"`
+	Appearance  appearance      `toml:"appearance"`
+	Text        text            `toml:"text"`
+	Icon        icon            `toml:"icon"`
+	Keybindings keybindings     `toml:"keybinding"`
 }
 
 // defaultPreferences : デフォルト設定
@@ -142,6 +156,50 @@ func defaultPreferences() *Preferences {
 			Pinned:   "📌",
 			Verified: "✅",
 			Private:  "🔒",
+		},
+		Keybindings: keybindings{
+			Global: map[string][]string{
+				ActionQuit: {"ctrl+q"},
+			},
+			Main: map[string][]string{
+				ActionSelectPrevTab: {"h", "Left"},
+				ActionSelectNextTab: {"l", "Right"},
+				ActionRemovePage:    {"ctrl+w"},
+				ActionRedraw:        {"ctrl+l"},
+				ActionFocusCmdLine:  {":"},
+				ActionShowHelp:      {"?"},
+			},
+			Page: map[string][]string{
+				ActionReloadPage: {"."},
+			},
+			HomeTimeline: map[string][]string{
+				ActionStreamModeStart: {"s"},
+				ActionStreamModeStop:  {"S"},
+			},
+			Tweet: map[string][]string{
+				ActionScrollUp:       {"ctrl+j", "PageUp"},
+				ActionScrollDown:     {"ctrl+k", "PageDown"},
+				ActionCursorUp:       {"k", "Up"},
+				ActionCursorDown:     {"j", "Down"},
+				ActionCursorTop:      {"g", "Home"},
+				ActionCursorBottom:   {"G", "End"},
+				ActionTweetLike:      {"f"},
+				ActionTweetUnlike:    {"F"},
+				ActionTweetRetweet:   {"t"},
+				ActionTweetUnretweet: {"T"},
+				ActionTweetRemove:    {"D"},
+				ActionUserFollow:     {"w"},
+				ActionUserUnfollow:   {"W"},
+				ActionUserBlock:      {"x"},
+				ActionUserUnblock:    {"X"},
+				ActionUserMute:       {"u"},
+				ActionUserUnmute:     {"U"},
+				ActionOpenUserPage:   {"i"},
+				ActionQuote:          {"q"},
+				ActionReply:          {"r"},
+				ActionOpenBrowser:    {"o"},
+				ActionCopyUrl:        {"c"},
+			},
 		},
 	}
 }
