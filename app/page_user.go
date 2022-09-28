@@ -22,7 +22,7 @@ type userPage struct {
 }
 
 func newUserPage(userName string) *userPage {
-	tabName := shared.conf.Settings.Text.TabUser
+	tabName := shared.conf.Pref.Text.TabUser
 	tabName = strings.Replace(tabName, "{name}", userName, 1)
 
 	tweetsColor := shared.conf.Style.Metrics.TweetsBackgroundColor.ToColor()
@@ -40,7 +40,7 @@ func newUserPage(userName string) *userPage {
 		userDic:          nil,
 	}
 
-	padding := shared.conf.Settings.Appearance.UserProfilePaddingX
+	padding := shared.conf.Pref.Appearance.UserProfilePaddingX
 
 	// プロフィール表示域
 	p.profile.
@@ -87,7 +87,7 @@ func (u *userPage) Load() {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	shared.SetStatus(u.name, shared.conf.Settings.Text.Loading)
+	shared.SetStatus(u.name, shared.conf.Pref.Text.Loading)
 
 	// ユーザの情報を取得
 	if u.userDic == nil {
@@ -102,7 +102,7 @@ func (u *userPage) Load() {
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(
 		u.userDic.User.ID,
 		u.tweets.GetSinceID(),
-		shared.conf.Settings.Feature.LoadTweetsLimit,
+		shared.conf.Pref.Feature.LoadTweetsLimit,
 	)
 
 	if err != nil {

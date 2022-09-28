@@ -92,7 +92,7 @@ func (v *view) drawTab() {
 
 		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabs)-1 {
-			fmt.Fprint(v.tabView, shared.conf.Settings.Appearance.TabSeparate)
+			fmt.Fprint(v.tabView, shared.conf.Pref.Appearance.TabSeparate)
 		}
 	}
 }

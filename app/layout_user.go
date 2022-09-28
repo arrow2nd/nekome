@@ -11,7 +11,7 @@ import (
 func createUserBioLayout(d string, w int) (string, int) {
 	desc := strings.ReplaceAll(d, "\n", " ")
 
-	maxRow := shared.conf.Settings.Appearance.UserBIOMaxRow
+	maxRow := shared.conf.Pref.Appearance.UserBIOMaxRow
 	desc = truncate(desc, w*maxRow)
 
 	return desc, getStringDisplayRow(desc, w)
@@ -22,11 +22,11 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 	texts := []string{}
 
 	if u.Location != "" {
-		texts = append(texts, shared.conf.Settings.Icon.Geo+" "+u.Location)
+		texts = append(texts, shared.conf.Pref.Icon.Geo+" "+u.Location)
 	}
 
 	if u.URL != "" {
-		texts = append(texts, shared.conf.Settings.Icon.Link+" "+u.URL)
+		texts = append(texts, shared.conf.Pref.Icon.Link+" "+u.URL)
 	}
 
 	return fmt.Sprintf(
@@ -38,7 +38,7 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 
 // createProfileLayout : レイアウト済みのプロフィール文字列を作成し、その表示行数を返す
 func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
-	padding := shared.conf.Settings.Appearance.UserProfilePaddingX
+	padding := shared.conf.Pref.Appearance.UserProfilePaddingX
 	width := w - padding*2
 
 	desc, row := createUserBioLayout(u.Description, width)

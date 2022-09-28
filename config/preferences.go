@@ -74,8 +74,8 @@ type icon struct {
 	Private string `toml:"private"`
 }
 
-// Settings : 環境設定
-type Settings struct {
+// Preferences : 環境設定
+type Preferences struct {
 	Feature    feature         `toml:"feature"`
 	Confirm    map[string]bool `toml:"comfirm"`
 	Appearance appearance      `toml:"appearance"`
@@ -83,8 +83,9 @@ type Settings struct {
 	Icon       icon            `toml:"icon"`
 }
 
-func defaultSettings() *Settings {
-	return &Settings{
+// defaultPreferences : デフォルト設定
+func defaultPreferences() *Preferences {
+	return &Preferences{
 		Feature: feature{
 			MainUser:             "",
 			LoadTweetsLimit:      25,

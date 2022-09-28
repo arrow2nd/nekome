@@ -33,9 +33,9 @@ type timelinePage struct {
 }
 
 func newTimelinePage(tt timelineType) *timelinePage {
-	tabName := shared.conf.Settings.Text.TabHome
+	tabName := shared.conf.Pref.Text.TabHome
 	if tt == mentionTL {
-		tabName = shared.conf.Settings.Text.TabMention
+		tabName = shared.conf.Pref.Text.TabMention
 	}
 
 	page := &timelinePage{
@@ -64,12 +64,12 @@ func (t *timelinePage) Load() {
 
 	// 読み込み中表示
 	if !t.isStreamMode() {
-		shared.SetStatus(t.name, shared.conf.Settings.Text.Loading)
+		shared.SetStatus(t.name, shared.conf.Pref.Text.Loading)
 	}
 
 	// タイムラインを取得
 	id := shared.api.CurrentUser.ID
-	count := shared.conf.Settings.Feature.LoadTweetsLimit
+	count := shared.conf.Pref.Feature.LoadTweetsLimit
 	sinceID := t.tweets.GetSinceID()
 
 	if t.tlType == homeTL {

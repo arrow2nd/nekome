@@ -6,7 +6,7 @@
 $HOME/.config/nekome
 ├── .cred.toml
 ├── style_default.toml
-└── settings.toml
+└── preferences.toml
 ```
 
 ## .cred.toml
@@ -36,7 +36,7 @@ $HOME/.config/nekome
       TokenSecret = "fuga"
 ```
 
-## settings.toml
+## preferences.toml
 
 環境設定のファイルです
 
@@ -78,7 +78,7 @@ $HOME/.config/nekome
   unretweet = true
 
 [appearance]
-  # 読み込むスタイルファイル
+  # 読み込むスタイル定義ファイル
   style_file = "style_default.toml"
   # 日付のフォーマット
   date_fmt = "2006/01/02"
@@ -131,7 +131,7 @@ $HOME/.config/nekome
 
 デフォルトのスタイル定義ファイルです
 
-`settings.toml` 内の `appearance.style_file` に指定したファイルが読み込まれます
+`preferences.toml` 内の `appearance.style_file` に指定したファイルが読み込まれます
 
 ### 設定項目の構文について
 

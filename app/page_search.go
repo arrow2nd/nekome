@@ -11,7 +11,7 @@ type searchPage struct {
 }
 
 func newSearchPage(query string) *searchPage {
-	tabName := shared.conf.Settings.Text.TabSearch
+	tabName := shared.conf.Pref.Text.TabSearch
 	tabName = strings.Replace(tabName, "{query}", query, 1)
 
 	p := &searchPage{
@@ -30,10 +30,10 @@ func (s *searchPage) Load() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	shared.SetStatus(s.name, shared.conf.Settings.Text.Loading)
+	shared.SetStatus(s.name, shared.conf.Pref.Text.Loading)
 
 	// ツイートを検索（RTは除外）
-	count := shared.conf.Settings.Feature.LoadTweetsLimit
+	count := shared.conf.Pref.Feature.LoadTweetsLimit
 	sinceID := s.tweets.GetSinceID()
 	query := s.query + " -is:retweet"
 	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, count)

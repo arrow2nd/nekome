@@ -71,7 +71,7 @@ func (a *App) Init() error {
 
 	// 日本語環境等での罫線の乱れ対策
 	// LINK: https://github.com/mattn/go-runewidth/issues/14
-	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Settings.Feature.IsLocaleCJK
+	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Pref.Feature.IsLocaleCJK
 
 	// ページのキーハンドラを設定
 	a.view.SetInputCapture(a.handlePageKeyEvent)
@@ -131,11 +131,11 @@ func (a *App) loadConfig() error {
 	shared.conf = config.New()
 
 	// 環境設定
-	if err := shared.conf.LoadSettings(); err != nil {
+	if err := shared.conf.LoadPreferences(); err != nil {
 		return err
 	}
 
-	// スタイル
+	// スタイル定義
 	if err := shared.conf.LoadStyle(); err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func (a *App) parseRuntimeArgs() (string, error) {
 	user, _ := f.GetString("user")
 	if user == "" {
 		return "", errors.New(
-			"feature.main_user is not set, please run 'nekome edit' and set in settings.toml",
+			"feature.main_user is not set, please run 'nekome edit' and set in preferences.toml",
 		)
 	}
 
@@ -194,7 +194,7 @@ func (a *App) initAutocomplate() {
 
 // runStartupCommands : 起動時に実行するコマンドを実行
 func (a *App) runStartupCommands() {
-	for _, c := range shared.conf.Settings.Feature.StartupCmds {
+	for _, c := range shared.conf.Pref.Feature.StartupCmds {
 		if err := a.ExecCommnad(c); err != nil {
 			shared.SetErrorStatus("Command", err.Error())
 		}
@@ -225,7 +225,7 @@ func (a *App) ExecCommnad(cmd string) error {
 // quitApp : アプリを終了
 func (a *App) quitApp() {
 	// 確認画面が不要ならそのまま終了
-	if !shared.conf.Settings.Confirm["quit"] {
+	if !shared.conf.Pref.Confirm["quit"] {
 		a.app.Stop()
 		return
 	}

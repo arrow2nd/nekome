@@ -25,7 +25,7 @@ func (a *App) newTweetCmd() *cli.Command {
 		Long: `Post a tweet.
 
 If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
-Tips: If 'Feature.UseTweetWhenExEditor' in 'settings.yml' is true, an external editor will be launched even from the TUI.
+Tips: If 'feature.use_external_editor' in preferences.toml is true, an external editor will be launched even from the TUI.
 
 When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.`,
@@ -52,7 +52,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 		text = string(stdin)
 	}
 
-	settings := shared.conf.Settings
+	pref := shared.conf.Pref
 
 	editor, _ := f.GetString("editor")
 	quoteId, _ := f.GetString("quote")
@@ -61,8 +61,8 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if text == "" {
 		// テキストエリアを開く
-		if isTerm && !settings.Feature.UseExternalEditor {
-			a.view.ShowTextArea(settings.Text.TweetTextAreaHint, func(s string) {
+		if isTerm && !pref.Feature.UseExternalEditor {
+			a.view.ShowTextArea(pref.Text.TweetTextAreaHint, func(s string) {
 				execPostTweet(s, quoteId, replyId, images)
 			})
 			return nil
@@ -141,7 +141,7 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 	}
 
 	// 確認画面不要 or コマンドラインモードならそのまま実行
-	if shared.isCommandLineMode || !shared.conf.Settings.Confirm["tweet"] {
+	if shared.isCommandLineMode || !shared.conf.Pref.Confirm["tweet"] {
 		post()
 		return
 	}

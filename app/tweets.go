@@ -107,7 +107,7 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 	size := len(t.contents)
 	addSize := len(tweets)
 	allSize := size + addSize
-	maxSize := shared.conf.Settings.Feature.AccmulateTweetsLimit
+	maxSize := shared.conf.Pref.Feature.AccmulateTweetsLimit
 
 	// 最大蓄積数を超えていたら古いものから削除
 	if allSize > maxSize {
@@ -161,7 +161,7 @@ func (t *tweets) draw(cursorPos int) {
 
 	// 表示するツイートが無いなら描画を中断
 	if t.GetTweetsCount() == 0 {
-		t.DrawMessage(shared.conf.Settings.Text.NoTweets)
+		t.DrawMessage(shared.conf.Pref.Text.NoTweets)
 		return
 	}
 
@@ -190,7 +190,7 @@ func (t *tweets) draw(cursorPos int) {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			icon := shared.conf.Settings.Icon.Pinned
+			icon := shared.conf.Pref.Icon.Pinned
 			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", icon)
 		}
 

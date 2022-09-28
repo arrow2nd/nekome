@@ -147,12 +147,12 @@ func convertDateString(createAt string) string {
 
 	// 今日の日付なら時刻のみを表示
 	if isSameDate(t) {
-		format = shared.conf.Settings.Appearance.TimeFormat
+		format = shared.conf.Pref.Appearance.TimeFormat
 	} else {
 		format = fmt.Sprintf(
 			"%s %s",
-			shared.conf.Settings.Appearance.DateFormat,
-			shared.conf.Settings.Appearance.TimeFormat,
+			shared.conf.Pref.Appearance.DateFormat,
+			shared.conf.Pref.Appearance.TimeFormat,
 		)
 	}
 

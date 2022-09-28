@@ -13,7 +13,7 @@ func addAccount(setMain bool) error {
 
 	// メインユーザに設定
 	if setMain {
-		shared.conf.Settings.Feature.MainUser = authUser.UserName
+		shared.conf.Pref.Feature.MainUser = authUser.UserName
 	}
 
 	return shared.conf.SaveAll()

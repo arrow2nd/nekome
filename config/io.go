@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	credFileName    = ".cred.toml"
-	setingsFileName = "settings.toml"
+	credFileName = ".cred.toml"
+	prefFileName = "preferences.toml"
 )
 
 // GetConfigDir : 設定ディレクトリを取得
@@ -68,20 +68,20 @@ func (c *Config) LoadCred() (bool, error) {
 	return len(c.Cred.User.Accounts) > 0, nil
 }
 
-// LoadSettings : 環境設定を読込む
-func (c *Config) LoadSettings() error {
-	if !c.hasFileExists(setingsFileName) {
-		if err := c.SaveSettings(); err != nil {
+// LoadPreferences : 環境設定を読込む
+func (c *Config) LoadPreferences() error {
+	if !c.hasFileExists(prefFileName) {
+		if err := c.SavePreferences(); err != nil {
 			return err
 		}
 	}
 
-	return c.load(setingsFileName, c.Settings)
+	return c.load(prefFileName, c.Pref)
 }
 
-// LoadStyle : スタイルを読込む
+// LoadStyle : スタイル定義を読込む
 func (c *Config) LoadStyle() error {
-	fileName := c.Settings.Appearance.StyleFilePath
+	fileName := c.Pref.Appearance.StyleFilePath
 
 	if !c.hasFileExists(fileName) {
 		if err := c.saveDefaultStyle(); err != nil {
@@ -97,14 +97,14 @@ func (c *Config) SaveCred() error {
 	return c.save(credFileName, c.Cred)
 }
 
-// SaveSettings : 環境設定を保存
-func (c *Config) SaveSettings() error {
-	return c.save(setingsFileName, c.Settings)
+// SavePreferences : 環境設定を保存
+func (c *Config) SavePreferences() error {
+	return c.save(prefFileName, c.Pref)
 }
 
-// saveDefaultStyle : デフォルトのスタイルを保存
+// saveDefaultStyle : デフォルトのスタイル定義を保存
 func (c *Config) saveDefaultStyle() error {
-	return c.save(c.Settings.Appearance.StyleFilePath, c.Style)
+	return c.save(c.Pref.Appearance.StyleFilePath, c.Style)
 }
 
 // SaveAll : 一括保存
@@ -113,7 +113,7 @@ func (c *Config) SaveAll() error {
 		return err
 	}
 
-	if err := c.SaveSettings(); err != nil {
+	if err := c.SavePreferences(); err != nil {
 		return err
 	}
 

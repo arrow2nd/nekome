@@ -14,7 +14,7 @@ func newCmd() *cli.Command {
 		Short: "TUI Twitter client 🐈",
 		Long:  "nekome is a TUI Twitter client that runs on the terminal 🐈",
 		SetFlag: func(f *pflag.FlagSet) {
-			f.StringP("user", "u", shared.conf.Settings.Feature.MainUser, "specify user to use")
+			f.StringP("user", "u", shared.conf.Pref.Feature.MainUser, "specify user to use")
 			f.BoolP("version", "v", false, "show version")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {

@@ -38,7 +38,7 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	}
 
 	style := shared.conf.Style
-	icon := shared.conf.Settings.Icon
+	icon := shared.conf.Pref.Icon
 
 	// ニックネーム・ユーザ名
 	header := fmt.Sprintf(
@@ -70,7 +70,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 
 	// グラフの表示幅を計算
 	windowWidth := float64(getWindowWidth())
-	graphMaxWidth := float64(shared.conf.Settings.Appearance.GraphMaxWidth)
+	graphMaxWidth := float64(shared.conf.Pref.Appearance.GraphMaxWidth)
 
 	if graphMaxWidth > windowWidth {
 		graphMaxWidth = windowWidth
@@ -93,7 +93,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 		}
 
 		graph := strings.Repeat(
-			shared.conf.Settings.Appearance.GraphChar,
+			shared.conf.Pref.Appearance.GraphChar,
 			int(math.Floor(per*graphMaxWidth)),
 		)
 
@@ -127,7 +127,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	likes := tw.PublicMetrics.Likes
 	if likes != 0 {
 		metrics += createMetricsString(
-			shared.conf.Settings.Text.Like,
+			shared.conf.Pref.Text.Like,
 			shared.conf.Style.Tweet.Like,
 			likes,
 			false,
@@ -138,7 +138,7 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	rts := tw.PublicMetrics.Retweets
 	if rts != 0 {
 		metrics += createMetricsString(
-			shared.conf.Settings.Text.Retweet,
+			shared.conf.Pref.Text.Retweet,
 			shared.conf.Style.Tweet.Retweet,
 			rts,
 			false,

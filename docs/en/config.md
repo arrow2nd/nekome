@@ -6,7 +6,7 @@ The configuration file is created and saved as follows
 $HOME/.config/nekome
 ├── .cred.toml
 ├── style_default.toml
-└── settings.toml
+└── preferences.toml
 ```
 
 ## .cred.toml
@@ -36,7 +36,7 @@ Credential data file
       TokenSecret = "fuga"
 ```
 
-## settings.toml
+## preferences.toml
 
 Preferences file
 
@@ -132,7 +132,7 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
 
 The default style definition file.
 
-The file specified in `appearance.style_file` in `settings.toml` is loaded.
+The file specified in `appearance.style_file` in `preferences.toml` is loaded.
 
 ### Syntax of configuration items
 
