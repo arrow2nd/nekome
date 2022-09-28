@@ -10,9 +10,8 @@ type searchPage struct {
 	query string
 }
 
-func newSearchPage(query string) *searchPage {
-	tabName := shared.conf.Pref.Text.TabSearch
-	tabName = strings.Replace(tabName, "{query}", query, 1)
+func newSearchPage(query string) (*searchPage, error) {
+	tabName := strings.Replace(shared.conf.Pref.Text.TabSearch, "{query}", query, 1)
 
 	p := &searchPage{
 		tweetsBasePage: newTweetsBasePage(tabName),
@@ -20,9 +19,15 @@ func newSearchPage(query string) *searchPage {
 	}
 
 	p.SetFrame(p.tweets.view)
-	p.frame.SetInputCapture(p.handleKeyEvents)
 
-	return p
+	handler, err := createCommonPageKeyHandler(p)
+	if err != nil {
+		return nil, err
+	}
+
+	p.frame.SetInputCapture(handler)
+
+	return p, nil
 }
 
 // Load : 検索結果読み込み
@@ -34,9 +39,9 @@ func (s *searchPage) Load() {
 
 	// ツイートを検索（RTは除外）
 	count := shared.conf.Pref.Feature.LoadTweetsLimit
-	sinceID := s.tweets.GetSinceID()
+	sinceId := s.tweets.GetSinceID()
 	query := s.query + " -is:retweet"
-	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceID, count)
+	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceId, count)
 
 	if err != nil {
 		s.tweets.DrawMessage(err.Error())

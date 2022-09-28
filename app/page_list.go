@@ -7,7 +7,7 @@ type listPage struct {
 	listID string
 }
 
-func newListPage(name, id string) *listPage {
+func newListPage(name, id string) (*listPage, error) {
 	tabName := shared.conf.Pref.Text.TabList
 	tabName = strings.Replace(tabName, "{name}", name, 1)
 
@@ -17,20 +17,28 @@ func newListPage(name, id string) *listPage {
 	}
 
 	p.SetFrame(p.tweets.view)
-	p.frame.SetInputCapture(p.handleKeyEvents)
 
-	return p
+	handler, err := createCommonPageKeyHandler(p)
+	if err != nil {
+		return nil, err
+	}
+
+	p.frame.SetInputCapture(handler)
+
+	return p, nil
 }
 
 // Load : リスト読み込み
 func (l *listPage) Load() {
+	pref := shared.conf.Pref
+
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	shared.SetStatus(l.name, shared.conf.Pref.Text.Loading)
+	shared.SetStatus(l.name, pref.Text.Loading)
 
 	// リスト内のツイートを取得
-	count := shared.conf.Pref.Feature.LoadTweetsLimit
+	count := pref.Feature.LoadTweetsLimit
 	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, count)
 	if err != nil {
 		l.tweets.DrawMessage(err.Error())

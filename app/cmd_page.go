@@ -21,8 +21,13 @@ func (a *App) newHomeCmd() *cli.Command {
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			page, err := newTimelinePage(homeTimeline)
+			if err != nil {
+				return err
+			}
+
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newTimelinePage(homeTL), !unfocus)
+			return a.view.AddPage(page, !unfocus)
 		},
 	}
 }
@@ -36,8 +41,13 @@ func (a *App) newMentionCmd() *cli.Command {
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
+			page, err := newTimelinePage(mentionTimeline)
+			if err != nil {
+				return err
+			}
+
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newTimelinePage(mentionTL), !unfocus)
+			return a.view.AddPage(page, !unfocus)
 		},
 	}
 }
@@ -63,8 +73,13 @@ func (a *App) newListCmd() *cli.Command {
 				return errors.New("please specify list id")
 			}
 
+			page, err := newListPage(name, id)
+			if err != nil {
+				return err
+			}
+
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newListPage(name, id), !unfocus)
+			return a.view.AddPage(page, !unfocus)
 		},
 	}
 }
@@ -94,8 +109,13 @@ If no user name is specified, the currently logged-in user is specified.`,
 			// @を除去
 			userName = strings.ReplaceAll(userName, "@", "")
 
+			page, err := newUserPage(userName)
+			if err != nil {
+				return err
+			}
+
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newUserPage(userName), !unfocus)
+			return a.view.AddPage(page, !unfocus)
 		},
 	}
 }
@@ -119,8 +139,13 @@ If the query contains spaces, enclose it in double quotes.`,
 				return errors.New("please specify search query")
 			}
 
+			page, err := newSearchPage(query)
+			if err != nil {
+				return err
+			}
+
 			unfocus, _ := f.GetBool("unfocus")
-			return a.view.AddPage(newSearchPage(query), !unfocus)
+			return a.view.AddPage(page, !unfocus)
 		},
 	}
 }

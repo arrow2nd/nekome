@@ -21,13 +21,14 @@ type userPage struct {
 	userDic          *api.UserDictionary
 }
 
-func newUserPage(userName string) *userPage {
-	tabName := shared.conf.Pref.Text.TabUser
-	tabName = strings.Replace(tabName, "{name}", userName, 1)
+func newUserPage(userName string) (*userPage, error) {
+	pref := shared.conf.Pref
+	style := shared.conf.Style
 
-	tweetsColor := shared.conf.Style.Metrics.TweetsBackgroundColor.ToColor()
-	followingColor := shared.conf.Style.Metrics.FollowingBackgroundColor.ToColor()
-	followersColor := shared.conf.Style.Metrics.FollowersBackgroundColor.ToColor()
+	tabName := strings.Replace(pref.Text.TabUser, "{name}", userName, 1)
+	tweetsColor := style.Metrics.TweetsBackgroundColor.ToColor()
+	followingColor := style.Metrics.FollowingBackgroundColor.ToColor()
+	followersColor := style.Metrics.FollowersBackgroundColor.ToColor()
 
 	p := &userPage{
 		tweetsBasePage:   newTweetsBasePage(tabName),
@@ -40,7 +41,7 @@ func newUserPage(userName string) *userPage {
 		userDic:          nil,
 	}
 
-	padding := shared.conf.Pref.Appearance.UserProfilePaddingX
+	padding := pref.Appearance.UserProfilePaddingX
 
 	// プロフィール表示域
 	p.profile.
@@ -66,9 +67,14 @@ func newUserPage(userName string) *userPage {
 
 	p.SetFrame(p.flex)
 
-	p.frame.SetInputCapture(p.handleKeyEvents)
+	handler, err := createCommonPageKeyHandler(p)
+	if err != nil {
+		return nil, err
+	}
 
-	return p
+	p.frame.SetInputCapture(handler)
+
+	return p, nil
 }
 
 // createMetricsView : 各メトリクス表示用のTextViewを作成

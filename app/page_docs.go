@@ -12,8 +12,7 @@ type docsPage struct {
 }
 
 func newDocsPage(name, text string) *docsPage {
-	tabName := shared.conf.Pref.Text.TabDocs
-	tabName = strings.Replace(tabName, "{name}", name, 1)
+	tabName := strings.Replace(shared.conf.Pref.Text.TabDocs, "{name}", name, 1)
 
 	textView := tview.NewTextView().
 		SetWordWrap(true).

@@ -72,8 +72,12 @@ func (a *App) Init() error {
 	runewidth.DefaultCondition.EastAsianWidth = !shared.conf.Pref.Feature.IsLocaleCJK
 
 	// キーハンドラを設定
-	a.setGlobalKeybindings()
-	a.setViewKeybindings()
+	if err := a.setGlobalKeybindings(); err != nil {
+		return err
+	}
+	if err := a.setViewKeybindings(); err != nil {
+		return err
+	}
 
 	// ステータスバー初期化
 	a.statusBar.Init()

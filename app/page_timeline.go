@@ -7,6 +7,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/arrow2nd/nekome/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 )
@@ -21,8 +22,8 @@ const (
 type timelineType string
 
 const (
-	homeTL    timelineType = "Home"
-	mentionTL timelineType = "Mention"
+	homeTimeline    timelineType = "Home"
+	mentionTimeline timelineType = "Mention"
 )
 
 type timelinePage struct {
@@ -32,23 +33,63 @@ type timelinePage struct {
 	cancel         context.CancelFunc
 }
 
-func newTimelinePage(tt timelineType) *timelinePage {
+func newTimelinePage(t timelineType) (*timelinePage, error) {
 	tabName := shared.conf.Pref.Text.TabHome
-	if tt == mentionTL {
+	if t == mentionTimeline {
 		tabName = shared.conf.Pref.Text.TabMention
 	}
 
-	page := &timelinePage{
+	p := &timelinePage{
 		tweetsBasePage: newTweetsBasePage(tabName),
-		tlType:         tt,
+		tlType:         t,
 		reloadInterval: 0,
 		cancel:         nil,
 	}
 
-	page.SetFrame(page.tweets.view)
-	page.frame.SetInputCapture(page.handleTimelinePageKeyEvents)
+	p.SetFrame(p.tweets.view)
 
-	return page
+	if err := p.setKeyHandler(); err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+// setKeyHandler : キーハンドラを設定
+func (t *timelinePage) setKeyHandler() error {
+	handler := map[string]func(){
+		config.ActionStreamModeStart: func() {
+			t.startStream()
+		},
+		config.ActionStreamModeStop: func() {
+			t.closeStream()
+		},
+	}
+
+	c, err := shared.conf.Pref.Keybindings.HomeTimeline.MappingEventHandler(handler)
+	if err != nil {
+		return err
+	}
+
+	commonHandler, err := createCommonPageKeyHandler(t)
+	if err != nil {
+		return err
+	}
+
+	t.frame.SetInputCapture(func(ev *tcell.EventKey) *tcell.EventKey {
+		if e := c.Capture(ev); e == nil {
+			return nil
+		}
+
+		// ストリームモード中は共通のキーハンドラを無効化（手動リロード禁止）
+		if t.isStreamMode() {
+			return nil
+		}
+
+		return commonHandler(ev)
+	})
+
+	return nil
 }
 
 // Load : タイムライン読み込み
@@ -72,7 +113,7 @@ func (t *timelinePage) Load() {
 	count := shared.conf.Pref.Feature.LoadTweetsLimit
 	sinceID := t.tweets.GetSinceID()
 
-	if t.tlType == homeTL {
+	if t.tlType == homeTimeline {
 		tweets, rateLimit, err = shared.api.FetchHomeTileline(id, sinceID, count)
 	} else {
 		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(id, sinceID, count)
@@ -216,29 +257,4 @@ func (t *timelinePage) loadStream(ticker *time.Ticker) {
 		t.reloadInterval = nextInterval
 		ticker.Reset(nextInterval * time.Second)
 	}
-}
-
-// handleKeyEvents : タイムラインページのキーハンドラ
-func (t *timelinePage) handleTimelinePageKeyEvents(event *tcell.EventKey) *tcell.EventKey {
-	keyRune := event.Rune()
-
-	// ストリームモード開始
-	if keyRune == 's' {
-		t.startStream()
-		return nil
-	}
-
-	// ストリームモード終了
-	if keyRune == 'S' {
-		t.closeStream()
-		return nil
-	}
-
-	// ストリームモード中の手動リロードを禁止
-	if t.isStreamMode() && keyRune == '.' {
-		shared.SetErrorStatus(t.name, "manual reloading is not possible while in stream mode")
-		return nil
-	}
-
-	return t.handleKeyEvents(event)
 }
