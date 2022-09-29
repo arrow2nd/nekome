@@ -8,13 +8,11 @@ import (
 	"github.com/rivo/tview"
 )
 
-type tabMove int
-
 const (
 	// TabMovePrev : 前のタブに移動
-	TabMovePrev tabMove = -1
+	TabMovePrev int = -1
 	// TabMoveNext : 次のタブに移動
-	TabMoveNext tabMove = 1
+	TabMoveNext int = 1
 )
 
 // ModalOpt : モーダルの設定
@@ -32,9 +30,9 @@ type tab struct {
 
 // view : ページの表示域
 type view struct {
-	mainFlex  *tview.Flex
+	flex      *tview.Flex
 	pages     *tview.Pages
-	tabArea   *tview.TextView
+	tabBar    *tview.TextView
 	textArea  *tview.TextArea
 	modal     *tview.Modal
 	pageItems map[string]page
@@ -45,9 +43,9 @@ type view struct {
 
 func newView() *view {
 	v := &view{
-		mainFlex:  tview.NewFlex(),
+		flex:      tview.NewFlex(),
 		pages:     tview.NewPages(),
-		tabArea:   tview.NewTextView(),
+		tabBar:    tview.NewTextView(),
 		textArea:  tview.NewTextArea(),
 		modal:     tview.NewModal(),
 		pageItems: map[string]page{},
@@ -55,12 +53,12 @@ func newView() *view {
 		tabIndex:  0,
 	}
 
-	v.mainFlex.
+	v.flex.
 		SetDirection(tview.FlexRow).
 		AddItem(v.pages, 0, 1, true).
 		AddItem(v.textArea, 0, 0, false)
 
-	v.tabArea.
+	v.tabBar.
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
@@ -69,7 +67,7 @@ func newView() *view {
 
 	v.modal.
 		AddButtons([]string{"No", "Yes"}).
-		SetInputCapture(v.handleModalKeyEvents)
+		SetInputCapture(v.handleModalKeyEvent)
 
 	v.textArea.
 		SetTitleAlign(tview.AlignLeft).
@@ -86,21 +84,21 @@ func createPageTag(id int) string {
 
 // drawTab : タブを描画
 func (v *view) drawTab() {
-	v.tabArea.Clear()
+	v.tabBar.Clear()
 
 	for i, tab := range v.tabItems {
-		fmt.Fprintf(v.tabArea, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
+		fmt.Fprintf(v.tabBar, `[%s]["%s"] %s [""][-:-:-]`, shared.conf.Style.Tab.Text, tab.id, tab.name)
 
 		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabItems)-1 {
-			fmt.Fprint(v.tabArea, shared.conf.Pref.Appearance.TabSeparate)
+			fmt.Fprint(v.tabBar, shared.conf.Pref.Appearance.TabSeparate)
 		}
 	}
 }
 
 // SetInputCapture : キーハンドラを設定
 func (v *view) SetInputCapture(f func(*tcell.EventKey) *tcell.EventKey) {
-	v.mainFlex.SetInputCapture(f)
+	v.flex.SetInputCapture(f)
 }
 
 // AddPage : ページを追加
@@ -120,7 +118,7 @@ func (v *view) AddPage(p page, focus bool) error {
 			return fmt.Errorf("Failed to add page (%s)", newTab.name)
 		}
 
-		v.tabArea.Highlight(newTab.id)
+		v.tabBar.Highlight(newTab.id)
 		v.tabIndex = tabIndex
 
 		return nil
@@ -132,7 +130,7 @@ func (v *view) AddPage(p page, focus bool) error {
 
 	// フォーカスが当たっているならタブをハイライト
 	if focus {
-		v.tabArea.Highlight(newTab.id)
+		v.tabBar.Highlight(newTab.id)
 		v.tabIndex = v.pages.GetPageCount() - 1
 	}
 
@@ -155,7 +153,7 @@ func (v *view) Reset() {
 
 	// タブを削除
 	v.tabItems = []*tab{}
-	v.tabArea.SetText("")
+	v.tabBar.SetText("")
 	v.tabIndex = 0
 }
 
@@ -194,11 +192,11 @@ func (v *view) RemoveCurrentPage() {
 		v.tabIndex = 0
 	}
 
-	v.tabArea.Highlight(v.tabItems[v.tabIndex].id)
+	v.tabBar.Highlight(v.tabItems[v.tabIndex].id)
 }
 
 // MoveTab : タブを移動する
-func (v *view) MoveTab(move tabMove) {
+func (v *view) MoveTab(move int) {
 	prevTabIndex := v.tabIndex
 	v.tabIndex += int(move)
 
@@ -214,13 +212,13 @@ func (v *view) MoveTab(move tabMove) {
 		return
 	}
 
-	v.tabArea.Highlight(v.tabItems[v.tabIndex].id)
+	v.tabBar.Highlight(v.tabItems[v.tabIndex].id)
 }
 
 // handleTabHighlight : タブがハイライトされたときのコールバック
 func (v *view) handleTabHighlight(added, removed, remaining []string) {
 	// ハイライトされたタブまでスクロール
-	v.tabArea.ScrollToHighlight()
+	v.tabBar.ScrollToHighlight()
 
 	// 前のページを非アクティブにする
 	if len(removed) > 0 {
@@ -264,8 +262,8 @@ func (v *view) PopupModal(o *ModalOpt) {
 	shared.SetDisableViewKeyEvent(true)
 }
 
-// handleModalKeyEvents : モーダルのキーハンドラ
-func (v *view) handleModalKeyEvents(event *tcell.EventKey) *tcell.EventKey {
+// handleModalKeyEvent : モーダルのキーイベントハンドラ
+func (v *view) handleModalKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	keyRune := event.Rune()
 
 	// hjを左キーの入力イベントに置換
@@ -308,7 +306,7 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 		SetTitle(" Press ESC to close, press Ctrl-p to post ").
 		SetInputCapture(f)
 
-	v.mainFlex.ResizeItem(v.textArea, 0, 1)
+	v.flex.ResizeItem(v.textArea, 0, 1)
 
 	shared.RequestFocusPrimitive(v.textArea)
 	shared.SetDisableViewKeyEvent(true)
@@ -316,7 +314,7 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 
 // HiddenTextArea : テキストエリアを非表示
 func (v *view) HiddenTextArea() {
-	v.mainFlex.ResizeItem(v.textArea, 0, 0)
+	v.flex.ResizeItem(v.textArea, 0, 0)
 
 	shared.RequestFocusPrimitive(v.pages)
 	shared.SetDisableViewKeyEvent(false)

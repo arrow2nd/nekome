@@ -94,10 +94,10 @@ func (a *App) Init() error {
 	layout := tview.NewGrid().
 		SetRows(1, 0, 1, 1).
 		SetBorders(false).
-		AddItem(a.view.tabArea, 0, 0, 1, 1, 0, 0, false).
+		AddItem(a.view.tabBar, 0, 0, 1, 1, 0, 0, false).
 		AddItem(a.statusBar.flex, 2, 0, 1, 1, 0, 0, false).
 		AddItem(a.commandLine.inputField, 3, 0, 1, 1, 0, 0, false).
-		AddItem(a.view.mainFlex, 1, 0, 1, 1, 0, 0, true)
+		AddItem(a.view.flex, 1, 0, 1, 1, 0, 0, true)
 
 	a.app.SetRoot(layout, true)
 
@@ -341,7 +341,7 @@ func (a *App) eventReciever() {
 		case <-shared.chFocusView:
 			focus := a.app.GetFocus()
 			if focus != a.view.textArea {
-				a.app.SetFocus(a.view.mainFlex)
+				a.app.SetFocus(a.view.flex)
 			}
 			a.app.Draw()
 		case p := <-shared.chFocusPrimitive:
