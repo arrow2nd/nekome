@@ -31,15 +31,13 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 	}
 
 	// 認証URLを取得
-	authURL, err := config.AuthorizationURL(requestToken)
+	authUrl, err := config.AuthorizationURL(requestToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to issue authentication URL: %w", err)
 	}
 
-	fmt.Println("🐈 Go to the following URL to authenticate the application and enter the PIN that is displayed")
-	fmt.Println()
-	fmt.Println(authURL.String())
-	fmt.Println()
+	message := "🐈 Go to the following URL to authenticate the application and enter the PIN that is displayed"
+	fmt.Printf("%s\n\n%s\n\n", message, authUrl.String())
 
 	// PINの入力受付
 	verifier, err := inputPinCode()
