@@ -74,7 +74,7 @@ func (a *App) Init() error {
 	// Ctrl+K/Jの再マッピングを無効化
 	cbind.UnifyEnterKeys = false
 
-	// キーハンドラを設定
+	// キーバインドを設定
 	if err := a.setGlobalKeybindings(); err != nil {
 		return err
 	}
@@ -293,6 +293,16 @@ func (a *App) execStartupCommands() {
 	}
 }
 
+// ExecCommnad : コマンドを実行
+func (a *App) ExecCommnad(cmd string) error {
+	args, err := split(cmd)
+	if err != nil {
+		return err
+	}
+
+	return a.cmd.Execute(args)
+}
+
 // Run : アプリを実行
 func (a *App) Run() error {
 	// コマンドラインモード
@@ -305,14 +315,40 @@ func (a *App) Run() error {
 	return a.app.Run()
 }
 
-// ExecCommnad : コマンドを実行
-func (a *App) ExecCommnad(cmd string) error {
-	args, err := split(cmd)
-	if err != nil {
-		return err
+// eventReciever : イベントレシーバ
+func (a *App) eventReciever() {
+	for {
+		select {
+		case status := <-shared.chStatus:
+			a.commandLine.UpdateStatusMessage(status)
+			a.app.Draw()
+		case indicator := <-shared.chIndicator:
+			a.statusBar.DrawPageIndicator(indicator)
+			a.app.Draw()
+		case b := <-shared.chDisableViewKeyEvent:
+			a.isDisablePageKeyEvent = b
+		case opt := <-shared.chPopupModal:
+			a.view.PopupModal(opt)
+			a.app.Draw()
+		case cmd := <-shared.chExecCommand:
+			if err := a.ExecCommnad(cmd); err != nil {
+				shared.SetErrorStatus("Command", err.Error())
+			}
+		case cmd := <-shared.chInputCommand:
+			a.app.SetFocus(a.commandLine.inputField)
+			a.commandLine.SetText(cmd)
+			a.app.Draw()
+		case <-shared.chFocusView:
+			focus := a.app.GetFocus()
+			if focus != a.view.textArea {
+				a.app.SetFocus(a.view.mainFlex)
+			}
+			a.app.Draw()
+		case p := <-shared.chFocusPrimitive:
+			a.app.SetFocus(*p)
+			a.app.Draw()
+		}
 	}
-
-	return a.cmd.Execute(args)
 }
 
 // quitApp : アプリを終了
@@ -327,40 +363,4 @@ func (a *App) quitApp() {
 		title:  "Do you want to quit the app?",
 		onDone: a.app.Stop,
 	})
-}
-
-// eventReciever : イベントレシーバ
-func (a *App) eventReciever() {
-	for {
-		select {
-		case status := <-shared.chStatus:
-			a.commandLine.UpdateStatusMessage(status)
-			a.app.Draw()
-		case indicator := <-shared.chIndicator:
-			a.statusBar.DrawPageIndicator(indicator)
-			a.app.Draw()
-		case b := <-shared.chDisablePageKeyEvent:
-			a.isDisablePageKeyEvent = b
-		case opt := <-shared.chPopupModal:
-			a.view.PopupModal(opt)
-			a.app.Draw()
-		case cmd := <-shared.chExecCommand:
-			if err := a.ExecCommnad(cmd); err != nil {
-				shared.SetErrorStatus("Command", err.Error())
-			}
-		case cmd := <-shared.chInputCommand:
-			a.app.SetFocus(a.commandLine.inputField)
-			a.commandLine.SetText(cmd)
-			a.app.Draw()
-		case <-shared.chFocusMainView:
-			focus := a.app.GetFocus()
-			if focus != a.view.textArea {
-				a.app.SetFocus(a.view.mainFlex)
-			}
-			a.app.Draw()
-		case p := <-shared.chFocusPrimitive:
-			a.app.SetFocus(*p)
-			a.app.Draw()
-		}
-	}
 }

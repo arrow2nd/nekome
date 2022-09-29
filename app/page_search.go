@@ -17,6 +17,7 @@ func newSearchPage(query string) (*searchPage, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	p := &searchPage{
 		tweetsBasePage: basePage,
 		query:          query,

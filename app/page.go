@@ -18,7 +18,7 @@ type page interface {
 	OnDelete()
 }
 
-// createCommonPageKeyHandler : ページ共通のキーハンドラを生成
+// createCommonPageKeyHandler : ページ共通のキーハンドラを作成
 func createCommonPageKeyHandler(p page) (func(*tcell.EventKey) *tcell.EventKey, error) {
 	handler := map[string]func(){
 		config.ActionReloadPage: func() {
@@ -106,10 +106,12 @@ func newTweetsBasePage(name string) (*tweetsBasePage, error) {
 
 // updateIndicator : インジケータを更新
 func (t *tweetsBasePage) updateIndicator(s string) {
+	rateLimit := t.tweets.rateLimit
+
 	// APIリミット
 	apiLimit := "unknown"
-	if t.tweets.rateLimit != nil {
-		apiLimit = fmt.Sprintf("%d / %d", t.tweets.rateLimit.Remaining, t.tweets.rateLimit.Limit)
+	if rateLimit != nil {
+		apiLimit = fmt.Sprintf("%d / %d", rateLimit.Remaining, rateLimit.Limit)
 	}
 
 	t.indicator = s + fmt.Sprintf("API limit: %s", apiLimit)

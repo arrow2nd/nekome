@@ -7,32 +7,32 @@ import (
 	"errors"
 	"fmt"
 	"html"
-	"log"
 	"math"
+	"net/url"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/arrow2nd/nekome/log"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// execEditor : エディタを起動
-func (a *App) execEditor(editor string, args ...string) error {
-	var err error
-
+// openExternalEditor : 外部エディタを開く
+func (a *App) openExternalEditor(editor string, args ...string) error {
 	if editor == "" {
 		return errors.New("please specify which editor to use")
 	}
 
 	cmd := exec.Command(editor, args...)
-
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
+	var err error
 
 	if shared.isCommandLineMode {
 		err = cmd.Run()
@@ -55,7 +55,7 @@ func getWindowWidth() int {
 
 	w, _, err := terminal.GetSize(fd)
 	if err != nil {
-		log.Fatal(err)
+		log.ErrorExit(err.Error(), log.ExitCodeErrTerm)
 	}
 
 	return w - 2
@@ -194,12 +194,9 @@ func createTweetSummary(t *twitter.TweetDictionary) string {
 	return fmt.Sprintf("%s | %s", createUserSummary(t.Author), html.UnescapeString(t.Tweet.Text))
 }
 
-// createTweetURL : ツイートのURLを作成
-func createTweetURL(t *twitter.TweetDictionary) string {
-	// TODO: url.JoinPath が使える様になったら置き換えたいね...
-	// https://github.com/golang/go/commit/604140d93111f89911e17cb147dcf6a02d2700d0
-
-	return fmt.Sprintf("https://twitter.com/%s/status/%s", t.Author.UserName, t.Tweet.ID)
+// createTweetUrl : ツイートのURLを作成
+func createTweetUrl(t *twitter.TweetDictionary) (string, error) {
+	return url.JoinPath("https://twitter.com/", t.Author.UserName, "status", t.Tweet.ID)
 }
 
 // createStatusMessage : ラベル付きステータスメッセージを作成

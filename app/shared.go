@@ -9,31 +9,31 @@ import (
 
 // Shared : 全体共有
 type Shared struct {
-	isCommandLineMode     bool
 	api                   *api.API
 	conf                  *config.Config
+	isCommandLineMode     bool
 	chStatus              chan string
 	chIndicator           chan string
 	chPopupModal          chan *ModalOpt
 	chExecCommand         chan string
 	chInputCommand        chan string
-	chFocusMainView       chan bool
+	chFocusView           chan bool
 	chFocusPrimitive      chan *tview.Primitive
-	chDisablePageKeyEvent chan bool
+	chDisableViewKeyEvent chan bool
 }
 
 var shared = Shared{
-	isCommandLineMode:     false,
 	api:                   nil,
 	conf:                  nil,
+	isCommandLineMode:     false,
 	chStatus:              make(chan string, 1),
 	chIndicator:           make(chan string, 1),
 	chPopupModal:          make(chan *ModalOpt, 1),
 	chExecCommand:         make(chan string, 1),
 	chInputCommand:        make(chan string, 1),
-	chFocusMainView:       make(chan bool, 1),
+	chFocusView:           make(chan bool, 1),
 	chFocusPrimitive:      make(chan *tview.Primitive, 1),
-	chDisablePageKeyEvent: make(chan bool, 1),
+	chDisableViewKeyEvent: make(chan bool, 1),
 }
 
 // SetStatus : ステータスメッセージを設定
@@ -65,10 +65,10 @@ func (s *Shared) SetIndicator(indicator string) {
 	}()
 }
 
-// SetDisablePageKeyEvent : ページの共通キーハンドラを無効化
-func (s *Shared) SetDisablePageKeyEvent(b bool) {
+// SetDisableViewKeyEvent : ビューのキーイベントを無効化
+func (s *Shared) SetDisableViewKeyEvent(b bool) {
 	go func() {
-		s.chDisablePageKeyEvent <- b
+		s.chDisableViewKeyEvent <- b
 	}()
 }
 
@@ -100,9 +100,9 @@ func (s *Shared) RequestFocusPrimitive(p tview.Primitive) {
 	}()
 }
 
-// RequestFocusMainView : MainViewへのフォーカスを要求
-func (s *Shared) RequestFocusMainView() {
+// RequestFocusView : ビューへのフォーカスを要求
+func (s *Shared) RequestFocusView() {
 	go func() {
-		s.chFocusMainView <- true
+		s.chFocusView <- true
 	}()
 }

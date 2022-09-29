@@ -16,7 +16,7 @@ func createTweetTag(id int) string {
 	return fmt.Sprintf("tweet_%d", id)
 }
 
-// createAnnotation : 「RT by」等のアノテーション文字列を作成
+// createAnnotation : アノテーションを作成
 func createAnnotation(s string, author *twitter.UserObj) string {
 	return fmt.Sprintf(
 		"[%s]%s %s [::i]@%s[-:-:-]",
@@ -27,7 +27,15 @@ func createAnnotation(s string, author *twitter.UserObj) string {
 	)
 }
 
-// createUserInfoLayout : レイアウト済みのユーザ情報文字列を作成
+// createTweetLayout : ツイートのレイアウトを作成
+func createTweetLayout(c *twitter.TweetDictionary, i, w int) string {
+	return createUserInfoLayout(c.Author, i, w) +
+		createTweetTextLayout(&c.Tweet) +
+		createPollLayout(c.AttachmentPolls) +
+		createTweetDetailLayout(&c.Tweet)
+}
+
+// createUserInfoLayout : ユーザ情報のレイアウトを作成
 func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	name := truncate(u.Name, w/2)
 	userName := truncate("@"+u.UserName, w/2)
@@ -49,12 +57,12 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 		userName,
 	)
 
-	// 認証済みアカウント
+	// 認証済みバッジを追加
 	if u.Verified {
 		header += fmt.Sprintf("[%s] %s[-:-:-]", style.User.Verified, icon.Verified)
 	}
 
-	// 非公開アカウント
+	// 非公開バッジを追加
 	if u.Protected {
 		header += fmt.Sprintf("[%s] %s[-:-:-]", style.User.Private, icon.Private)
 	}
@@ -62,105 +70,7 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	return header + "\n"
 }
 
-// createPollLayout : レイアウト済みの投票文字列を作成
-func createPollLayout(p []*twitter.PollObj) string {
-	if len(p) == 0 {
-		return ""
-	}
-
-	// グラフの表示幅を計算
-	windowWidth := float64(getWindowWidth())
-	graphMaxWidth := float64(shared.conf.Pref.Appearance.GraphMaxWidth)
-
-	if graphMaxWidth > windowWidth {
-		graphMaxWidth = windowWidth
-	}
-
-	// 総投票数を計算
-	allVotes := 0
-	for _, o := range p[0].Options {
-		allVotes += o.Votes
-	}
-
-	// グラフを作成
-	text := "\n"
-	for _, o := range p[0].Options {
-		text += fmt.Sprintln(o.Label)
-
-		per := float64(0)
-		if allVotes > 0 {
-			per = float64(o.Votes) / float64(allVotes)
-		}
-
-		graph := strings.Repeat(
-			shared.conf.Pref.Appearance.GraphChar,
-			int(math.Floor(per*graphMaxWidth)),
-		)
-
-		text += fmt.Sprintf(
-			"[%s]%s[-:-:-] %.1f%% (%d)\n",
-			shared.conf.Style.Tweet.PollGraph,
-			graph,
-			per*100,
-			o.Votes,
-		)
-	}
-
-	// 投票の詳細情報
-	endDate := convertDateString(p[0].EndDateTime)
-	text += fmt.Sprintf(
-		"[%s]%s | %d votes | ends on %s[-:-:-]\n\n",
-		shared.conf.Style.Tweet.PollDetail,
-		p[0].VotingStatus,
-		allVotes,
-		endDate,
-	)
-
-	return text
-}
-
-// createTweetDetailLayout : レイアウト済みのツイート詳細文字列を作成
-func createTweetDetailLayout(tw *twitter.TweetObj) string {
-	metrics := ""
-
-	// いいね数
-	likes := tw.PublicMetrics.Likes
-	if likes != 0 {
-		metrics += createMetricsString(
-			shared.conf.Pref.Text.Like,
-			shared.conf.Style.Tweet.Like,
-			likes,
-			false,
-		)
-	}
-
-	// リツイート数
-	rts := tw.PublicMetrics.Retweets
-	if rts != 0 {
-		metrics += createMetricsString(
-			shared.conf.Pref.Text.Retweet,
-			shared.conf.Style.Tweet.Retweet,
-			rts,
-			false,
-		)
-	}
-
-	if metrics != "" {
-		metrics = "\n" + metrics
-	}
-
-	// 投稿日時・投稿元クライアント
-	date := convertDateString(tw.CreatedAt)
-	return fmt.Sprintf(
-		"[%s]%s | via %s[-:-:-]%s",
-		shared.conf.Style.Tweet.Detail,
-		date,
-		tw.Source,
-		metrics,
-	)
-}
-
-// createTweetTextLayout : レイアウト済みのツイート文字列を作成
+// createTweetTextLayout : ツイート文のレイアウトを作成
 func createTweetTextLayout(tweet *twitter.TweetObj) string {
 	text := html.UnescapeString(tweet.Text) + "\n"
 
@@ -187,7 +97,7 @@ func createTweetTextLayout(tweet *twitter.TweetObj) string {
 	return text
 }
 
-// highlightHashtags : ハッシュタグをハイライトしたツイート文字列を作成
+// highlightHashtags : ツイート文内のハッシュタグをハイライト
 func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	result := ""
 	runes := []rune(text)
@@ -196,7 +106,7 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	for _, hashtag := range entities.HashTags {
 		hashtagText := fmt.Sprintf("#%s", hashtag.Tag)
 
-		// NOTE: URLや絵文字を多く含むツイートなどで、ハッシュタグの開始位置が後方にズレていることがあるので
+		// NOTE: URLや絵文字を多く含むツイートなどで、APIで取得できるハッシュタグの開始位置が後方にズレていることがあるので
 		//       +1 して意図的にズラした後、ハッシュタグ全文が見つかるまで開始位置を前方に移動することで正しい位置を見つける
 
 		start := hashtag.Start + 1
@@ -234,10 +144,85 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 	return result
 }
 
-// createTweetLayout : レイアウト済みのツイート文字列を作成
-func createTweetLayout(c *twitter.TweetDictionary, i, w int) string {
-	return createUserInfoLayout(c.Author, i, w) +
-		createTweetTextLayout(&c.Tweet) +
-		createPollLayout(c.AttachmentPolls) +
-		createTweetDetailLayout(&c.Tweet)
+// createPollLayout : 投票のレイアウトを作成
+func createPollLayout(p []*twitter.PollObj) string {
+	if len(p) == 0 {
+		return ""
+	}
+
+	style := shared.conf.Style.Tweet
+	pref := shared.conf.Pref.Appearance
+
+	// グラフの表示幅を計算
+	windowWidth := float64(getWindowWidth())
+	graphMaxWidth := float64(pref.GraphMaxWidth)
+
+	if graphMaxWidth > windowWidth {
+		graphMaxWidth = windowWidth
+	}
+
+	// 総投票数を計算
+	allVotes := 0
+	for _, o := range p[0].Options {
+		allVotes += o.Votes
+	}
+
+	// グラフを作成
+	text := "\n"
+	for _, o := range p[0].Options {
+		per := float64(0)
+		if allVotes > 0 {
+			per = float64(o.Votes) / float64(allVotes)
+		}
+
+		graph := strings.Repeat(pref.GraphChar, int(math.Floor(per*graphMaxWidth)))
+		text += fmt.Sprintf(
+			"%s[%s]%s[-:-:-] %.1f%% (%d)\n",
+			o.Label,
+			style.PollGraph,
+			graph,
+			per*100,
+			o.Votes,
+		)
+	}
+
+	// 投票の詳細情報
+	endDate := convertDateString(p[0].EndDateTime)
+	text += fmt.Sprintf(
+		"[%s]%s | %d votes | ends on %s[-:-:-]\n\n",
+		style.PollDetail,
+		p[0].VotingStatus,
+		allVotes,
+		endDate,
+	)
+
+	return text
+}
+
+// createTweetDetailLayout : ツイート詳細のレイアウトを作成
+func createTweetDetailLayout(tw *twitter.TweetObj) string {
+	pref := shared.conf.Pref.Text
+	style := shared.conf.Style.Tweet
+
+	metrics := ""
+
+	// いいね数
+	likes := tw.PublicMetrics.Likes
+	if likes != 0 {
+		metrics += createMetricsString(pref.Like, style.Like, likes, false)
+	}
+
+	// リツイート数
+	rts := tw.PublicMetrics.Retweets
+	if rts != 0 {
+		metrics += createMetricsString(pref.Retweet, style.Retweet, rts, false)
+	}
+
+	if metrics != "" {
+		metrics = "\n" + metrics
+	}
+
+	// 投稿日時・投稿元クライアント
+	date := convertDateString(tw.CreatedAt)
+	return fmt.Sprintf("[%s]%s | via %s[-:-:-]%s", style.Detail, date, tw.Source, metrics)
 }

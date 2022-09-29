@@ -10,11 +10,9 @@ import (
 )
 
 // cursorMove : カーソルの移動量
-type cursorMove int
-
 const (
-	cursorMoveUp   cursorMove = -1
-	cursorMoveDown cursorMove = 1
+	cursorMoveUp   int = -1
+	cursorMoveDown int = 1
 )
 
 // tweets : ツイートの表示管理
@@ -40,20 +38,20 @@ func newTweets() (*tweets, error) {
 		SetWrap(true).
 		SetRegions(true)
 
-	t.view.SetHighlightedFunc(func(added, removed, remaining []string) {
+	t.view.SetHighlightedFunc(func(_, _, _ []string) {
 		t.view.ScrollToHighlight()
 	})
 
-	if err := t.setKeyEventHandler(); err != nil {
+	if err := t.setKeybindings(); err != nil {
 		return nil, err
 	}
 
 	return t, nil
 }
 
-// setKeyEventHandler : キーハンドラを設定
-func (t *tweets) setKeyEventHandler() error {
-	handler := map[string]func(){
+// setKeybindings : キーバインドを設定
+func (t *tweets) setKeybindings() error {
+	handlers := map[string]func(){
 		config.ActionScrollUp: func() {
 			r, c := t.view.GetScrollOffset()
 			t.view.ScrollTo(r+1, c)
@@ -76,37 +74,37 @@ func (t *tweets) setKeyEventHandler() error {
 			t.scrollToTweet(lastIndex)
 		},
 		config.ActionTweetLike: func() {
-			t.actionForTweet(tweetLike)
+			t.actionForTweet(tweetActionLike)
 		},
 		config.ActionTweetUnlike: func() {
-			t.actionForTweet(tweetUnlike)
+			t.actionForTweet(tweetActionUnlike)
 		},
 		config.ActionTweetRetweet: func() {
-			t.actionForTweet(tweetRetweet)
+			t.actionForTweet(tweetActionRetweet)
 		},
 		config.ActionTweetUnretweet: func() {
-			t.actionForTweet(tweetUnretweet)
+			t.actionForTweet(tweetActionUnretweet)
 		},
 		config.ActionTweetRemove: func() {
-			t.actionForTweet(tweetDelete)
+			t.actionForTweet(tweetActionDelete)
 		},
 		config.ActionUserFollow: func() {
-			t.actionForUser(userFollow)
+			t.actionForUser(userActionFollow)
 		},
 		config.ActionUserUnfollow: func() {
-			t.actionForUser(userUnfollow)
+			t.actionForUser(userActionUnfollow)
 		},
 		config.ActionUserBlock: func() {
-			t.actionForUser(userBlock)
+			t.actionForUser(userActionBlock)
 		},
 		config.ActionUserUnblock: func() {
-			t.actionForUser(userUnblock)
+			t.actionForUser(userActionUnblock)
 		},
 		config.ActionUserMute: func() {
-			t.actionForUser(userMute)
+			t.actionForUser(userActionMute)
 		},
 		config.ActionUserUnmute: func() {
-			t.actionForUser(userUnmute)
+			t.actionForUser(userActionUnmute)
 		},
 		config.ActionOpenUserPage: func() {
 			t.openUserPage()
@@ -125,7 +123,7 @@ func (t *tweets) setKeyEventHandler() error {
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.Tweet.MappingEventHandler(handler)
+	c, err := shared.conf.Pref.Keybindings.Tweet.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
@@ -171,7 +169,7 @@ func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 		// ピン留めツイートが選択されている
 		c = t.pinned
 	} else {
-		// ピン留めツイート意外が選択されている
+		// ピン留めツイート以外が選択されている
 		c = t.contents[id-1]
 	}
 
@@ -240,7 +238,6 @@ func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
 func (t *tweets) draw(cursorPos int) {
 	width := getWindowWidth()
 
-	// ビューの初期化
 	t.view.
 		SetTextAlign(tview.AlignLeft).
 		Clear()
@@ -280,9 +277,7 @@ func (t *tweets) draw(cursorPos int) {
 			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", icon)
 		}
 
-		// 表示部分を作成
-		layout := createTweetLayout(content, i, width)
-		fmt.Fprintln(t.view, layout)
+		fmt.Fprintln(t.view, createTweetLayout(content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
@@ -300,7 +295,7 @@ func (t *tweets) draw(cursorPos int) {
 	t.scrollToTweet(cursorPos)
 }
 
-// DrawMessage : Viewにメッセージを表示
+// DrawMessage : ツイートビューにメッセージを表示
 func (t *tweets) DrawMessage(s string) {
 	t.view.Clear().
 		SetTextAlign(tview.AlignCenter).
@@ -320,7 +315,7 @@ func (t *tweets) scrollToTweet(i int) {
 }
 
 // moveCursor : カーソルを移動
-func (t *tweets) moveCursor(c cursorMove) {
+func (t *tweets) moveCursor(c int) {
 	idx := getHighlightId(t.view.GetHighlights())
 	if idx == -1 {
 		return

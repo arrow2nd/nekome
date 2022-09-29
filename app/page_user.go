@@ -18,7 +18,7 @@ type userPage struct {
 	followingMetrics *tview.TextView
 	followersMetrics *tview.TextView
 	userName         string
-	userDic          *api.UserDictionary
+	data             *api.UserDictionary
 }
 
 func newUserPage(userName string) (*userPage, error) {
@@ -43,19 +43,17 @@ func newUserPage(userName string) (*userPage, error) {
 		followingMetrics: createMetricsView(followingColor),
 		followersMetrics: createMetricsView(followersColor),
 		userName:         userName,
-		userDic:          nil,
+		data:             nil,
 	}
 
 	padding := pref.Appearance.UserProfilePaddingX
 
-	// プロフィール表示域
 	p.profile.
 		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignCenter).
 		SetBorderPadding(0, 1, padding, padding)
 
-	// メトリクス表示域
 	metrics := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
 		AddItem(p.tweetsMetrics, 0, 1, false).
@@ -82,7 +80,7 @@ func newUserPage(userName string) (*userPage, error) {
 	return p, nil
 }
 
-// createMetricsView : 各メトリクス表示用のTextViewを作成
+// createMetricsView : メトリクス表示用のTextViewを作成
 func createMetricsView(color tcell.Color) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
@@ -100,8 +98,8 @@ func (u *userPage) Load() {
 
 	shared.SetStatus(u.name, shared.conf.Pref.Text.Loading)
 
-	// ユーザの情報を取得
-	if u.userDic == nil {
+	// ユーザ情報が空なら取得して登録
+	if u.data == nil {
 		if err := u.loadProfile(); err != nil {
 			u.tweets.DrawMessage(err.Error())
 			shared.SetErrorStatus(u.name, err.Error())
@@ -109,9 +107,9 @@ func (u *userPage) Load() {
 		}
 	}
 
-	// ユーザのツイートを取得
+	// ユーザのタイムラインを取得
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(
-		u.userDic.User.ID,
+		u.data.User.ID,
 		u.tweets.GetSinceID(),
 		shared.conf.Pref.Feature.LoadTweetsLimit,
 	)
@@ -122,10 +120,11 @@ func (u *userPage) Load() {
 		return
 	}
 
-	u.drawProfile(u.userDic.User)
+	u.drawProfile(u.data.User)
 
-	if u.userDic.PinnedTweet != nil {
-		u.tweets.RegisterPinned(u.userDic.PinnedTweet)
+	// ピン留めツイートがあれば登録
+	if u.data.PinnedTweet != nil {
+		u.tweets.RegisterPinned(u.data.PinnedTweet)
 	}
 
 	u.tweets.Update(tweets)
@@ -135,7 +134,7 @@ func (u *userPage) Load() {
 	u.updateLoadedStatus(len(tweets))
 }
 
-// loadProfile : プロフィール読み込み
+// loadProfile : ユーザのプロフィール読み込み
 func (u *userPage) loadProfile() error {
 	users, err := shared.api.FetchUser([]string{u.userName})
 	if err != nil {
@@ -146,7 +145,7 @@ func (u *userPage) loadProfile() error {
 		return fmt.Errorf("no user profile data: %w", err)
 	}
 
-	u.userDic = users[0]
+	u.data = users[0]
 
 	return nil
 }
@@ -161,7 +160,8 @@ func (u *userPage) drawProfile(ur *twitter.UserObj) {
 	profile, row := createProfileLayout(ur, width)
 	fmt.Fprint(u.profile, profile)
 
-	// プロフィールの行数に合わせて表示域をリサイズ（+1 は下辺の padding 分）
+	// プロフィールの行数に合わせて表示域をリサイズ
+	// NOTE: +1 は下辺の padding 分
 	u.flex.ResizeItem(u.profile, row+1, 1)
 
 	style := shared.conf.Style.Metrics

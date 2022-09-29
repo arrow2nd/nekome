@@ -4,12 +4,11 @@ import "strings"
 
 type listPage struct {
 	*tweetsBasePage
-	listID string
+	listId string
 }
 
 func newListPage(name, id string) (*listPage, error) {
-	tabName := shared.conf.Pref.Text.TabList
-	tabName = strings.Replace(tabName, "{name}", name, 1)
+	tabName := strings.Replace(shared.conf.Pref.Text.TabList, "{name}", name, 1)
 
 	basePage, err := newTweetsBasePage(tabName)
 	if err != nil {
@@ -18,7 +17,7 @@ func newListPage(name, id string) (*listPage, error) {
 
 	p := &listPage{
 		tweetsBasePage: basePage,
-		listID:         id,
+		listId:         id,
 	}
 
 	p.SetFrame(p.tweets.view)
@@ -44,7 +43,7 @@ func (l *listPage) Load() {
 
 	// リスト内のツイートを取得
 	count := pref.Feature.LoadTweetsLimit
-	tweets, rateLimit, err := shared.api.FetchListTweets(l.listID, count)
+	tweets, rateLimit, err := shared.api.FetchListTweets(l.listId, count)
 	if err != nil {
 		l.tweets.DrawMessage(err.Error())
 		shared.SetErrorStatus(l.name, err.Error())

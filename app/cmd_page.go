@@ -21,7 +21,7 @@ func (a *App) newHomeCmd() *cli.Command {
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			page, err := newTimelinePage(homeTimeline)
+			page, err := newTimelinePage(timelineTypeHome)
 			if err != nil {
 				return err
 			}
@@ -41,7 +41,7 @@ func (a *App) newMentionCmd() *cli.Command {
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			page, err := newTimelinePage(mentionTimeline)
+			page, err := newTimelinePage(timelineTypeMention)
 			if err != nil {
 				return err
 			}

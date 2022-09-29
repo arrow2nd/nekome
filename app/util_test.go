@@ -386,7 +386,7 @@ func TestCreateTweetSummary(t *testing.T) {
 }
 
 func TestCreateTweetURL(t *testing.T) {
-	url := createTweetURL(&twitter.TweetDictionary{
+	url, err := createTweetUrl(&twitter.TweetDictionary{
 		Tweet: twitter.TweetObj{
 			ID: "0123456789",
 		},
@@ -395,5 +395,6 @@ func TestCreateTweetURL(t *testing.T) {
 		},
 	})
 
+	assert.NoError(t, err, "エラーが発生しないか")
 	assert.Equal(t, url, "https://twitter.com/test/status/0123456789", "URLが作成できるか")
 }

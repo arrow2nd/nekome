@@ -18,24 +18,22 @@ const (
 	reloadIntervalDefault = 10
 )
 
-// timelineType : タイムラインの種類
-type timelineType string
-
+// タイムラインのタイプ
 const (
-	homeTimeline    timelineType = "Home"
-	mentionTimeline timelineType = "Mention"
+	timelineTypeHome    string = "Home"
+	timelineTypeMention string = "Mention"
 )
 
 type timelinePage struct {
 	*tweetsBasePage
-	tlType         timelineType
+	timelineType   string
 	reloadInterval time.Duration
 	cancel         context.CancelFunc
 }
 
-func newTimelinePage(t timelineType) (*timelinePage, error) {
+func newTimelinePage(t string) (*timelinePage, error) {
 	tabName := shared.conf.Pref.Text.TabHome
-	if t == mentionTimeline {
+	if t == timelineTypeMention {
 		tabName = shared.conf.Pref.Text.TabMention
 	}
 
@@ -46,32 +44,32 @@ func newTimelinePage(t timelineType) (*timelinePage, error) {
 
 	p := &timelinePage{
 		tweetsBasePage: basePage,
-		tlType:         t,
+		timelineType:   t,
 		reloadInterval: 0,
 		cancel:         nil,
 	}
 
 	p.SetFrame(p.tweets.view)
 
-	if err := p.setKeyHandler(); err != nil {
+	if err := p.setKeybindings(); err != nil {
 		return nil, err
 	}
 
 	return p, nil
 }
 
-// setKeyHandler : キーハンドラを設定
-func (t *timelinePage) setKeyHandler() error {
-	handler := map[string]func(){
+// setKeybindings : キーバインドを設定
+func (t *timelinePage) setKeybindings() error {
+	handlers := map[string]func(){
 		config.ActionStreamModeStart: func() {
-			t.startStream()
+			t.startStreamMode()
 		},
 		config.ActionStreamModeStop: func() {
-			t.closeStream()
+			t.stopStreamMode()
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.HomeTimeline.MappingEventHandler(handler)
+	c, err := shared.conf.Pref.Keybindings.HomeTimeline.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
@@ -86,7 +84,7 @@ func (t *timelinePage) setKeyHandler() error {
 			return nil
 		}
 
-		// ストリームモード中は共通のキーハンドラを無効化（手動リロード禁止）
+		// ストリームモード中はページ共通のキーバインドを無効化（手動リロード禁止）
 		if t.isStreamMode() {
 			return nil
 		}
@@ -99,29 +97,34 @@ func (t *timelinePage) setKeyHandler() error {
 
 // Load : タイムライン読み込み
 func (t *timelinePage) Load() {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
 	var (
 		tweets    []*twitter.TweetDictionary
 		rateLimit *twitter.RateLimit
 		err       error
 	)
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	// 読み込み中表示
 	if !t.isStreamMode() {
 		shared.SetStatus(t.name, shared.conf.Pref.Text.Loading)
 	}
 
-	// タイムラインを取得
 	id := shared.api.CurrentUser.ID
 	count := shared.conf.Pref.Feature.LoadTweetsLimit
-	sinceID := t.tweets.GetSinceID()
+	sinceId := t.tweets.GetSinceID()
 
-	if t.tlType == homeTimeline {
-		tweets, rateLimit, err = shared.api.FetchHomeTileline(id, sinceID, count)
-	} else {
-		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(id, sinceID, count)
+	// タイムラインを取得
+	switch t.timelineType {
+	case timelineTypeHome:
+		tweets, rateLimit, err = shared.api.FetchHomeTileline(id, sinceId, count)
+	case timelineTypeMention:
+		tweets, rateLimit, err = shared.api.FetchUserMentionTimeline(id, sinceId, count)
+	default:
+		t.tweets.DrawMessage("Load error")
+		shared.SetErrorStatus(t.name, fmt.Sprintf("unknown timeline type: %s", t.timelineType))
+		return
 	}
 
 	if err != nil {
@@ -143,9 +146,9 @@ func (t *timelinePage) Load() {
 
 // OnDelete : ページが破棄された
 func (t *timelinePage) OnDelete() {
-	// ストリームモードが有効なら終了する
+	// ストリームモード実行中なら停止する
 	if t.isStreamMode() {
-		t.closeStream()
+		t.stopStreamMode()
 	}
 }
 
@@ -158,13 +161,13 @@ func (t *timelinePage) getStreamIndicator() string {
 	return fmt.Sprintf("Stream Mode | Interval: %ds | ", t.reloadInterval)
 }
 
-// isStreamMode : ストリームモードが有効かどうか
+// isStreamMode : ストリームモードが実行中かどうか
 func (t *timelinePage) isStreamMode() bool {
 	return t.cancel != nil
 }
 
-// startStream : ストリームモードを開始
-func (t *timelinePage) startStream() {
+// startStreamMode : ストリームモードを開始
+func (t *timelinePage) startStreamMode() {
 	if t.isStreamMode() {
 		shared.SetErrorStatus(t.name, "stream mode has already started")
 		return
@@ -181,14 +184,14 @@ func (t *timelinePage) startStream() {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.cancel = cancel
 
-	go t.stream(ctx)
+	go t.streamMainLoop(ctx)
 
 	shared.SetStatus(t.name, "stream mode has been started")
 	t.updateIndicator(t.getStreamIndicator())
 }
 
-// closeStream : ストリームモードを終了
-func (t *timelinePage) closeStream() {
+// stopStreamMode : ストリームモードを停止
+func (t *timelinePage) stopStreamMode() {
 	if !t.isStreamMode() {
 		shared.SetErrorStatus(t.name, "stream mode has not been started")
 		return
@@ -199,6 +202,45 @@ func (t *timelinePage) closeStream() {
 
 	shared.SetStatus(t.name, "stream mode has been closed")
 	t.updateIndicator(t.getStreamIndicator())
+}
+
+// streamMainLoop : ストリームモードメインループ
+func (t *timelinePage) streamMainLoop(ctx context.Context) {
+	ticker := time.NewTicker(t.reloadInterval * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			t.loadStream(ticker)
+		}
+	}
+}
+
+// loadStream : ストリームを読み込み
+func (t *timelinePage) loadStream(ticker *time.Ticker) {
+	// レート制限情報が無い場合は不正な状態なので終了させる
+	if t.tweets.rateLimit == nil {
+		t.stopStreamMode()
+		shared.SetErrorStatus(t.name, "stream mode has been interrupted (failed to obtain rate limit)")
+		return
+	}
+
+	prevRemaining := t.tweets.rateLimit.Remaining
+
+	t.Load()
+
+	if t.tweets.rateLimit.Remaining <= prevRemaining {
+		return
+	}
+
+	// レート制限がリセットされたら、読み込み間隔を再計算する
+	if nextInterval, _ := t.calcReloadInterval(); t.reloadInterval != nextInterval {
+		t.reloadInterval = nextInterval
+		ticker.Reset(nextInterval * time.Second)
+	}
 }
 
 // calcReloadInterval : 読み込み間隔を計算
@@ -223,43 +265,4 @@ func (t *timelinePage) calcReloadInterval() (time.Duration, error) {
 	}
 
 	return time.Duration(newInterval), nil
-}
-
-// stream : ストリームモード
-func (t *timelinePage) stream(ctx context.Context) {
-	ticker := time.NewTicker(t.reloadInterval * time.Second)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			t.loadStream(ticker)
-		}
-	}
-}
-
-// loadStream : ストリームを読み込み
-func (t *timelinePage) loadStream(ticker *time.Ticker) {
-	// レート制限情報が無い場合は不正な状態なので終了させる
-	if t.tweets.rateLimit == nil {
-		t.closeStream()
-		shared.SetErrorStatus(t.name, "stream mode has been interrupted (failed to obtain rate limit)")
-		return
-	}
-
-	prevRemaining := t.tweets.rateLimit.Remaining
-
-	t.Load()
-
-	if t.tweets.rateLimit.Remaining <= prevRemaining {
-		return
-	}
-
-	// レート制限がリセットされたら、読み込み間隔を再計算する
-	if nextInterval, _ := t.calcReloadInterval(); t.reloadInterval != nextInterval {
-		t.reloadInterval = nextInterval
-		ticker.Reset(nextInterval * time.Second)
-	}
 }

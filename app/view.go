@@ -250,7 +250,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 		}
 
 		v.pages.RemovePage("modal")
-		shared.SetDisablePageKeyEvent(false)
+		shared.SetDisableViewKeyEvent(false)
 	}
 
 	v.modal.
@@ -261,7 +261,7 @@ func (v *view) PopupModal(o *ModalOpt) {
 	v.pages.AddPage("modal", v.modal, true, true)
 
 	shared.RequestFocusPrimitive(v.modal)
-	shared.SetDisablePageKeyEvent(true)
+	shared.SetDisableViewKeyEvent(true)
 }
 
 // handleModalKeyEvents : モーダルのキーハンドラ
@@ -311,7 +311,7 @@ func (v *view) ShowTextArea(hint string, onSubmit func(s string)) {
 	v.mainFlex.ResizeItem(v.textArea, 0, 1)
 
 	shared.RequestFocusPrimitive(v.textArea)
-	shared.SetDisablePageKeyEvent(true)
+	shared.SetDisableViewKeyEvent(true)
 }
 
 // HiddenTextArea : テキストエリアを非表示
@@ -319,5 +319,5 @@ func (v *view) HiddenTextArea() {
 	v.mainFlex.ResizeItem(v.textArea, 0, 0)
 
 	shared.RequestFocusPrimitive(v.pages)
-	shared.SetDisablePageKeyEvent(false)
+	shared.SetDisableViewKeyEvent(false)
 }

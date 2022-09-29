@@ -8,25 +8,27 @@ import (
 	"github.com/pkg/browser"
 )
 
-type tweetActionType string
-type userActionType string
-
+// ツイートへの操作タイプ
 const (
-	tweetLike      tweetActionType = "Like"
-	tweetUnlike    tweetActionType = "Unlike"
-	tweetRetweet   tweetActionType = "Retweet"
-	tweetUnretweet tweetActionType = "Unretweet"
-	tweetDelete    tweetActionType = "Delete"
-	userFollow     userActionType  = "Follow"
-	userUnfollow   userActionType  = "Unfollow"
-	userBlock      userActionType  = "Block"
-	userUnblock    userActionType  = "Unblock"
-	userMute       userActionType  = "Mute"
-	userUnmute     userActionType  = "Unmute"
+	tweetActionLike      string = "Like"
+	tweetActionUnlike    string = "Unlike"
+	tweetActionRetweet   string = "Retweet"
+	tweetActionUnretweet string = "Unretweet"
+	tweetActionDelete    string = "Delete"
 )
 
-// actionForTweet : ツイートに対しての操作
-func (t *tweets) actionForTweet(a tweetActionType) {
+// ユーザへの操作タイプ
+const (
+	userActionFollow   string = "Follow"
+	userActionUnfollow string = "Unfollow"
+	userActionBlock    string = "Block"
+	userActionUnblock  string = "Unblock"
+	userActionMute     string = "Mute"
+	userActionUnmute   string = "Unmute"
+)
+
+// actionForTweet : ツイートへの操作
+func (t *tweets) actionForTweet(a string) {
 	c := t.getSelectTweet()
 	if c == nil {
 		return
@@ -40,16 +42,19 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		var err error
 
 		switch a {
-		case tweetLike:
+		case tweetActionLike:
 			err = shared.api.Like(id)
-		case tweetUnlike:
+		case tweetActionUnlike:
 			err = shared.api.UnLike(id)
-		case tweetRetweet:
+		case tweetActionRetweet:
 			err = shared.api.Retweet(id)
-		case tweetUnretweet:
+		case tweetActionUnretweet:
 			err = shared.api.UnRetweet(id)
-		case tweetDelete:
+		case tweetActionDelete:
 			err = shared.api.DeleteTweet(id)
+		default:
+			shared.SetErrorStatus(label, fmt.Sprintf("unknown tweet action type: %s", a))
+			return
 		}
 
 		if err != nil {
@@ -70,17 +75,17 @@ func (t *tweets) actionForTweet(a tweetActionType) {
 		return
 	}
 
-	style := shared.conf.Style.App.EmphasisText
+	title := fmt.Sprintf(
+		"Do you want to [%s]%s[-:-:-] this tweet?",
+		shared.conf.Style.App.EmphasisText,
+		strings.ToLower(label),
+	)
 
-	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf("Do you want to [%s]%s[-:-:-] this tweet?", style, strings.ToLower(label)),
-		"",
-		f,
-	})
+	shared.ReqestPopupModal(&ModalOpt{title, "", f})
 }
 
-// actionForUser : ユーザに対しての操作
-func (t *tweets) actionForUser(a userActionType) {
+// actionForUser : ユーザへの操作
+func (t *tweets) actionForUser(a string) {
 	c := t.getSelectTweet()
 	if c == nil {
 		return
@@ -94,18 +99,21 @@ func (t *tweets) actionForUser(a userActionType) {
 		var err error
 
 		switch a {
-		case userFollow:
+		case userActionFollow:
 			err = shared.api.Follow(id)
-		case userUnfollow:
+		case userActionUnfollow:
 			err = shared.api.UnFollow(id)
-		case userBlock:
+		case userActionBlock:
 			err = shared.api.Block(id)
-		case userUnblock:
+		case userActionUnblock:
 			err = shared.api.UnBlock(id)
-		case userMute:
+		case userActionMute:
 			err = shared.api.Mute(id)
-		case userUnmute:
+		case userActionUnmute:
 			err = shared.api.UnMute(id)
+		default:
+			shared.SetErrorStatus(label, fmt.Sprintf("unknown user action type: %s", a))
+			return
 		}
 
 		if err != nil {
@@ -126,13 +134,13 @@ func (t *tweets) actionForUser(a userActionType) {
 		return
 	}
 
-	style := shared.conf.Style.App.EmphasisText
+	title := fmt.Sprintf(
+		`Do you want to [%s]%s[-:-:-] this user?`,
+		shared.conf.Style.App.EmphasisText,
+		strings.ToLower(label),
+	)
 
-	shared.ReqestPopupModal(&ModalOpt{
-		fmt.Sprintf(`Do you want to [%s]%s[-:-:-] this user?`, style, strings.ToLower(label)),
-		summary,
-		f,
-	})
+	shared.ReqestPopupModal(&ModalOpt{title, summary, f})
 }
 
 // openUserPage : ユーザページを開く
@@ -146,7 +154,7 @@ func (t *tweets) openUserPage() {
 	shared.RequestExecCommand(cmd)
 }
 
-// postQuoteTweet : QTコマンドを挿入
+// postQuoteTweet : Quoteコマンドを挿入
 func (t *tweets) postQuoteTweet() {
 	c := t.getSelectTweet()
 	if c == nil {
@@ -157,7 +165,7 @@ func (t *tweets) postQuoteTweet() {
 	shared.RequestInputCommand(cmd)
 }
 
-// postReply : リプライコマンドを挿入
+// postReply : replyコマンドを挿入
 func (t *tweets) postReply() {
 	c := t.getSelectTweet()
 	if c == nil {
@@ -175,7 +183,13 @@ func (t *tweets) openBrower() {
 		return
 	}
 
-	if err := browser.OpenURL(createTweetURL(c)); err != nil {
+	url, err := createTweetUrl(c)
+	if err != nil {
+		shared.SetErrorStatus("Open", err.Error())
+		return
+	}
+
+	if err := browser.OpenURL(url); err != nil {
 		shared.SetErrorStatus("Open", err.Error())
 		return
 	}
@@ -190,7 +204,13 @@ func (t *tweets) copyLinkToClipBoard() {
 		return
 	}
 
-	if err := clipboard.WriteAll(createTweetURL(c)); err != nil {
+	url, err := createTweetUrl(c)
+	if err != nil {
+		shared.SetErrorStatus("Copy", err.Error())
+		return
+	}
+
+	if err := clipboard.WriteAll(url); err != nil {
 		shared.SetErrorStatus("Copy", err.Error())
 		return
 	}

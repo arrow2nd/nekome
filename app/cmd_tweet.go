@@ -18,20 +18,24 @@ import (
 )
 
 func (a *App) newTweetCmd() *cli.Command {
-	return &cli.Command{
-		Name:      "tweet",
-		Shorthand: "t",
-		Short:     "Post a tweet",
-		Long: `Post a tweet.
+	longHelp := `Post a tweet.
 
 If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
 Tips: If 'feature.use_external_editor' in preferences.toml is true, an external editor will be launched even from the TUI.
 
 When specifying multiple images, please separate them with commas.
-You may attach up to four images at a time.`,
+You may attach up to four images at a time.`
+
+	example := `tweet にゃーん --image cute_cat.png,very_cute_cat.png
+echo "にゃーん" | nekome tweet`
+
+	return &cli.Command{
+		Name:      "tweet",
+		Shorthand: "t",
+		Short:     "Post a tweet",
+		Long:      longHelp,
 		UsageArgs: "[text]",
-		Example: `tweet にゃーん --image cute_cat.png,very_cute_cat.png
-  echo "にゃーん" | nekome tweet`,
+		Example:   example,
 		SetFlag: func(f *pflag.FlagSet) {
 			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
 			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
@@ -70,7 +74,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 		// エディタを開く
 		var err error
-		text, err = a.editTweetWithExEditor(editor)
+		text, err = a.editTweetExternalEditor(editor)
 		if err != nil {
 			return err
 		}
@@ -81,25 +85,23 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	return nil
 }
 
-// editTweetWithExEditor : 外部エディタでツイートを編集する
-func (a *App) editTweetWithExEditor(editor string) (string, error) {
+// editTweetExternalEditor : 外部エディタでツイートを編集する
+func (a *App) editTweetExternalEditor(editor string) (string, error) {
+	// 一時ファイル作成
 	tmpFilePath := path.Join(os.TempDir(), ".nekome_tweet_tmp")
 	if _, err := os.Create(tmpFilePath); err != nil {
 		return "", err
 	}
 
-	// エディタを起動
-	if err := a.execEditor(editor, tmpFilePath); err != nil {
+	if err := a.openExternalEditor(editor, tmpFilePath); err != nil {
 		return "", err
 	}
 
-	// 一時ファイル読み込み
 	bytes, err := ioutil.ReadFile(tmpFilePath)
 	if err != nil {
 		return "", err
 	}
 
-	// 一時ファイル削除
 	if err := os.Remove(tmpFilePath); err != nil {
 		return "", err
 	}
@@ -109,7 +111,6 @@ func (a *App) editTweetWithExEditor(editor string) (string, error) {
 
 // execPostTweet : ツイートを投稿
 func execPostTweet(text, quoteId, replyId string, images []string) {
-	// 末尾の改行を削除
 	text = trimEndNewline(text)
 
 	// 文章も画像もない場合キャンセル
@@ -131,7 +132,6 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 			mediaIids = ids
 		}
 
-		// 投稿
 		if err := shared.api.PostTweet(text, quoteId, replyId, mediaIids); err != nil {
 			shared.SetErrorStatus("Tweet", err.Error())
 			return
@@ -154,10 +154,12 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 		operationType = "quote tweet"
 	}
 
-	style := shared.conf.Style.App.EmphasisText
-
 	shared.ReqestPopupModal(&ModalOpt{
-		title:  fmt.Sprintf("Do you want to post a [%s]%s[-:-:-]?", style, operationType),
+		title: fmt.Sprintf(
+			"Do you want to post a [%s]%s[-:-:-]?",
+			shared.conf.Style.App.EmphasisText,
+			operationType,
+		),
 		text:   text,
 		onDone: post,
 	})
@@ -171,7 +173,7 @@ func uploadImages(images []string) ([]string, error) {
 		return strings.HasSuffix(strings.ToLower(v), ".gif")
 	})
 
-	// 複数の画像と一緒にGIFをアップロードしようとしていないか
+	// GIFと複数画像の同時アップロードを防止（GIFは動画扱い）
 	if containsGif && imagesCount > 1 {
 		return nil, errors.New("gif images cannot be attached with other images")
 	}

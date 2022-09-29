@@ -22,6 +22,8 @@ const (
 	ExitCodeErrApp
 	// ExitCodeErrFileIO : ファイルIOエラー
 	ExitCodeErrFileIO
+	// ExitCodeErrTerm : 端末関連のエラー
+	ExitCodeErrTerm
 )
 
 // Exit : ログを出力して終了

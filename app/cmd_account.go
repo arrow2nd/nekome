@@ -78,12 +78,10 @@ If you do not specify an account name, you can select it interactively.`,
 				target = seletecd
 			}
 
-			// 削除実行
 			if err := shared.conf.Cred.Delete(target); err != nil {
 				return err
 			}
 
-			// 書き込み
 			if err := shared.conf.SaveCred(); err != nil {
 				return err
 			}
@@ -131,12 +129,10 @@ func (a *App) newAccountSwitchCmd() *cli.Command {
 				return errors.New("account currently logged in")
 			}
 
-			// ログイン
 			if err := loginAccount(f.Arg(0)); err != nil {
 				return err
 			}
 
-			// アプリを初期化
 			a.view.Reset()
 			a.statusBar.DrawAccountInfo()
 			a.initAutocomplate()

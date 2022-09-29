@@ -32,7 +32,6 @@ func (a *App) newEditCmd() *cli.Command {
 				Items: items,
 			}
 
-			// プロンプト表示
 			_, file, err := prompt.Run()
 			if err != nil {
 				return err
@@ -43,9 +42,8 @@ func (a *App) newEditCmd() *cli.Command {
 				return err
 			}
 
-			// エディタ記号
 			editor, _ := f.GetString("editor")
-			return a.execEditor(editor, path.Join(dir, file))
+			return a.openExternalEditor(editor, path.Join(dir, file))
 		},
 	}
 }

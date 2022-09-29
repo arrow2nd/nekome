@@ -7,16 +7,16 @@ import (
 )
 
 type statusBar struct {
-	flex          *tview.Flex
-	accountInfo   *tview.TextView
-	pageIndicator *tview.TextView
+	flex      *tview.Flex
+	leftView  *tview.TextView
+	rightView *tview.TextView
 }
 
 func newStatusBar() *statusBar {
 	return &statusBar{
-		flex:          tview.NewFlex(),
-		accountInfo:   tview.NewTextView(),
-		pageIndicator: tview.NewTextView(),
+		flex:      tview.NewFlex(),
+		leftView:  tview.NewTextView(),
+		rightView: tview.NewTextView(),
 	}
 }
 
@@ -24,28 +24,28 @@ func newStatusBar() *statusBar {
 func (s *statusBar) Init() {
 	bgColor := shared.conf.Style.StatusBar.BackgroundColor.ToColor()
 
-	s.accountInfo.
+	s.leftView.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft).
 		SetBackgroundColor(bgColor)
 
-	s.pageIndicator.
+	s.rightView.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignRight).
 		SetBackgroundColor(bgColor)
 
 	s.flex.
 		SetDirection(tview.FlexColumn).
-		AddItem(s.accountInfo, 0, 1, false).
-		AddItem(s.pageIndicator, 0, 1, false)
+		AddItem(s.leftView, 0, 1, false).
+		AddItem(s.rightView, 0, 1, false)
 }
 
 // DrawAccountInfo : ログイン中のアカウント情報を描画
 func (s *statusBar) DrawAccountInfo() {
-	s.accountInfo.Clear()
+	s.leftView.Clear()
 
 	fmt.Fprintf(
-		s.accountInfo,
+		s.leftView,
 		" [%s]@%s[-:-:-]",
 		shared.conf.Style.StatusBar.Text,
 		shared.api.CurrentUser.UserName,
@@ -54,10 +54,10 @@ func (s *statusBar) DrawAccountInfo() {
 
 // DrawPageIndicator : 現在のページのインジケータを描画
 func (s *statusBar) DrawPageIndicator(d string) {
-	s.pageIndicator.Clear()
+	s.rightView.Clear()
 
 	fmt.Fprintf(
-		s.pageIndicator,
+		s.rightView,
 		"[%s]%s[-:-:-] ",
 		shared.conf.Style.StatusBar.Text,
 		d,

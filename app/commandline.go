@@ -101,7 +101,7 @@ func (c *commandLine) Blur() {
 		SetLabel("").
 		SetText("")
 
-	shared.RequestFocusMainView()
+	shared.RequestFocusView()
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
@@ -140,17 +140,14 @@ func (c *commandLine) handleFocus() {
 		SetPlaceholder("")
 }
 
-// handleKeyEvents : キーハンドラ
+// handleKeyEvents : キーイベントハンドラ
 func (c *commandLine) handleKeyEvents(event *tcell.EventKey) *tcell.EventKey {
 	key := event.Key()
 	text := c.inputField.GetText()
 
 	// フィールドが空かつ、BSが押されたらフォーカスを外す
 	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2) {
-		c.backspaceCount++
-		if c.backspaceCount >= 2 {
-			c.Blur()
-		}
+		c.Blur()
 		return nil
 	}
 
