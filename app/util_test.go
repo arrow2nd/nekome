@@ -9,6 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestOpenExternalEditor(t *testing.T) {
+	a := &App{}
+
+	t.Run("エディタの起動コマンドが未指定の場合にエラーが返るか", func(t *testing.T) {
+		err := a.openExternalEditor("")
+		assert.EqualError(t, err, "please specify which editor to use")
+	})
+}
+
 func TestMD5(t *testing.T) {
 	tests := []struct {
 		name string
@@ -340,7 +349,9 @@ func TestCreateUserSummary(t *testing.T) {
 		UserName: "test",
 	})
 
-	assert.Equal(t, "TEST @test", summary, "作成できるか")
+	t.Run("作成できるか", func(t *testing.T) {
+		assert.Equal(t, "TEST @test", summary)
+	})
 }
 
 func TestCreateTweetSummary(t *testing.T) {
@@ -395,6 +406,8 @@ func TestCreateTweetURL(t *testing.T) {
 		},
 	})
 
-	assert.NoError(t, err, "エラーが発生しないか")
-	assert.Equal(t, url, "https://twitter.com/test/status/0123456789", "URLが作成できるか")
+	t.Run("作成できるか", func(t *testing.T) {
+		assert.NoError(t, err)
+		assert.Equal(t, url, "https://twitter.com/test/status/0123456789")
+	})
 }
