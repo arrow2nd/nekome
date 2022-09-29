@@ -7,14 +7,15 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
-type user struct {
+// User : ユーザの認証情報
+type User struct {
 	Accounts []api.User `toml:"accounts"`
 }
 
 // Cred : 認証情報
 type Cred struct {
 	Consumer oauth1.Token `toml:"consumer"`
-	User     user         `toml:"user"`
+	User     User         `toml:"user"`
 }
 
 // Get : 取得
