@@ -1,6 +1,7 @@
 package config
 
-type feature struct {
+// Feature : 機能
+type Feature struct {
 	// MainUser : メインで使用するユーザ
 	MainUser string `toml:"main_user"`
 	// LoadTweetsLimit : 1度に読み込むツイート数
@@ -15,7 +16,8 @@ type feature struct {
 	StartupCmds []string `toml:"startup_cmds"`
 }
 
-type appearance struct {
+// Appearancene : 外観
+type Appearancene struct {
 	// StyleFilePath : 配色テーマファイルのパス
 	StyleFilePath string `toml:"style_file"`
 	// DateFormat : 日付のフォーマット
@@ -36,7 +38,8 @@ type appearance struct {
 	TabMaxWidth int `toml:"tab_max_width"`
 }
 
-type text struct {
+// Text : 表示テキスト
+type Text struct {
 	// Like : いいねの単位
 	Like string `toml:"like"`
 	// Retweet : リツイートの単位
@@ -61,7 +64,8 @@ type text struct {
 	TabDocs string `toml:"tab_docs"`
 }
 
-type icon struct {
+// Icon : アイコン
+type Icon struct {
 	// Geo : 位置情報
 	Geo string `toml:"geo"`
 	// Link : リンク
@@ -74,7 +78,8 @@ type icon struct {
 	Private string `toml:"private"`
 }
 
-type keybindings struct {
+// Keybindings : キーバインド
+type Keybindings struct {
 	// Global : アプリ全体のキーバインド
 	Global keybinding `toml:"global"`
 	// View : メインビューのキーバインド
@@ -89,18 +94,18 @@ type keybindings struct {
 
 // Preferences : 環境設定
 type Preferences struct {
-	Feature     feature         `toml:"feature"`
+	Feature     Feature         `toml:"feature"`
 	Confirm     map[string]bool `toml:"comfirm"`
-	Appearance  appearance      `toml:"appearance"`
-	Text        text            `toml:"text"`
-	Icon        icon            `toml:"icon"`
-	Keybindings keybindings     `toml:"keybinding"`
+	Appearance  Appearancene    `toml:"appearance"`
+	Text        Text            `toml:"text"`
+	Icon        Icon            `toml:"icon"`
+	Keybindings Keybindings     `toml:"keybinding"`
 }
 
 // defaultPreferences : デフォルト設定
 func defaultPreferences() *Preferences {
 	return &Preferences{
-		Feature: feature{
+		Feature: Feature{
 			MainUser:             "",
 			LoadTweetsLimit:      25,
 			AccmulateTweetsLimit: 250,
@@ -126,7 +131,7 @@ func defaultPreferences() *Preferences {
 			"tweet":     true,
 			"quit":      true,
 		},
-		Appearance: appearance{
+		Appearance: Appearancene{
 			StyleFilePath:       "style_default.toml",
 			DateFormat:          "2006/01/02",
 			TimeFormat:          "15:04:05",
@@ -137,7 +142,7 @@ func defaultPreferences() *Preferences {
 			TabSeparate:         "|",
 			TabMaxWidth:         20,
 		},
-		Text: text{
+		Text: Text{
 			Like:              "Like",
 			Retweet:           "RT",
 			Loading:           "Loading...",
@@ -150,14 +155,14 @@ func defaultPreferences() *Preferences {
 			TabSearch:         "Search: {query}",
 			TabDocs:           "Docs: {name}",
 		},
-		Icon: icon{
+		Icon: Icon{
 			Geo:      "📍",
 			Link:     "🔗",
 			Pinned:   "📌",
 			Verified: "✅",
 			Private:  "🔒",
 		},
-		Keybindings: keybindings{
+		Keybindings: Keybindings{
 			Global: map[string][]string{
 				ActionQuit: {"ctrl+q"},
 			},

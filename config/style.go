@@ -22,7 +22,8 @@ func (c color) ToColor() tcell.Color {
 	return tcell.NewHexColor(int32(i))
 }
 
-type appStyle struct {
+// AppStyle : アプリ全体のスタイル
+type AppStyle struct {
 	BackgroundColor color  `toml:"background_color"`
 	BorderColor     color  `toml:"border_color"`
 	TextColor       color  `toml:"text_color"`
@@ -30,23 +31,27 @@ type appStyle struct {
 	EmphasisText    string `toml:"emphasis_text"`
 }
 
-type tabStyle struct {
+// TabStyle : タブのスタイル
+type TabStyle struct {
 	Text            string `toml:"text"`
 	BackgroundColor color  `toml:"background_color"`
 }
 
-type autocompleteStyle struct {
+// AutocompleteStyle : 補完候補のスタイル
+type AutocompleteStyle struct {
 	TextColor               color `toml:"text_color"`
 	BackgroundColor         color `toml:"background_color"`
 	SelectedBackgroundColor color `toml:"selected_background_color"`
 }
 
-type statusBarStyle struct {
+// StatusBarStyle : ステータスバーのスタイル
+type StatusBarStyle struct {
 	Text            string `toml:"text"`
 	BackgroundColor color  `toml:"background_color"`
 }
 
-type tweetStyle struct {
+// TweetStyle : ツイートのスタイル
+type TweetStyle struct {
 	Annotation string `toml:"annotation"`
 	Detail     string `toml:"detail"`
 	Like       string `toml:"like"`
@@ -58,7 +63,8 @@ type tweetStyle struct {
 	Separator  string `toml:"separator"`
 }
 
-type userStyle struct {
+// UserStyle : ユーザのスタイル
+type UserStyle struct {
 	Name     string `toml:"name"`
 	UserName string `toml:"user_name"`
 	Detail   string `toml:"detaill"`
@@ -66,7 +72,8 @@ type userStyle struct {
 	Private  string `toml:"private"`
 }
 
-type metricsStyle struct {
+// MetricsStyle : ユーザメトリクスのスタイル
+type MetricsStyle struct {
 	TweetsText               string `toml:"tweets_text"`
 	TweetsBackgroundColor    color  `toml:"tweets_background_color"`
 	FollowingText            string `toml:"following_text"`
@@ -77,38 +84,38 @@ type metricsStyle struct {
 
 // Style : スタイル定義
 type Style struct {
-	App          appStyle          `toml:"app"`
-	Tab          tabStyle          `toml:"tab"`
-	Autocomplate autocompleteStyle `toml:"autocomplete"`
-	StatusBar    statusBarStyle    `toml:"statusbar"`
-	Tweet        tweetStyle        `toml:"tweet"`
-	User         userStyle         `toml:"user"`
-	Metrics      metricsStyle      `toml:"metrics"`
+	App          AppStyle          `toml:"app"`
+	Tab          TabStyle          `toml:"tab"`
+	Autocomplate AutocompleteStyle `toml:"autocomplete"`
+	StatusBar    StatusBarStyle    `toml:"statusbar"`
+	Tweet        TweetStyle        `toml:"tweet"`
+	User         UserStyle         `toml:"user"`
+	Metrics      MetricsStyle      `toml:"metrics"`
 }
 
 func defaultStyle() *Style {
 	return &Style{
-		App: appStyle{
+		App: AppStyle{
 			BackgroundColor: "#000000",
 			BorderColor:     "#ffffff",
 			TextColor:       "#f9f9f9",
 			SubTextColor:    "#979797",
 			EmphasisText:    "maroon:-:bi",
 		},
-		Tab: tabStyle{
+		Tab: TabStyle{
 			Text:            "white:-:-",
 			BackgroundColor: "#000000",
 		},
-		Autocomplate: autocompleteStyle{
+		Autocomplate: AutocompleteStyle{
 			TextColor:               "#000000",
 			BackgroundColor:         "#808080",
 			SelectedBackgroundColor: "#C0C0C0",
 		},
-		StatusBar: statusBarStyle{
+		StatusBar: StatusBarStyle{
 			Text:            "black:-:-",
 			BackgroundColor: "#ffffff",
 		},
-		Tweet: tweetStyle{
+		Tweet: TweetStyle{
 			Annotation: "teal:-:-",
 			Detail:     "gray:-:-",
 			Like:       "pink:-:-",
@@ -119,14 +126,14 @@ func defaultStyle() *Style {
 			PollDetail: "gray:-:-",
 			Separator:  "gray:-:-",
 		},
-		User: userStyle{
+		User: UserStyle{
 			Name:     "white:-:b",
 			UserName: "gray:-:i",
 			Detail:   "gray:-:-",
 			Verified: "blue:-:-",
 			Private:  "gray:-:-",
 		},
-		Metrics: metricsStyle{
+		Metrics: MetricsStyle{
 			TweetsText:               "black:-:-",
 			TweetsBackgroundColor:    "#a094c7",
 			FollowingText:            "black:-:-",
