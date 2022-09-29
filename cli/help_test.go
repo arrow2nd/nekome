@@ -46,5 +46,7 @@ Flags:
 	}
 	r.AddCommand(a)
 
-	assert.NoError(t, r.Execute([]string{"--help"}), "実行できるか")
+	t.Run("実行できるか", func(t *testing.T) {
+		assert.NoError(t, r.Execute([]string{"--help"}))
+	})
 }
