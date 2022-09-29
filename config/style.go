@@ -12,6 +12,12 @@ type color string
 // ToColor : tcell.Colorに変換
 func (c color) ToColor() tcell.Color {
 	s := strings.Replace(string(c), "#", "", 1)
+
+	// 空文字ならデフォルト色を返す
+	if s == "" {
+		return tcell.ColorDefault
+	}
+
 	i, _ := strconv.ParseInt(s, 16, 32)
 	return tcell.NewHexColor(int32(i))
 }
