@@ -42,7 +42,7 @@ func (a *API) Auth(client *oauth1.Token) (*User, error) {
 	fmt.Println()
 
 	// PINの入力受付
-	verifier, err := inputPIN()
+	verifier, err := inputPinCode()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read PIN: %w", err)
 	}

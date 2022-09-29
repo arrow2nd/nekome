@@ -14,8 +14,8 @@ var (
 	consumerSecret = ""
 )
 
-// inputPIN : PINの入力を受付
-func inputPIN() (string, error) {
+// inputPinCode : PINの入力を受付
+func inputPinCode() (string, error) {
 	prompt := promptui.Prompt{
 		Label: "PIN",
 		Validate: func(s string) error {
@@ -29,7 +29,7 @@ func inputPIN() (string, error) {
 	return prompt.Run()
 }
 
-// getConsumerToken : クライアントトークンを取得
+// getConsumerToken : コンシューマトークンを取得
 func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 	consumer := &oauth1.Token{
 		Token:       consumerToken,
@@ -53,7 +53,7 @@ func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 
 // createTweetSlice : TweetDictionary のスライスを作成
 func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
-	// データがあるかチェック
+	// データがあるか
 	if len(raw.Tweets) == 0 || raw.Tweets[0] == nil {
 		return false, nil
 	}
@@ -76,7 +76,7 @@ type UserDictionary struct {
 
 // createUserSlice : UserDictionary のスライスを作成
 func createUserSlice(raw *twitter.UserRaw) (bool, []*UserDictionary) {
-	// データがあるかチェック
+	// データがあるか
 	if len(raw.Users) == 0 || raw.Users[0] == nil {
 		return false, nil
 	}
