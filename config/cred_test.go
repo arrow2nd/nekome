@@ -49,7 +49,7 @@ func TestCredGet(t *testing.T) {
 
 	t.Run("見つからなかった際にエラーが返るか", func(t *testing.T) {
 		_, err := c.Get("hoge")
-		assert.ErrorContains(t, err, "user not found: hoge")
+		assert.EqualError(t, err, "user not found: hoge")
 	})
 }
 
@@ -113,13 +113,13 @@ func TestDelete(t *testing.T) {
 		assert.NoError(t, err)
 
 		_, err = c.Get("user_name_a")
-		assert.ErrorContains(t, err, "user not found: user_name_a")
+		assert.EqualError(t, err, "user not found: user_name_a")
 	})
 
 	t.Run("見つからない場合にエラーが返るか", func(t *testing.T) {
 		c := newTestCred()
 
 		err := c.Delete("hoge")
-		assert.ErrorContains(t, err, "user not found: hoge")
+		assert.EqualError(t, err, "user not found: hoge")
 	})
 }
