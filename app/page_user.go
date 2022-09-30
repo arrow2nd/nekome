@@ -61,6 +61,7 @@ func newUserPage(userName string) (*userPage, error) {
 		AddItem(p.followersMetrics, 0, 1, false)
 
 	p.tweets.view.SetBorderPadding(1, 0, 0, 0)
+	p.tweets.DrawMessage(pref.Text.Loading)
 
 	p.flex.
 		SetDirection(tview.FlexRow).
@@ -100,7 +101,7 @@ func (u *userPage) Load() {
 
 	// ユーザ情報が空なら取得して登録
 	if u.data == nil {
-		if err := u.loadProfile(); err != nil {
+		if err := u.fetchProfile(); err != nil {
 			u.tweets.DrawMessage(err.Error())
 			shared.SetErrorStatus(u.name, err.Error())
 			return
@@ -134,15 +135,15 @@ func (u *userPage) Load() {
 	u.updateLoadedStatus(len(tweets))
 }
 
-// loadProfile : ユーザのプロフィール読み込み
-func (u *userPage) loadProfile() error {
+// fetchProfile : ユーザのプロフィール読み込み
+func (u *userPage) fetchProfile() error {
 	users, err := shared.api.FetchUser([]string{u.userName})
 	if err != nil {
 		return err
 	}
 
 	if len(users) == 0 || users[0] == nil {
-		return fmt.Errorf("no user profile data: %w", err)
+		return fmt.Errorf("failed to get user profile: %w", err)
 	}
 
 	u.data = users[0]
