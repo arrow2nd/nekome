@@ -34,15 +34,15 @@ func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetD
 }
 
 // Like : いいね
-func (a *API) Like(tweetID string) error {
-	_, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID)
+func (a *API) Like(tweetId string) error {
+	_, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetId)
 
 	return checkError(err)
 }
 
 // UnLike : いいねを解除
-func (a *API) UnLike(tweetID string) error {
-	_, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID)
+func (a *API) UnLike(tweetId string) error {
+	_, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetId)
 
 	return checkError(err)
 }

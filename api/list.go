@@ -6,11 +6,11 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// FetchOwnedListIDs : ユーザが所有するリストの情報を取得
-func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
+// FetchOwnedLists : ユーザが所有するリストの情報を取得
+func (a *API) FetchOwnedLists(userId string) ([]*twitter.ListObj, error) {
 	opts := twitter.UserListLookupOpts{}
 
-	res, err := a.client.UserListLookup(context.Background(), userID, opts)
+	res, err := a.client.UserListLookup(context.Background(), userId, opts)
 
 	if e := checkError(err); e != nil {
 		return nil, e
@@ -28,7 +28,7 @@ func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 }
 
 // FetchListTweets : リスト内のツイートを取得
-func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
+func (a *API) FetchListTweets(listId string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForTL,
@@ -36,7 +36,7 @@ func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDicti
 		MaxResults:  results,
 	}
 
-	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
+	res, err := a.client.ListTweetLookup(context.Background(), listId, opts)
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
