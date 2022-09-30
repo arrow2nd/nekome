@@ -177,11 +177,12 @@ func createPollLayout(p []*twitter.PollObj, w int) string {
 
 		graph := strings.Repeat(pref.GraphChar, int(math.Floor(per*graphMaxWidth)))
 		text += fmt.Sprintf(
-			"%s[%s]%s[-:-:-] %.1f%% (%d)\n",
+			"%s\n[%s]%s[-:-:-] %.1f%% [%s](%d)[-:-:-]\n",
 			o.Label,
 			style.PollGraph,
 			graph,
 			per*100,
+			style.PollDetail,
 			o.Votes,
 		)
 	}
