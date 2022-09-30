@@ -110,6 +110,8 @@ func (a *App) Init() error {
 func (a *App) loadConfig() error {
 	shared.conf = config.New()
 
+	shared.conf.CheckOldFile()
+
 	// 環境設定
 	if err := shared.conf.LoadPreferences(); err != nil {
 		return err

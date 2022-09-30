@@ -55,6 +55,24 @@ func GetConfigFileNames() ([]string, error) {
 	return fileNames, nil
 }
 
+// CheckOldFile : 古い設定ファイルがあるかチェック
+func (c *Config) CheckOldFile() {
+	notice := `🐈 Notice 🐈
+
+Starting with nekome v2.0.0, the configuration file format has been changed from yaml to toml.
+Please run 'nekome edit' and reconfigure the file.
+
+For more information on the new configuration file, please visit the following site
+https://github.com/arrow2nd/nekome/blob/v2/docs/ja/config.md
+
+(This notice will not appear if you delete the old configuration file)
+`
+
+	if c.hasFileExists("default.yml") || c.hasFileExists("settings.yml") {
+		fmt.Println(notice)
+	}
+}
+
 // LoadCred : 認証情報を読込む
 func (c *Config) LoadCred() (bool, error) {
 	if !c.hasFileExists(credFileName) {
