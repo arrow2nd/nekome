@@ -109,11 +109,17 @@ func (t *tweets) setKeybindings() error {
 		config.ActionOpenUserPage: func() {
 			t.openUserPage()
 		},
+		config.ActionOpenUserLikes: func() {
+			t.openUserLikes()
+		},
+		config.ActionTweet: func() {
+			shared.RequestExecCommand("tweet")
+		},
 		config.ActionQuote: func() {
-			t.postQuoteTweet()
+			t.insertQuoteCommand()
 		},
 		config.ActionReply: func() {
-			t.postReply()
+			t.insertReplyCommand()
 		},
 		config.ActionOpenBrowser: func() {
 			t.openBrower()
@@ -133,8 +139,8 @@ func (t *tweets) setKeybindings() error {
 	return nil
 }
 
-// GetSinceID : 一番新しいツイートIDを取得
-func (t *tweets) GetSinceID() string {
+// GetSinceId : 一番新しいツイートIDを取得
+func (t *tweets) GetSinceId() string {
 	if len(t.contents) == 0 {
 		return ""
 	}

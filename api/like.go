@@ -7,7 +7,7 @@ import (
 )
 
 // FetchLikedTweets : ユーザのいいねしたツイートを取得
-func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetObj, error) {
+func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserLikesLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForTL,
@@ -16,22 +16,21 @@ func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetO
 		},
 		MaxResults: maxResults,
 	}
-
-	res, err := a.client.UserLikesLookup(context.Background(), userID, opts)
-
+	res, err := a.client.UserLikesLookup(context.Background(), userId, opts)
 	if e := checkError(err); e != nil {
-		return nil, e
+		return nil, nil, e
 	}
 
 	if res.Raw == nil {
-		return []*twitter.TweetObj{}, nil
+		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
-	if e := checkPartialError(res.Raw.Errors); len(res.Raw.Tweets) == 0 && e != nil {
-		return nil, e
+	ok, tweets := createTweetSlice(res.Raw)
+	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
+		return nil, nil, e
 	}
 
-	return res.Raw.Tweets, nil
+	return tweets, res.RateLimit, nil
 }
 
 // Like : いいね

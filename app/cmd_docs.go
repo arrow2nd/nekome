@@ -82,13 +82,15 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Unlike a tweet
   %-20s Retweet a tweet
   %-20s Unretweet a tweet
+  %-20s New tweet
   %-20s Quote tweet
   %-20s Reply to
   %-20s Remove a tweet
   %-20s Open in browser
-  %-20s Open author's user timeline page
   %-20s Copy link to clipboard
   
+  %-20s Open user timeline page
+  %-20s Open user likes page
   %-20s Follow a user
   %-20s Unfollow a user
   %-20s Mute a user
@@ -106,12 +108,14 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.TweetView.GetString(config.ActionTweetUnlike),
 		k.TweetView.GetString(config.ActionTweetRetweet),
 		k.TweetView.GetString(config.ActionTweetUnretweet),
+		k.TweetView.GetString(config.ActionTweet),
 		k.TweetView.GetString(config.ActionQuote),
 		k.TweetView.GetString(config.ActionReply),
 		k.TweetView.GetString(config.ActionTweetRemove),
 		k.TweetView.GetString(config.ActionOpenBrowser),
-		k.TweetView.GetString(config.ActionOpenUserPage),
 		k.TweetView.GetString(config.ActionCopyUrl),
+		k.TweetView.GetString(config.ActionOpenUserPage),
+		k.TweetView.GetString(config.ActionOpenUserLikes),
 		k.TweetView.GetString(config.ActionUserFollow),
 		k.TweetView.GetString(config.ActionUserUnfollow),
 		k.TweetView.GetString(config.ActionUserMute),

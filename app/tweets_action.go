@@ -154,8 +154,19 @@ func (t *tweets) openUserPage() {
 	shared.RequestExecCommand(cmd)
 }
 
-// postQuoteTweet : Quoteコマンドを挿入
-func (t *tweets) postQuoteTweet() {
+// openUserLikes : ユーザのいいねリストを開く
+func (t *tweets) openUserLikes() {
+	c := t.getSelectTweet()
+	if c == nil {
+		return
+	}
+
+	cmd := fmt.Sprintf("likes %s", c.Author.UserName)
+	shared.RequestExecCommand(cmd)
+}
+
+// insertQuoteCommand : Quoteコマンドを挿入
+func (t *tweets) insertQuoteCommand() {
 	c := t.getSelectTweet()
 	if c == nil {
 		return
@@ -165,8 +176,8 @@ func (t *tweets) postQuoteTweet() {
 	shared.RequestInputCommand(cmd)
 }
 
-// postReply : replyコマンドを挿入
-func (t *tweets) postReply() {
+// insertReplyCommand : replyコマンドを挿入
+func (t *tweets) insertReplyCommand() {
 	c := t.getSelectTweet()
 	if c == nil {
 		return

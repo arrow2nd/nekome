@@ -60,6 +60,8 @@ type Text struct {
 	TabUser string `toml:"tab_user"`
 	// TabSearch : 検索タブ
 	TabSearch string `toml:"tab_search"`
+	// TabLikes : いいねリストタブ
+	TabLikes string `toml:"tab_likes"`
 	// TabDocs : ドキュメントタブ
 	TabDocs string `toml:"tab_docs"`
 }
@@ -153,6 +155,7 @@ func defaultPreferences() *Preferences {
 			TabList:           "List: {name}",
 			TabUser:           "User: @{name}",
 			TabSearch:         "Search: {query}",
+			TabLikes:          "Likes: @{name}",
 			TabDocs:           "Docs: {name}",
 		},
 		Icon: Icon{
@@ -200,6 +203,8 @@ func defaultPreferences() *Preferences {
 				ActionUserMute:       {"u"},
 				ActionUserUnmute:     {"U"},
 				ActionOpenUserPage:   {"i"},
+				ActionOpenUserLikes:  {"I"},
+				ActionTweet:          {"n"},
 				ActionQuote:          {"q"},
 				ActionReply:          {"r"},
 				ActionOpenBrowser:    {"o"},

@@ -46,6 +46,8 @@ const (
 	ActionUserMute       = "user_mute"
 	ActionUserUnmute     = "user_unmute"
 	ActionOpenUserPage   = "open_user_page"
+	ActionOpenUserLikes  = "open_user_likes"
+	ActionTweet          = "tweet"
 	ActionQuote          = "quote"
 	ActionReply          = "reply"
 	ActionOpenBrowser    = "open_browser"

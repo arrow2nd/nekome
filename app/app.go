@@ -267,6 +267,7 @@ func (a *App) initCommands() {
 		a.newListCmd(),
 		a.newUserCmd(),
 		a.newSearchCmd(),
+		a.newLikesCmd(),
 		a.newTweetCmd(),
 		a.newQuitCmd(),
 		a.newDocsCmd(),
