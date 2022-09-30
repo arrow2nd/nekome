@@ -88,8 +88,8 @@ type Keybindings struct {
 	Page keybinding `toml:"page"`
 	// HomeTimeline : ホームタイムラインページのキーバインド
 	HomeTimeline keybinding `toml:"home_timeline"`
-	// Tweet : ツイートビューのキーバインド
-	Tweet keybinding `toml:"tweet"`
+	// TweetView : ツイートビューのキーバインド
+	TweetView keybinding `toml:"tweet"`
 }
 
 // Preferences : 環境設定
@@ -163,10 +163,10 @@ func defaultPreferences() *Preferences {
 			Private:  "🔒",
 		},
 		Keybindings: Keybindings{
-			Global: map[string][]string{
+			Global: keybinding{
 				ActionQuit: {"ctrl+q"},
 			},
-			View: map[string][]string{
+			View: keybinding{
 				ActionSelectPrevTab: {"h", "Left"},
 				ActionSelectNextTab: {"l", "Right"},
 				ActionRemovePage:    {"ctrl+w"},
@@ -174,14 +174,14 @@ func defaultPreferences() *Preferences {
 				ActionFocusCmdLine:  {":"},
 				ActionShowHelp:      {"?"},
 			},
-			Page: map[string][]string{
+			Page: keybinding{
 				ActionReloadPage: {"."},
 			},
-			HomeTimeline: map[string][]string{
+			HomeTimeline: keybinding{
 				ActionStreamModeStart: {"s"},
 				ActionStreamModeStop:  {"S"},
 			},
-			Tweet: map[string][]string{
+			TweetView: keybinding{
 				ActionScrollUp:       {"ctrl+j", "PageUp"},
 				ActionScrollDown:     {"ctrl+k", "PageDown"},
 				ActionCursorUp:       {"k", "Up"},

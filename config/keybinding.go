@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"code.rocketnine.space/tslocum/cbind"
 	"github.com/gdamore/tcell/v2"
@@ -53,6 +54,17 @@ const (
 
 type keybinding map[string][]string
 
+// GetString : キーバインド文字列を取得
+func (k *keybinding) GetString(key string) string {
+	s := strings.Join((*k)[key], ", ")
+
+	if s == "" {
+		return "*No assignment*"
+	}
+
+	return s
+}
+
 // MappingEventHandler : キーバインドにイベントハンドラをマッピング
 func (k *keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Configuration, error) {
 	c := cbind.NewConfiguration()
@@ -69,6 +81,12 @@ func (k *keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Con
 		}
 
 		for _, key := range keys {
+			key = strings.TrimSpace(key)
+
+			if key == "" {
+				continue
+			}
+
 			if err := c.Set(key, handler); err != nil {
 				return nil, fmt.Errorf("failed to set key bindings: %w", err)
 			}

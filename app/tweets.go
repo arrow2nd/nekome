@@ -123,7 +123,7 @@ func (t *tweets) setKeybindings() error {
 		},
 	}
 
-	c, err := shared.conf.Pref.Keybindings.Tweet.MappingEventHandler(handlers)
+	c, err := shared.conf.Pref.Keybindings.TweetView.MappingEventHandler(handlers)
 	if err != nil {
 		return err
 	}
