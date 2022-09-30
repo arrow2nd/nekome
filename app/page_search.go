@@ -44,7 +44,7 @@ func (s *searchPage) Load() {
 
 	// ツイートを検索（RTは除外）
 	count := shared.conf.Pref.Feature.LoadTweetsLimit
-	sinceId := s.tweets.GetSinceID()
+	sinceId := s.tweets.GetSinceId()
 	query := s.query + " -is:retweet"
 	tweets, rateLimit, err := shared.api.SearchRecentTweets(query, sinceId, count)
 

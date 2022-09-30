@@ -113,7 +113,7 @@ func (t *timelinePage) Load() {
 
 	id := shared.api.CurrentUser.ID
 	count := shared.conf.Pref.Feature.LoadTweetsLimit
-	sinceId := t.tweets.GetSinceID()
+	sinceId := t.tweets.GetSinceId()
 
 	// タイムラインを取得
 	switch t.timelineType {

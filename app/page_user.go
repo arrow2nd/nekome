@@ -111,7 +111,7 @@ func (u *userPage) Load() {
 	// ユーザのタイムラインを取得
 	tweets, rateLimit, err := shared.api.FetchUserTimeline(
 		u.data.User.ID,
-		u.tweets.GetSinceID(),
+		u.tweets.GetSinceId(),
 		shared.conf.Pref.Feature.LoadTweetsLimit,
 	)
 

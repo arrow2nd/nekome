@@ -50,12 +50,11 @@ func (l *listPage) Load() {
 		return
 	}
 
-	sinceID := l.tweets.GetSinceID()
-
 	// 新規ツイート数をカウント
 	newTweetsCount := 0
+	sinceId := l.tweets.GetSinceId()
 	for ; newTweetsCount < len(tweets); newTweetsCount++ {
-		if tweets[newTweetsCount].Tweet.ID == sinceID {
+		if tweets[newTweetsCount].Tweet.ID == sinceId {
 			break
 		}
 	}
