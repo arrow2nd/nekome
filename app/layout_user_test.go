@@ -5,6 +5,7 @@ import (
 
 	"github.com/arrow2nd/nekome/config"
 	"github.com/g8rswimmer/go-twitter/v2"
+	"github.com/mattn/go-runewidth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,8 +46,8 @@ func TestCreateProfileLayout(t *testing.T) {
 bio
 [style_detail]g location | l url[-:-:-]`
 
-		assert.Equal(t, s, want)
-		assert.Equal(t, r, 3)
+		assert.Equal(t, want, s)
+		assert.Equal(t, 3, r)
 	})
 
 	t.Run("詳細情報なし", func(t *testing.T) {
@@ -61,8 +62,8 @@ bio
 bio
 `
 
-		assert.Equal(t, s, want)
-		assert.Equal(t, r, 2)
+		assert.Equal(t, want, s)
+		assert.Equal(t, 2, r)
 	})
 }
 
@@ -85,18 +86,19 @@ func TestCreateUserBioLayout(t *testing.T) {
 
 		s, r := createUserBioLayout(bio, 100)
 
-		assert.Equal(t, s, want)
-		assert.Equal(t, r, 1)
+		assert.Equal(t, want, s)
+		assert.Equal(t, 1, r)
 	})
 
 	t.Run("最大表示幅を超えた場合に省略されるか", func(t *testing.T) {
-		bio := "123123123"
-		want := "1231…"
+		bio := "1234567890"
+		want := "12345678…"
 
-		s, r := createUserBioLayout(bio, 2)
+		runewidth.DefaultCondition.EastAsianWidth = false
+		s, r := createUserBioLayout(bio, 3)
 
-		assert.Equal(t, s, want)
-		assert.Equal(t, r, 3)
+		assert.Equal(t, want, s)
+		assert.Equal(t, 3, r)
 	})
 }
 
@@ -126,6 +128,6 @@ func TestCreateUserDetailLayout(t *testing.T) {
 		s := createUserDetailLayout(u)
 		want := "[style_detail]g location | l url[-:-:-]"
 
-		assert.Equal(t, s, want)
+		assert.Equal(t, want, s)
 	})
 }

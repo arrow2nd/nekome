@@ -10,6 +10,8 @@ import (
 func TestExit(t *testing.T) {
 	t.Run("終了コードが取得できるか", func(t *testing.T) {
 		code := log.ExitCodeOK.GetInt()
-		assert.Equal(t, code, 0)
+		want := 0
+
+		assert.Equal(t, want, code)
 	})
 }

@@ -314,7 +314,9 @@ func TestCreateSeparator(t *testing.T) {
 
 	t.Run("生成できるか", func(t *testing.T) {
 		s := createSeparator("-", 10)
-		assert.Equal(t, s, "[style_sep]----------[-:-:-]")
+		want := "[style_sep]----------[-:-:-]"
+
+		assert.Equal(t, want, s)
 	})
 }
 
@@ -425,7 +427,9 @@ func TestCreateTweetURL(t *testing.T) {
 	})
 
 	t.Run("作成できるか", func(t *testing.T) {
+		want := "https://twitter.com/test/status/0123456789"
+
 		assert.NoError(t, err)
-		assert.Equal(t, url, "https://twitter.com/test/status/0123456789")
+		assert.Equal(t, want, url)
 	})
 }

@@ -21,9 +21,7 @@ func TestHelp(t *testing.T) {
 	r.Short = "root command"
 	r.Example = "example"
 	r.Help = func(c *cli.Command, h string) {
-		assert.Equal(
-			t,
-			`root command
+		want := `root command
 
 Usage:
   root [flags] [command]
@@ -39,11 +37,11 @@ Commands:
 
 Flags:
   -h, --help   help for root
-`,
-			h,
-			"正しいヘルプが生成されているか",
-		)
+`
+
+		assert.Equal(t, want, h, "正しいヘルプが生成されているか")
 	}
+
 	r.AddCommand(a)
 
 	t.Run("実行できるか", func(t *testing.T) {

@@ -43,6 +43,7 @@ func TestCredGet(t *testing.T) {
 
 	t.Run("取得できるか", func(t *testing.T) {
 		u, err := c.Get("user_name_a")
+
 		assert.NoError(t, err)
 		assert.Equal(t, *u, c.User.Accounts[0])
 	})
@@ -63,7 +64,7 @@ func TestGetAllNames(t *testing.T) {
 			"user_name_b",
 		}
 
-		assert.Equal(t, l, want)
+		assert.Equal(t, want, l)
 	})
 }
 
@@ -83,7 +84,7 @@ func TestWrite(t *testing.T) {
 		c.Write(want)
 
 		u, _ := c.Get("hiori")
-		assert.Equal(t, u, want)
+		assert.Equal(t, want, u)
 	})
 
 	t.Run("同じIDを持つユーザを上書きできるか", func(t *testing.T) {
@@ -101,7 +102,7 @@ func TestWrite(t *testing.T) {
 		c.Write(want)
 
 		u, _ := c.Get("meguru")
-		assert.Equal(t, u, want)
+		assert.Equal(t, want, u)
 	})
 }
 

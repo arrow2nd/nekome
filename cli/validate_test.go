@@ -25,7 +25,11 @@ func TestVaidateNoArgs(t *testing.T) {
 	})
 
 	t.Run("引数の数が不正な場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test", "a"}), "unknown command a for test")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test", "a"}),
+			"unknown command a for test",
+		)
 	})
 }
 
@@ -37,11 +41,19 @@ func TestVaidateRequireArgs(t *testing.T) {
 	})
 
 	t.Run("引数の数が少ない場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test", "a"}), "accepts 2 arg(s), received 1")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test", "a"}),
+			"accepts 2 arg(s), received 1",
+		)
 	})
 
 	t.Run("引数の数が多い場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test", "a", "b", "c"}), "accepts 2 arg(s), received 3")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test", "a", "b", "c"}),
+			"accepts 2 arg(s), received 3",
+		)
 	})
 }
 
@@ -55,14 +67,26 @@ func TestVaidateRangeArgs(t *testing.T) {
 	})
 
 	t.Run("引数がない場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test"}), "accepts between 2 and 4 arg(s), received 0")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test"}),
+			"accepts between 2 and 4 arg(s), received 0",
+		)
 	})
 
 	t.Run("引数の数が少ない場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test", "a"}), "accepts between 2 and 4 arg(s), received 1")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test", "a"}),
+			"accepts between 2 and 4 arg(s), received 1",
+		)
 	})
 
 	t.Run("引数の数が多い場合にエラーが返るか", func(t *testing.T) {
-		assert.EqualError(t, r.Execute([]string{"test", "a", "b", "c", "d", "e"}), "accepts between 2 and 4 arg(s), received 5")
+		assert.EqualError(
+			t,
+			r.Execute([]string{"test", "a", "b", "c", "d", "e"}),
+			"accepts between 2 and 4 arg(s), received 5",
+		)
 	})
 }

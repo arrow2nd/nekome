@@ -32,6 +32,8 @@ func createUserBioLayout(d string, w int) (string, int) {
 	maxRow := shared.conf.Pref.Appearance.UserBIOMaxRow
 	desc = truncate(desc, w*maxRow)
 
+	fmt.Println(w * maxRow)
+
 	return desc, getStringDisplayRow(desc, w)
 }
 
