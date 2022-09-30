@@ -13,7 +13,9 @@ import (
 func TestCreateTweetTag(t *testing.T) {
 	t.Run("作成できるか", func(t *testing.T) {
 		tag := createTweetTag(12345)
-		assert.Equal(t, tag, "tweet_12345")
+		want := "tweet_12345"
+
+		assert.Equal(t, tag, want)
 	})
 }
 
@@ -35,7 +37,9 @@ func TestCreateAnotation(t *testing.T) {
 
 	t.Run("作成できるか", func(t *testing.T) {
 		ano := createAnnotation("RT by", a)
-		assert.Equal(t, ano, "[-:-:-]RT by 市川雛菜 [::i]@ickwhnn[-:-:-]")
+		want := "[-:-:-]RT by 市川雛菜 [::i]@ickwhnn[-:-:-]"
+
+		assert.Equal(t, ano, want)
 	})
 }
 
@@ -68,7 +72,9 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		assert.Equal(t, s, `[style_name]["tweet_0"]hoge[""] [style_user_name]@fuga[-:-:-]`+"\n")
+		want := `[style_name]["tweet_0"]hoge[""] [style_user_name]@fuga[-:-:-]` + "\n"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("認証済みアカウント", func(t *testing.T) {
@@ -80,7 +86,9 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		assert.Equal(t, s, `[style_name]["tweet_0"]櫻木真乃[""] [style_user_name]@sakuragi_mano_official[-:-:-][style_verified] v[-:-:-]`+"\n")
+		want := `[style_name]["tweet_0"]櫻木真乃[""] [style_user_name]@sakuragi_mano_official[-:-:-][style_verified] v[-:-:-]` + "\n"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("非公開アカウント", func(t *testing.T) {
@@ -92,7 +100,9 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		assert.Equal(t, s, `[style_name]["tweet_0"]ルカ[""] [style_user_name]@ikrglc_0131[-:-:-][style_private] p[-:-:-]`+"\n")
+		want := `[style_name]["tweet_0"]ルカ[""] [style_user_name]@ikrglc_0131[-:-:-][style_private] p[-:-:-]` + "\n"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("認証済み&非公開アカウント", func(t *testing.T) {
@@ -104,7 +114,9 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		assert.Equal(t, s, `[style_name]["tweet_0"]N.Y.[""] [style_user_name]@ykmnm[-:-:-][style_verified] v[-:-:-][style_private] p[-:-:-]`+"\n")
+		want := `[style_name]["tweet_0"]N.Y.[""] [style_user_name]@ykmnm[-:-:-][style_verified] v[-:-:-][style_private] p[-:-:-]` + "\n"
+
+		assert.Equal(t, s, want)
 	})
 }
 
@@ -126,7 +138,9 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		assert.Equal(t, s, "test @ #\n")
+		want := "test @ #\n"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("ハッシュタグがハイライトされるか", func(t *testing.T) {
@@ -146,7 +160,9 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		assert.Equal(t, s, "test [style_hashtag]#hashtag[-:-:-]\n")
+		want := "test [style_hashtag]#hashtag[-:-:-]\n"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("メンションがハイライトされるか", func(t *testing.T) {
@@ -165,7 +181,9 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		assert.Equal(t, s, "test [style_mention]@mention[-:-:-]\n")
+    want := "test [style_mention]@mention[-:-:-]\n"
+
+		assert.Equal(t, s, want)
 	})
 }
 
@@ -202,7 +220,9 @@ func TestHighlightHashtags(t *testing.T) {
 
 	t.Run("開始位置の値が正しい場合", func(t *testing.T) {
 		s := highlightHashtags(text, &e)
-		assert.Equal(t, s, "test tweet [style_hashtag]#hashtag[-:-:-] [style_hashtag]#ハッシュタグ[-:-:-]")
+    want := "test tweet [style_hashtag]#hashtag[-:-:-] [style_hashtag]#ハッシュタグ[-:-:-]"
+
+		assert.Equal(t, s, want)
 	})
 
 	t.Run("開始位置がズレている場合", func(t *testing.T) {
@@ -214,7 +234,9 @@ func TestHighlightHashtags(t *testing.T) {
 		}
 
 		s := highlightHashtags(text, &e2)
-		assert.Equal(t, s, "test tweet [style_hashtag]#hashtag[-:-:-] [style_hashtag]#ハッシュタグ[-:-:-]")
+    want := "test tweet [style_hashtag]#hashtag[-:-:-] [style_hashtag]#ハッシュタグ[-:-:-]"
+
+		assert.Equal(t, s, want)
 	})
 }
 
