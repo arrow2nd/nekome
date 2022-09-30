@@ -164,7 +164,7 @@ func (a *App) parseRuntimeArgs() (string, error) {
 	return user, nil
 }
 
-// setAppStyles : アプリ全体の配色を設定
+// setAppStyles : アプリ全体のスタイルを設定
 func (a *App) setAppStyles() {
 	app := shared.conf.Style.App
 
@@ -186,6 +186,14 @@ func (a *App) setAppStyles() {
 	// ボーダー色
 	tview.Styles.BorderColor = borderColor
 	tview.Styles.GraphicsColor = borderColor
+
+	// ボーダー
+	tview.Borders.HorizontalFocus = tview.BoxDrawingsHeavyHorizontal
+	tview.Borders.VerticalFocus = tview.BoxDrawingsHeavyVertical
+	tview.Borders.TopLeftFocus = tview.BoxDrawingsHeavyDownAndRight
+	tview.Borders.TopRightFocus = tview.BoxDrawingsHeavyDownAndLeft
+	tview.Borders.BottomLeftFocus = tview.BoxDrawingsHeavyUpAndRight
+	tview.Borders.BottomRightFocus = tview.BoxDrawingsHeavyUpAndLeft
 }
 
 // setGlobalKeybindings : アプリ全体のキーバインドを設定
