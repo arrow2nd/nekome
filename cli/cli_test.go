@@ -21,10 +21,10 @@ func TestAddCommand(t *testing.T) {
 	c := newCmd("root")
 
 	t.Run("サブコマンドを追加できるか", func(t *testing.T) {
-		assert.Equal(t, 0, len(c.GetChildren()), "追加前にサブコマンドが存在していないか")
+		assert.Len(t, c.GetChildren(), 0, "追加前にサブコマンドが存在していないか")
 
 		c.AddCommand(newCmd("test"))
-		assert.Equal(t, 1, len(c.GetChildren()))
+		assert.Len(t, c.GetChildren(), 1)
 	})
 }
 
