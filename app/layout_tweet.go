@@ -28,11 +28,11 @@ func createAnnotation(s string, author *twitter.UserObj) string {
 }
 
 // createTweetLayout : ツイートのレイアウトを作成
-func createTweetLayout(c *twitter.TweetDictionary, i, w int) string {
-	return createUserInfoLayout(c.Author, i, w) +
-		createTweetTextLayout(&c.Tweet) +
-		createPollLayout(c.AttachmentPolls) +
-		createTweetDetailLayout(&c.Tweet)
+func createTweetLayout(d *twitter.TweetDictionary, i, w int) string {
+	return createUserInfoLayout(d.Author, i, w) +
+		createTextLayout(&d.Tweet) +
+		createPollLayout(d.AttachmentPolls, w) +
+		createTweetDetailLayout(&d.Tweet)
 }
 
 // createUserInfoLayout : ユーザ情報のレイアウトを作成
@@ -70,25 +70,25 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 	return header + "\n"
 }
 
-// createTweetTextLayout : ツイート文のレイアウトを作成
-func createTweetTextLayout(tweet *twitter.TweetObj) string {
-	text := html.UnescapeString(tweet.Text) + "\n"
+// createTextLayout : ツイート文のレイアウトを作成
+func createTextLayout(t *twitter.TweetObj) string {
+	text := html.UnescapeString(t.Text) + "\n"
 
 	// 全角記号を置換
 	text = strings.ReplaceAll(text, "＃", "#")
 	text = strings.ReplaceAll(text, "＠", "@")
 
-	if tweet.Entities == nil {
+	if t.Entities == nil {
 		return text
 	}
 
 	// ハッシュタグをハイライト
-	if len(tweet.Entities.HashTags) != 0 {
-		text = highlightHashtags(text, tweet.Entities)
+	if len(t.Entities.HashTags) != 0 {
+		text = highlightHashtags(text, t.Entities)
 	}
 
 	// メンションをハイライト
-	if len(tweet.Entities.Mentions) != 0 {
+	if len(t.Entities.Mentions) != 0 {
 		rep := regexp.MustCompile(`(^|[^\w@#$%&])@(\w+)`)
 		highlight := fmt.Sprintf("$1[%s]@$2[-:-:-]", shared.conf.Style.Tweet.Mention)
 		text = rep.ReplaceAllString(text, highlight)
@@ -145,7 +145,7 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 }
 
 // createPollLayout : 投票のレイアウトを作成
-func createPollLayout(p []*twitter.PollObj) string {
+func createPollLayout(p []*twitter.PollObj, w int) string {
 	if len(p) == 0 {
 		return ""
 	}
@@ -154,7 +154,7 @@ func createPollLayout(p []*twitter.PollObj) string {
 	pref := shared.conf.Pref.Appearance
 
 	// グラフの表示幅を計算
-	windowWidth := float64(getWindowWidth())
+	windowWidth := float64(w)
 	graphMaxWidth := float64(pref.GraphMaxWidth)
 
 	if graphMaxWidth > windowWidth {
@@ -200,20 +200,20 @@ func createPollLayout(p []*twitter.PollObj) string {
 }
 
 // createTweetDetailLayout : ツイート詳細のレイアウトを作成
-func createTweetDetailLayout(tw *twitter.TweetObj) string {
+func createTweetDetailLayout(t *twitter.TweetObj) string {
 	pref := shared.conf.Pref.Text
 	style := shared.conf.Style.Tweet
 
 	metrics := ""
 
 	// いいね数
-	likes := tw.PublicMetrics.Likes
+	likes := t.PublicMetrics.Likes
 	if likes != 0 {
 		metrics += createMetricsString(pref.Like, style.Like, likes, false)
 	}
 
 	// リツイート数
-	rts := tw.PublicMetrics.Retweets
+	rts := t.PublicMetrics.Retweets
 	if rts != 0 {
 		metrics += createMetricsString(pref.Retweet, style.Retweet, rts, false)
 	}
@@ -223,6 +223,8 @@ func createTweetDetailLayout(tw *twitter.TweetObj) string {
 	}
 
 	// 投稿日時・投稿元クライアント
-	date := convertDateString(tw.CreatedAt)
-	return fmt.Sprintf("[%s]%s | via %s[-:-:-]%s", style.Detail, date, tw.Source, metrics)
+	date := convertDateString(t.CreatedAt)
+	detail := fmt.Sprintf("[%s]%s | via %s[-:-:-]%s", style.Detail, date, t.Source, metrics)
+
+	return strings.TrimSpace(detail)
 }
