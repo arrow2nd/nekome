@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -276,8 +277,6 @@ test_3[style_poll_g]===[-:-:-] 30.0% (3)
 }
 
 func TestCreateDetailLayout(t *testing.T) {
-	time.Local = time.FixedZone("Asia/Tokyo", 9*60*60)
-
 	shared = Shared{
 		conf: &config.Config{
 			Pref: &config.Preferences{
@@ -311,7 +310,12 @@ func TestCreateDetailLayout(t *testing.T) {
 
 	t.Run("作成できるか", func(t *testing.T) {
 		s := createTweetDetailLayout(o)
-		assert.Equal(t, s, `[style_detail]2022/04/19 00:00:00 | via nekome for term[-:-:-]
-[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-]`)
+
+		p, _ := time.Parse(time.RFC3339, o.CreatedAt)
+		d := p.Local().Format("2006/01/02 15:04:05")
+		want := fmt.Sprintf(`[style_detail]%s | via nekome for term[-:-:-]
+[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-]`, d)
+
+		assert.Equal(t, s, want)
 	})
 }
