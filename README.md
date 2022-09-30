@@ -62,7 +62,7 @@ scoop install arrow2nd/nekome
 
 ### キーバインド
 
-[キーバインド一覧](./docs/ja/keybindings.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください
+[デフォルトキーバインド](./docs/ja/keybindings.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください
 
 ### 設定
 

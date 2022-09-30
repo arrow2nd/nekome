@@ -68,7 +68,7 @@ Please refer to [Commands List](./docs/en/commands.md) or `nekome -h`
 
 ### Keybindings
 
-Please refer to [Keybindings](./docs/en/keybindings.md) or typing `?` for help
+Please refer to [Default Keybindings](./docs/en/keybindings.md) or typing `?` for help
 
 ### Configuration
 
