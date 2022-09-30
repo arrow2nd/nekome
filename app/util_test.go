@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/arrow2nd/nekome/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/stretchr/testify/assert"
@@ -298,6 +299,23 @@ func TestIsSameDate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCreateSeparator(t *testing.T) {
+	shared = Shared{
+		conf: &config.Config{
+			Style: &config.Style{
+				Tweet: config.TweetStyle{
+					Separator: "style_sep",
+				},
+			},
+		},
+	}
+
+	t.Run("生成できるか", func(t *testing.T) {
+		s := createSeparator("-", 10)
+		assert.Equal(t, s, "[style_sep]----------[-:-:-]")
+	})
 }
 
 func TestCreateMetricsString(t *testing.T) {

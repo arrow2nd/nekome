@@ -142,18 +142,16 @@ func isSameDate(t time.Time) bool {
 
 // convertDateString : 日付文字列を変換
 func convertDateString(createAt string) string {
+	pref := shared.conf.Pref.Appearance
+
 	t, _ := time.Parse(time.RFC3339, createAt)
 	format := ""
 
 	// 今日の日付なら時刻のみを表示
 	if isSameDate(t) {
-		format = shared.conf.Pref.Appearance.TimeFormat
+		format = pref.TimeFormat
 	} else {
-		format = fmt.Sprintf(
-			"%s %s",
-			shared.conf.Pref.Appearance.DateFormat,
-			shared.conf.Pref.Appearance.TimeFormat,
-		)
+		format = fmt.Sprintf("%s %s", pref.DateFormat, pref.TimeFormat)
 	}
 
 	return t.Local().Format(format)
