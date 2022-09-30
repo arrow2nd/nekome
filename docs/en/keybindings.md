@@ -1,5 +1,7 @@
 # Keybindings
 
+> [日本語](../ja/keybindings.md)
+
 ## Global Keybinding
 
 | Keybinding | Description        |

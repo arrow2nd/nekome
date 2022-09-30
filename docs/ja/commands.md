@@ -1,5 +1,7 @@
 # コマンド一覧
 
+> [English](../en/commands.md)
+
 ### nekome
 
 ```

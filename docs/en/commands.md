@@ -1,5 +1,7 @@
 # Commands List
 
+> [日本語](../ja/commands.md)
+
 ### nekome
 
 ```

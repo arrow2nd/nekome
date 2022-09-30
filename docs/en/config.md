@@ -1,5 +1,7 @@
 # About Configuration File
 
+> [日本語](../ja/config.md)
+
 The configuration file is created and saved as follows
 
 ```
