@@ -37,14 +37,15 @@ func createUserBioLayout(d string, w int) (string, int) {
 
 // createUserDetailLayout : ユーザ詳細のレイアウトを作成
 func createUserDetailLayout(u *twitter.UserObj) string {
+	icon := shared.conf.Pref.Icon
 	texts := []string{}
 
 	if u.Location != "" {
-		texts = append(texts, shared.conf.Pref.Icon.Geo+" "+u.Location)
+		texts = append(texts, icon.Geo+" "+u.Location)
 	}
 
 	if u.URL != "" {
-		texts = append(texts, shared.conf.Pref.Icon.Link+" "+u.URL)
+		texts = append(texts, icon.Link+" "+u.URL)
 	}
 
 	return fmt.Sprintf(
