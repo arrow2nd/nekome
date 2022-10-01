@@ -37,7 +37,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		`[View]
   %-20s Select previous tab
   %-20s Select next tab
-  %-20s Remove current page
+  %-20s Close current page
   %-20s Redraw screen (window width changes are not reflected)
   %-20s Focus the command line
   %-20s Show documentation for keybindings
@@ -45,7 +45,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 `,
 		k.View.GetString(config.ActionSelectPrevTab),
 		k.View.GetString(config.ActionSelectNextTab),
-		k.View.GetString(config.ActionRemovePage),
+		k.View.GetString(config.ActionClosePage),
 		k.View.GetString(config.ActionRedraw),
 		k.View.GetString(config.ActionFocusCmdLine),
 		k.View.GetString(config.ActionShowHelp),
@@ -85,7 +85,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s New tweet
   %-20s Quote tweet
   %-20s Reply to
-  %-20s Remove a tweet
+  %-20s Delete a tweet
   %-20s Open in browser
   %-20s Copy link to clipboard
   
@@ -111,7 +111,7 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.TweetView.GetString(config.ActionTweet),
 		k.TweetView.GetString(config.ActionQuote),
 		k.TweetView.GetString(config.ActionReply),
-		k.TweetView.GetString(config.ActionTweetRemove),
+		k.TweetView.GetString(config.ActionTweetDelete),
 		k.TweetView.GetString(config.ActionOpenBrowser),
 		k.TweetView.GetString(config.ActionCopyUrl),
 		k.TweetView.GetString(config.ActionOpenUserPage),

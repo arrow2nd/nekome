@@ -15,10 +15,10 @@ const (
 	// ページビューのアクション
 	ActionSelectPrevTab = "select_prev_tab"
 	ActionSelectNextTab = "select_next_tab"
+	ActionClosePage     = "close_page"
 	ActionRedraw        = "redraw"
 	ActionFocusCmdLine  = "focus_cmdline"
 	ActionShowHelp      = "show_help"
-	ActionRemovePage    = "remove_page"
 
 	// ページ共通のアクション
 	ActionReloadPage = "reload_page"
@@ -38,7 +38,7 @@ const (
 	ActionTweetUnlike    = "tweet_unlike"
 	ActionTweetRetweet   = "tweet_retweet"
 	ActionTweetUnretweet = "tweet_unretweet"
-	ActionTweetRemove    = "tweet_remove"
+	ActionTweetDelete    = "tweet_delete"
 	ActionUserFollow     = "user_follow"
 	ActionUserUnfollow   = "user_unfollow"
 	ActionUserBlock      = "user_block"

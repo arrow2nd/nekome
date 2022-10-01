@@ -232,8 +232,8 @@ func (a *App) setViewKeybindings() error {
 		config.ActionShowHelp: func() {
 			shared.RequestExecCommand("docs keybindings")
 		},
-		config.ActionRemovePage: func() {
-			a.view.RemoveCurrentPage()
+		config.ActionClosePage: func() {
+			a.view.CloseCurrentPage()
 		},
 	}
 

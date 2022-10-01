@@ -23,7 +23,7 @@ Cannot be used when the input area is in focus, etc.
 | `h` `left`  | Select next tab (page)     |
 | `l` `right` | Select previous tab (page) |
 | `ctrl-l`    | Redraw screen              |
-| `ctrl-w`    | Remove current page        |
+| `ctrl-w`    | Close current page         |
 | `:`         | Focus the command line     |
 | `?`         | Show keybindings help      |
 

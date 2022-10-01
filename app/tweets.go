@@ -85,7 +85,7 @@ func (t *tweets) setKeybindings() error {
 		config.ActionTweetUnretweet: func() {
 			t.actionForTweet(tweetActionUnretweet)
 		},
-		config.ActionTweetRemove: func() {
+		config.ActionTweetDelete: func() {
 			t.actionForTweet(tweetActionDelete)
 		},
 		config.ActionUserFollow: func() {

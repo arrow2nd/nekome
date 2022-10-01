@@ -157,11 +157,11 @@ func (v *view) Reset() {
 	v.tabIndex = 0
 }
 
-// RemoveCurrentPage : 現在のページを削除
-func (v *view) RemoveCurrentPage() {
+// CloseCurrentPage : 現在のページを削除
+func (v *view) CloseCurrentPage() {
 	// ページが1つのみなら削除しない
 	if v.pages.GetPageCount() == 1 {
-		shared.SetErrorStatus("App", "last page cannot be deleted")
+		shared.SetErrorStatus("App", "last page cannot be closed")
 		return
 	}
 

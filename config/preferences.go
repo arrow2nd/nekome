@@ -172,7 +172,7 @@ func defaultPreferences() *Preferences {
 			View: keybinding{
 				ActionSelectPrevTab: {"h", "Left"},
 				ActionSelectNextTab: {"l", "Right"},
-				ActionRemovePage:    {"ctrl+w"},
+				ActionClosePage:     {"ctrl+w"},
 				ActionRedraw:        {"ctrl+l"},
 				ActionFocusCmdLine:  {":"},
 				ActionShowHelp:      {"?"},
@@ -195,7 +195,7 @@ func defaultPreferences() *Preferences {
 				ActionTweetUnlike:    {"F"},
 				ActionTweetRetweet:   {"t"},
 				ActionTweetUnretweet: {"T"},
-				ActionTweetRemove:    {"D"},
+				ActionTweetDelete:    {"D"},
 				ActionUserFollow:     {"w"},
 				ActionUserUnfollow:   {"W"},
 				ActionUserBlock:      {"x"},
