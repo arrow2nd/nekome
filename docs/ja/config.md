@@ -114,6 +114,7 @@ $HOME/.config/nekome
   tab_list = "List: {name}"
   tab_user = "User: @{name}"
   tab_search = "Search: {query}"
+  tab_likes = "Likes: @{name}"
   tab_docs = "Docs: {name}"
 
 [icon]
@@ -127,6 +128,52 @@ $HOME/.config/nekome
   verified = "✅"
   # 非公開バッジ
   private = "🔒"
+
+[keybinding]
+  # アプリ全体
+  [keybinding.global]
+    quit = ["ctrl+q"]
+  # メインビュー
+  [keybinding.view]
+    close_page = ["ctrl+w"]
+    focus_cmdline = [":"]
+    redraw = ["ctrl+l"]
+    select_next_tab = ["l", "Right"]
+    select_prev_tab = ["h", "Left"]
+    show_help = ["?"]
+  # 全ページ共通
+  [keybinding.page]
+    reload_page = ["."]
+  # ホームタイムラインページ
+  [keybinding.home_timeline]
+    stream_mode_start = ["s"]
+    stream_mode_stop = ["S"]
+  # ツイートビュー
+  [keybinding.tweet]
+    copy_url = ["c"]
+    cursor_bottom = ["G", "End"]
+    cursor_down = ["j", "Down"]
+    cursor_top = ["g", "Home"]
+    cursor_up = ["k", "Up"]
+    open_browser = ["o"]
+    open_user_likes = ["I"]
+    open_user_page = ["i"]
+    quote = ["q"]
+    reply = ["r"]
+    scroll_down = ["ctrl+k", "PageDown"]
+    scroll_up = ["ctrl+j", "PageUp"]
+    tweet = ["n"]
+    tweet_delete = ["D"]
+    tweet_like = ["f"]
+    tweet_retweet = ["t"]
+    tweet_unlike = ["F"]
+    tweet_unretweet = ["T"]
+    user_block = ["x"]
+    user_follow = ["w"]
+    user_mute = ["u"]
+    user_unblock = ["X"]
+    user_unfollow = ["W"]
+    user_unmute = ["U"]
 ```
 
 ## style_default.toml

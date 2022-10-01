@@ -115,6 +115,7 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
   tab_list = "List: {name}"
   tab_user = "User: @{name}"
   tab_search = "Search: {query}"
+  tab_likes = "Likes: @{name}"
   tab_docs = "Docs: {name}"
 
 [icon]
@@ -128,6 +129,52 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
   verified = "✅"
   # Private badge
   private = "🔒"
+
+[keybinding]
+  # Global
+  [keybinding.global]
+    quit = ["ctrl+q"]
+  # Main view
+  [keybinding.view]
+    close_page = ["ctrl+w"]
+    focus_cmdline = [":"]
+    redraw = ["ctrl+l"]
+    select_next_tab = ["l", "Right"]
+    select_prev_tab = ["h", "Left"]
+    show_help = ["?"]
+  # All pages in common
+  [keybinding.page]
+    reload_page = ["."]
+  # Home timeline page
+  [keybinding.home_timeline]
+    stream_mode_start = ["s"]
+    stream_mode_stop = ["S"]
+  # Tweet view
+  [keybinding.tweet]
+    copy_url = ["c"]
+    cursor_bottom = ["G", "End"]
+    cursor_down = ["j", "Down"]
+    cursor_top = ["g", "Home"]
+    cursor_up = ["k", "Up"]
+    open_browser = ["o"]
+    open_user_likes = ["I"]
+    open_user_page = ["i"]
+    quote = ["q"]
+    reply = ["r"]
+    scroll_down = ["ctrl+k", "PageDown"]
+    scroll_up = ["ctrl+j", "PageUp"]
+    tweet = ["n"]
+    tweet_delete = ["D"]
+    tweet_like = ["f"]
+    tweet_retweet = ["t"]
+    tweet_unlike = ["F"]
+    tweet_unretweet = ["T"]
+    user_block = ["x"]
+    user_follow = ["w"]
+    user_mute = ["u"]
+    user_unblock = ["X"]
+    user_unfollow = ["W"]
+    user_unmute = ["U"]
 ```
 
 ## style_default.toml
