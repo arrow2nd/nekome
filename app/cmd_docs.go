@@ -78,25 +78,25 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
   %-20s Move cursor top
   %-20s Move cursor bottom
 
-  %-20s Like a tweet
-  %-20s Unlike a tweet
-  %-20s Retweet a tweet
-  %-20s Unretweet a tweet
+  %-20s Like
+  %-20s Unlike
+  %-20s Retweet
+  %-20s Unretweet
   %-20s New tweet
   %-20s Quote tweet
-  %-20s Reply to
+  %-20s Reply to tweet
   %-20s Delete a tweet
   %-20s Open in browser
   %-20s Copy link to clipboard
   
+  %-20s Follow
+  %-20s Unfollow
+  %-20s Mute
+  %-20s Unmute
+  %-20s Block
+  %-20s Unblock
   %-20s Open user timeline page
   %-20s Open user likes page
-  %-20s Follow a user
-  %-20s Unfollow a user
-  %-20s Mute a user
-  %-20s Unmute a user
-  %-20s Block a user
-  %-20s Unblock a user
 `,
 		k.TweetView.GetString(config.ActionScrollUp),
 		k.TweetView.GetString(config.ActionScrollDown),
@@ -114,14 +114,14 @@ func (a *App) newDocsKeybindingsCmd() *cli.Command {
 		k.TweetView.GetString(config.ActionTweetDelete),
 		k.TweetView.GetString(config.ActionOpenBrowser),
 		k.TweetView.GetString(config.ActionCopyUrl),
-		k.TweetView.GetString(config.ActionOpenUserPage),
-		k.TweetView.GetString(config.ActionOpenUserLikes),
 		k.TweetView.GetString(config.ActionUserFollow),
 		k.TweetView.GetString(config.ActionUserUnfollow),
 		k.TweetView.GetString(config.ActionUserMute),
 		k.TweetView.GetString(config.ActionUserUnmute),
 		k.TweetView.GetString(config.ActionUserBlock),
 		k.TweetView.GetString(config.ActionUserUnblock),
+		k.TweetView.GetString(config.ActionOpenUserPage),
+		k.TweetView.GetString(config.ActionOpenUserLikes),
 	)
 
 	text := global + view + page + home + tweet

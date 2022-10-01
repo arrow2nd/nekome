@@ -20,10 +20,10 @@ Cannot be used when the input area is in focus, etc.
 
 | Keybinding  | Description                |
 | ----------- | -------------------------- |
-| `h` `left`  | Select next tab (page)     |
-| `l` `right` | Select previous tab (page) |
-| `ctrl-l`    | Redraw screen              |
+| `h` `left`  | Select previous tab (page) |
+| `l` `right` | Select next tab (page)     |
 | `ctrl-w`    | Close current page         |
+| `ctrl-l`    | Redraw screen              |
 | `:`         | Focus the command line     |
 | `?`         | Show keybindings help      |
 
@@ -48,27 +48,29 @@ Can be used in the home timeline page
 
 Can be used in the tweet list
 
-| Keybinding          | Description                      |
-| ------------------- | -------------------------------- |
-| `ctrl-j` `PageUp`   | Scroll up                        |
-| `ctrl-k` `PageDown` | Scroll down                      |
-| `j` `Up`            | Move cursor up                   |
-| `k` `Down`          | Move cursor down                 |
-| `g` `Home`          | Move cursor top                  |
-| `G` `End`           | Move cursor bottom               |
-| `f`                 | Like                             |
-| `F`                 | Unlike                           |
-| `t`                 | Retweet                          |
-| `T`                 | Unretweet                        |
-| `q`                 | Quote                            |
-| `r`                 | Reply to                         |
-| `D`                 | Delete your tweet                |
-| `o`                 | Open in browser                  |
-| `i`                 | Open author's user timeline page |
-| `c`                 | Copy link to clipboard           |
-| `w`                 | Follow                           |
-| `W`                 | Unfollow                         |
-| `u`                 | Mute                             |
-| `U`                 | Unmute                           |
-| `x`                 | Block                            |
-| `X`                 | Unblock                          |
+| Keybinding          | Description             |
+| ------------------- | ----------------------- |
+| `ctrl-j` `PageUp`   | Scroll up               |
+| `ctrl-k` `PageDown` | Scroll down             |
+| `j` `Up`            | Move cursor up          |
+| `k` `Down`          | Move cursor down        |
+| `g` `Home`          | Move cursor top         |
+| `G` `End`           | Move cursor bottom      |
+| `f`                 | Like                    |
+| `F`                 | Unlike                  |
+| `t`                 | Retweet                 |
+| `T`                 | Unretweet               |
+| `n`                 | New tweet               |
+| `q`                 | Quote tweet             |
+| `r`                 | Reply to tweet          |
+| `D`                 | Delete tweet            |
+| `o`                 | Open in browser         |
+| `c`                 | Copy link to clipboard  |
+| `w`                 | Follow                  |
+| `W`                 | Unfollow                |
+| `u`                 | Mute                    |
+| `U`                 | Unmute                  |
+| `x`                 | Block                   |
+| `X`                 | Unblock                 |
+| `i`                 | Open user timeline page |
+| `I`                 | Open user likes page    |
