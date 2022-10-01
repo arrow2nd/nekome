@@ -163,5 +163,10 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
 	}
 
+	// 項目を決定
+	if key == tcell.KeyCtrlY {
+		return tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone)
+	}
+
 	return event
 }
