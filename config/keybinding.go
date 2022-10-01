@@ -57,8 +57,8 @@ const (
 type keybinding map[string][]string
 
 // GetString : キーバインド文字列を取得
-func (k *keybinding) GetString(key string) string {
-	s := strings.Join((*k)[key], ", ")
+func (k keybinding) GetString(key string) string {
+	s := strings.Join(k[key], ", ")
 
 	if s == "" {
 		return "*No assignment*"
@@ -68,10 +68,10 @@ func (k *keybinding) GetString(key string) string {
 }
 
 // MappingEventHandler : キーバインドにイベントハンドラをマッピング
-func (k *keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Configuration, error) {
+func (k keybinding) MappingEventHandler(handlers map[string]func()) (*cbind.Configuration, error) {
 	c := cbind.NewConfiguration()
 
-	for action, keys := range *k {
+	for action, keys := range k {
 		f, ok := handlers[action]
 		if !ok {
 			return nil, fmt.Errorf("unknown action: %s", action)
