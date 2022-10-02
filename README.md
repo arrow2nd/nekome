@@ -68,6 +68,10 @@ scoop install arrow2nd/nekome
 
 [設定ファイルについて](./docs/ja/config.md)をご覧ください
 
+### v1 からの移行
+
+[v1 から v2 へ移行](./docs/ja/migrate-v1-v2.md)をご覧ください
+
 ## 由来
 
 `物事がめまぐるしく変化すること` を指す 猫の目 という言葉が由来です

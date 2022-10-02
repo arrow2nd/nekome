@@ -74,6 +74,10 @@ Please refer to [Default Keybindings](./docs/en/keybindings.md) or typing `?` fo
 
 Please refer to [About Configuration File](./docs/en/config.md)
 
+### Migration from v1
+
+Please refer to [Migrate from v1 to v2](./docs/en/migrate-v1-v2.md)
+
 ## Origin of name
 
 The name comes from the Japanese word "猫の目 (neko no me)" which means "the eye of a cat" and refers to things changing at a dizzying pace
