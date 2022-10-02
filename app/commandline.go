@@ -11,17 +11,19 @@ import (
 )
 
 type commandLine struct {
-	inputField        *tview.InputField
-	autocomplateItems []string
-	backspaceCount    int
-	mu                sync.Mutex
+	inputField               *tview.InputField
+	backspaceCount           int
+	autocomplateItems        []string
+	isAutocompleteDisplaying bool
+	mu                       sync.Mutex
 }
 
 func newCommandLine() *commandLine {
 	return &commandLine{
-		inputField:        tview.NewInputField(),
-		backspaceCount:    0,
-		autocomplateItems: []string{},
+		inputField:               tview.NewInputField(),
+		autocomplateItems:        []string{},
+		isAutocompleteDisplaying: false,
+		backspaceCount:           0,
 	}
 }
 
@@ -116,11 +118,13 @@ func (c *commandLine) Blur(closeAutocompleteList bool) {
 // handleAutocomplete : コマンドの入力補完ハンドラ
 func (c *commandLine) handleAutocomplete(currentText string) []string {
 	entries := []string{}
+	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
 		// NOTE: 外部から補完リストを初期化できないので、空リストを返すことで補完リストを削除し表示をクリアする
 		// LINK: https://github.com/rivo/tview/blob/2e69b7385a37df55e0c2ef4d1c0054898bed05a1/inputfield.go#L286-L292
 		if c.inputField.GetLabel() == "" {
+			c.isAutocompleteDisplaying = false
 			return []string{}
 		}
 
@@ -152,8 +156,7 @@ func (c *commandLine) handleDone(key tcell.Key) {
 func (c *commandLine) handleFocus() {
 	c.inputField.
 		SetLabel(":").
-		SetPlaceholder("").
-		Autocomplete()
+		SetPlaceholder("")
 }
 
 // handleKeyEvent : キーイベントハンドラ
@@ -162,7 +165,7 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 	text := c.inputField.GetText()
 
 	// フィールドが空かつ、BSが押されたらフォーカスを外す
-	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2) {
+	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2 || key == tcell.KeyCtrlW) {
 		c.Blur(true)
 		return nil
 	}
@@ -173,10 +176,15 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	// Tabキーを上キーの入力に変換
-	// NOTE: デフォルトだとTabキーで補完候補の選択ができない
-	if key == tcell.KeyTAB {
-		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
+	if key == tcell.KeyTab {
+		if c.isAutocompleteDisplaying {
+			// 補完リスト表示中なら、上キーの入力に変換
+			return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
+		} else {
+			// 補完リストを表示
+			c.inputField.Autocomplete()
+			return nil
+		}
 	}
 
 	// 項目を決定
