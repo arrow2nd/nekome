@@ -57,13 +57,13 @@ func GetConfigFileNames() ([]string, error) {
 
 // CheckOldFile : 古い設定ファイルがあるかチェック
 func (c *Config) CheckOldFile() {
-	notice := `🐈 Notice 🐈
+	notice := `[ 🐈 Notice ]
 
 Starting with nekome v2.0.0, the configuration file format has been changed from yaml to toml.
 Please run 'nekome edit' and reconfigure the file.
 
-For more information on the new configuration file, please visit the following site
-https://github.com/arrow2nd/nekome/blob/v2/docs/ja/config.md
+For more information, please refer to the following pages.
+https://github.com/arrow2nd/nekome/blob/v2/docs/en/migrate-v1-v2.md
 
 (This notice will not appear if you delete the old configuration file)
 `
