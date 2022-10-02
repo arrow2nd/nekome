@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 
@@ -27,16 +28,18 @@ func newCommandLine() *commandLine {
 // Init : 初期化
 func (c *commandLine) Init() {
 	style := shared.conf.Style.Autocomplate
+	textColor := style.TextColor.ToColor()
 
 	c.inputField.
 		SetAutocompleteStyles(
 			style.BackgroundColor.ToColor(),
 			tcell.StyleDefault.
-				Foreground(style.TextColor.ToColor()),
+				Foreground(textColor),
 			tcell.StyleDefault.
-				Foreground(style.TextColor.ToColor()).
+				Foreground(textColor).
 				Background(style.SelectedBackgroundColor.ToColor()),
 		).
+		SetLabelColor(textColor).
 		SetAutocompleteFunc(c.handleAutocomplete).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).
@@ -78,6 +81,8 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
 
+	sort.Slice(c.autocomplateItems, func(i, j int) bool { return c.autocomplateItems[i] < c.autocomplateItems[j] })
+
 	return nil
 }
 
@@ -96,20 +101,30 @@ func (c *commandLine) UpdateStatusMessage(s string) {
 }
 
 // Blur : コマンドラインからフォーカスを外す
-func (c *commandLine) Blur() {
-	c.inputField.
-		SetLabel("").
-		SetText("")
+func (c *commandLine) Blur(closeAutocompleteList bool) {
+	c.inputField.SetLabel("").SetText("")
+
+	// 補完リストを閉じる
+	// NOTE: 補完リストが表示された状態でフォーカスを外すと、一部が表示されたままになる
+	if closeAutocompleteList {
+		c.inputField.Autocomplete()
+	}
 
 	shared.RequestFocusView()
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
 func (c *commandLine) handleAutocomplete(currentText string) []string {
-	var entries []string = nil
+	entries := []string{}
 
 	if currentText == "" {
-		return nil
+		// NOTE: 外部から補完リストを初期化できないので、空リストを返すことで補完リストを削除し表示をクリアする
+		// LINK: https://github.com/rivo/tview/blob/2e69b7385a37df55e0c2ef4d1c0054898bed05a1/inputfield.go#L286-L292
+		if c.inputField.GetLabel() == "" {
+			return []string{}
+		}
+
+		return c.autocomplateItems
 	}
 
 	for _, cmd := range c.autocomplateItems {
@@ -129,7 +144,7 @@ func (c *commandLine) handleDone(key tcell.Key) {
 			shared.RequestExecCommand(text)
 		}
 
-		c.Blur()
+		c.Blur(false)
 	}
 }
 
@@ -137,7 +152,8 @@ func (c *commandLine) handleDone(key tcell.Key) {
 func (c *commandLine) handleFocus() {
 	c.inputField.
 		SetLabel(":").
-		SetPlaceholder("")
+		SetPlaceholder("").
+		Autocomplete()
 }
 
 // handleKeyEvent : キーイベントハンドラ
@@ -147,13 +163,13 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// フィールドが空かつ、BSが押されたらフォーカスを外す
 	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2) {
-		c.Blur()
+		c.Blur(true)
 		return nil
 	}
 
 	// フォーカスを外す
 	if key == tcell.KeyEsc {
-		c.Blur()
+		c.Blur(true)
 		return nil
 	}
 
