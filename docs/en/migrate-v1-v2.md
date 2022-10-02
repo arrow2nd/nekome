@@ -1,4 +1,4 @@
-## Migrate from v1 to v2
+# Migrate from v1 to v2
 
 > [日本語](../ja/migrate-v1-v2.md)
 
