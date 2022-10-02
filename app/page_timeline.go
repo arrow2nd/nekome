@@ -86,7 +86,7 @@ func (t *timelinePage) setKeybindings() error {
 
 		// ストリームモード中はページ共通のキーバインドを無効化（手動リロード禁止）
 		if t.isStreamMode() {
-			return nil
+			return ev
 		}
 
 		return commonHandler(ev)
