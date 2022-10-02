@@ -312,9 +312,9 @@ func (t *tweets) DrawMessage(s string) {
 func (t *tweets) scrollToTweet(i int) {
 	// 範囲内に丸める
 	if max := t.GetTweetsCount(); i < 0 {
-		i = max - 1
-	} else if i >= max {
 		i = 0
+	} else if i >= max {
+		i = max - 1
 	}
 
 	t.view.Highlight(createTweetTag(i))
