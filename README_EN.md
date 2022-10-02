@@ -51,9 +51,7 @@ go install github.com/arrow2nd/nekome/v2@latest
 
 Download the appropriate file for your environment from [Releases](https://github.com/arrow2nd/nekome/releases)
 
-## Usage
-
-### Initialization
+## Initialization
 
 ![image](https://user-images.githubusercontent.com/44780846/177674269-2efa3342-bb1a-4be3-8133-7fc8f6e8cec0.png)
 
@@ -62,21 +60,13 @@ Download the appropriate file for your environment from [Releases](https://githu
 3. Enter PIN code into nekome
 4. Done! 🐱
 
-### Commands
+## Documents
 
-Please refer to [Commands List](./docs/en/commands.md) or `nekome -h`
-
-### Keybindings
-
-Please refer to [Default Keybindings](./docs/en/keybindings.md) or typing `?` for help
-
-### Configuration
-
-Please refer to [About Configuration File](./docs/en/config.md)
-
-### Migration from v1
-
-Please refer to [Migrate from v1 to v2](./docs/en/migrate-v1-v2.md)
+- [Commands List](./docs/en/commands.md) or `nekome -h`
+- [Default Keybindings](./docs/en/keybindings.md) or `docs keybindings`
+- [About Configuration File](./docs/en/config.md)
+- [Migrate from v1 to v2](./docs/en/migrate-v1-v2.md)
+- [Sample Styles](./docs/sample_styles.md)
 
 ## Origin of name
 

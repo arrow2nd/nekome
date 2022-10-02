@@ -58,6 +58,8 @@ File name changed from `settings.yml` to `preferences.toml`.
 
 The style definition file format has also been changed to `.toml`.
 
+See [Sample Styles](../sample_styles.md) for a sample.
+
 ### Destructive changes
 
 - Background color can now be set.

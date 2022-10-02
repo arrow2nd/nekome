@@ -45,9 +45,7 @@ scoop install arrow2nd/nekome
 
 [Releases](https://github.com/arrow2nd/nekome/releases) からお使いの環境にあったファイルをダウンロードしてください
 
-## 使い方
-
-### 初期設定
+## 初期設定
 
 ![image](https://user-images.githubusercontent.com/44780846/177674269-2efa3342-bb1a-4be3-8133-7fc8f6e8cec0.png)
 
@@ -56,21 +54,13 @@ scoop install arrow2nd/nekome
 3. PIN コードを nekome に入力
 4. 完了！ 🐱
 
-### コマンド
+## ドキュメント
 
-[コマンド一覧](./docs/ja/commands.md)、もしくは `nekome -h` をご覧ください
-
-### キーバインド
-
-[デフォルトキーバインド](./docs/ja/keybindings.md)、もしくは アプリ内で `?` を入力しヘルプをご覧ください
-
-### 設定
-
-[設定ファイルについて](./docs/ja/config.md)をご覧ください
-
-### v1 からの移行
-
-[v1 から v2 へ移行](./docs/ja/migrate-v1-v2.md)をご覧ください
+- [コマンド一覧](./docs/ja/commands.md) もしくは `nekome -h`
+- [デフォルトキーバインド](./docs/ja/keybindings.md) もしくは `docs keybindings`
+- [設定ファイル](./docs/ja/config.md)
+- [v1 から v2 へ移行](./docs/ja/migrate-v1-v2.md)
+- [スタイル定義のサンプル](./docs/sample_styles.md)
 
 ## 由来
 
