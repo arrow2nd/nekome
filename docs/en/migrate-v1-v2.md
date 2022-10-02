@@ -2,6 +2,10 @@
 
 > [日本語](../ja/migrate-v1-v2.md)
 
+nekome v2 mainly introduces destructive changes around the configuration file.
+
+For more information, see [About Configuration File](. /config.md) for details.
+
 ## 1. re-configure custom consumer key
 
 The location of the consumer key has been changed from `settings.yml` to `.cred.toml`.
