@@ -16,7 +16,7 @@ func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
 	layout = replaceLayoutTag(layout, "{bio}", createUserBioLayout(u.Description, width))
 	layout = replaceLayoutTag(layout, "{user_detail}", createUserDetailLayout(u))
 
-	return layout, getStringDisplayRow(layout, width)
+	return trimEndNewline(layout), getStringDisplayRow(layout, width)
 }
 
 // createUserBioLayout : BIOのレイアウトを作成

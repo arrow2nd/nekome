@@ -40,7 +40,7 @@ func createTweetLayout(a string, d *twitter.TweetDictionary, i, w int) string {
 	layout = replaceLayoutTag(layout, "{detail}", createTweetDetailLayout(&d.Tweet))
 	layout = replaceLayoutTag(layout, "{metrics}", createTweetMetricsLayout(&d.Tweet))
 
-	return layout
+	return trimEndNewline(layout)
 }
 
 // createUserInfoLayout : ユーザ情報のレイアウトを作成
@@ -178,16 +178,14 @@ func createTweetDetailLayout(t *twitter.TweetObj) string {
 	// 投稿元クライアント
 	layout = replaceLayoutTag(layout, "{via}", t.Source)
 
-	layout = createStyledText(
-		shared.conf.Style.Tweet.Detail,
-		layout,
-	)
-
 	// メトリクス
 	metrics := createTweetMetricsLayout(t)
 	layout = replaceLayoutTag(layout, "{metrics}", metrics)
 
-	return layout
+	return createStyledText(
+		shared.conf.Style.Tweet.Detail,
+		trimEndNewline(layout),
+	)
 }
 
 // createTweetMetricsLayout : ツイートメトリクスのレイアウトを作成
