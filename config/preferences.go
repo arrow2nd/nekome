@@ -52,10 +52,14 @@ type Layout struct {
 	Tweet string `toml:"tweet"`
 	// TweetAnotation : ツイートアノテーション
 	TweetAnotation string `toml:"tweet_anotation"`
-	// TweetPoll : 投票
-	TweetPoll string `toml:"tweet_poll"`
 	// TweetDetail : ツイート詳細
 	TweetDetail string `toml:"tweet_detail"`
+	// TweetPoll : 投票
+	TweetPoll string `toml:"tweet_poll"`
+	// TweetPollGraph : 投票グラフ
+	TweetPollGraph string `toml:"tweet_poll_graph"`
+	// TweetPollDetail : 投票詳細
+	TweetPollDetail string `toml:"tweet_poll_detail"`
 	// User : ユーザプロフィール
 	User string `toml:"user"`
 	// UserInfo : ユーザ情報
@@ -176,13 +180,15 @@ func defaultPreferences() *Preferences {
 			TabMaxWidth:             20,
 		},
 		Layout: Layout{
-			Tweet:          "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
-			TweetAnotation: "",
-			TweetPoll:      "",
-			TweetDetail:    "",
-			User:           "{user_info}\n{bio}\n{user_detail}",
-			UserInfo:       "",
-			UserDetail:     "",
+			Tweet:           "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
+			TweetAnotation:  "{text} {author_name} @{author_username}",
+			TweetDetail:     "",
+			TweetPoll:       "{graph}\n{detail}",
+			TweetPollGraph:  "{label}\n{graph} {per} {votes}",
+			TweetPollDetail: "{status} | {all_votes} votes | ends on {end_date}",
+			User:            "{user_info}\n{bio}\n{user_detail}",
+			UserInfo:        "{name} {username} {badge}",
+			UserDetail:      "",
 		},
 		Text: Text{
 			Like:              "Like",
