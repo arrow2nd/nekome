@@ -22,9 +22,14 @@ func TestCreateTweetTag(t *testing.T) {
 func TestCreateAnotation(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
+			Pref: &config.Preferences{
+				Layout: config.Layout{
+					TweetAnotation: "{text} {author_name} @{author_username}",
+				},
+			},
 			Style: &config.Style{
 				Tweet: config.TweetStyle{
-					Annotation: "-:-:-",
+					Annotation: "style_anno",
 				},
 			},
 		},
@@ -37,7 +42,7 @@ func TestCreateAnotation(t *testing.T) {
 
 	t.Run("作成できるか", func(t *testing.T) {
 		s := createAnnotation("RT by", a)
-		want := "[-:-:-]RT by 市川雛菜 [::i]@ickwhnn[-:-:-]"
+		want := "[style_anno]RT by 市川雛菜 @ickwhnn[-:-:-]"
 
 		assert.Equal(t, want, s)
 	})
@@ -53,11 +58,10 @@ func TestCreateTweetLayout(t *testing.T) {
 				},
 				Layout: config.Layout{
 					Tweet:          "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
-					TweetAnotation: "",
-					TweetPoll:      "",
 					TweetDetail:    "",
+					TweetPollGraph: "",
 					User:           "{user_info}\n{bio}\n{user_detail}",
-					UserInfo:       "",
+					UserInfo:       "{name} {username} {badge}",
 					UserDetail:     "",
 				},
 				Icon: config.Icon{

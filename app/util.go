@@ -181,29 +181,28 @@ func convertDateString(createAt string) string {
 	return t.Local().Format(format)
 }
 
+// createStyledText : スタイル適応済みの文字列を作成
+func createStyledText(style, text string) string {
+	return fmt.Sprintf("[%s]%s[-:-:-]", style, text)
+}
+
 // createSeparator : 指定幅のセパレータ文字列を作成
 func createSeparator(s string, width int) string {
-	return fmt.Sprintf(
-		"[%s]%s[-:-:-]",
+	return createStyledText(
 		shared.conf.Style.Tweet.Separator,
 		strings.Repeat(s, width),
 	)
 }
 
 // createMetricsString : ツイートのリアクション数文字列を作成
-func createMetricsString(unit, style string, count int, reverse bool) string {
+func createMetricsString(unit, style string, count int) string {
 	if count <= 0 {
 		return ""
 	} else if count > 1 {
 		unit += "s"
 	}
 
-	// TODO: 反転未実装
-	if reverse {
-		return fmt.Sprintf("[%s] %d%s [-:-:-]", style, count, unit)
-	}
-
-	return fmt.Sprintf("[%s]%d%s[-:-:-] ", style, count, unit)
+	return createStyledText(style, strconv.Itoa(count)+unit)
 }
 
 // createUserSummary : ユーザの要約文を作成
