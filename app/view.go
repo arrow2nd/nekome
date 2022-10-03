@@ -91,7 +91,7 @@ func (v *view) drawTab() {
 
 		// タブが2個以上あるならセパレータを挿入
 		if i < len(v.tabItems)-1 {
-			fmt.Fprint(v.tabBar, shared.conf.Pref.Appearance.TabSeparate)
+			fmt.Fprint(v.tabBar, shared.conf.Pref.Appearance.TabSeparator)
 		}
 	}
 }
@@ -236,10 +236,9 @@ func (v *view) handleTabHighlight(added, removed, remaining []string) {
 func (v *view) PopupModal(o *ModalOpt) {
 	message := o.title
 
-	// メッセージがあるなら表示
+	// メッセージがあるなら追加
 	if o.text != "" {
-		hr := createSeparator("-", 4)
-		message = fmt.Sprintf("%s\n%s\n%s", o.title, hr, o.text)
+		message = fmt.Sprintf("%s\n\n%s", o.title, o.text)
 	}
 
 	f := func(buttonIndex int, buttonLabel string) {
