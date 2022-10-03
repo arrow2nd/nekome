@@ -242,6 +242,7 @@ func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
 func (t *tweets) draw(cursorPos int) {
+	pref := shared.conf.Pref
 	width := getWindowWidth()
 
 	t.view.
@@ -265,6 +266,7 @@ func (t *tweets) draw(cursorPos int) {
 		var quotedTweet *twitter.TweetDictionary = nil
 
 		// 参照ツイートを確認
+		// TODO: 関数に切り出す。アノテーション文字列を返す
 		for _, rc := range content.ReferencedTweets {
 			switch rc.Reference.Type {
 			case "retweeted":
@@ -279,22 +281,29 @@ func (t *tweets) draw(cursorPos int) {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			icon := shared.conf.Pref.Icon.Pinned
-			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", icon)
+			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", pref.Icon.Pinned)
 		}
 
+		// TODO: アノテーション文字列を引数で受け取る
 		fmt.Fprintln(t.view, createTweetLayout(content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
-			fmt.Fprintln(t.view, createSeparator("-", width))
+			if !pref.Appearance.HideQuoteTweetSeparator {
+				fmt.Fprintln(t.view, createSeparator(pref.Appearance.QuoteTweetSeparator, width))
+			}
+
 			fmt.Fprintln(t.view, createTweetLayout(quotedTweet, -1, width))
 		}
 
-		// 末尾のツイートでないならセパレータを挿入
-		lastIndex := t.GetTweetsCount() - 1
-		if i < lastIndex {
-			fmt.Fprintln(t.view, createSeparator("─", width))
+		// セパレータを挿入しない
+		if pref.Appearance.HideTweetSeparator {
+			continue
+		}
+
+		// 末尾のツイート以外ならセパレータを挿入
+		if i < t.GetTweetsCount()-1 {
+			fmt.Fprintln(t.view, createSeparator(pref.Appearance.TweetSeparator, width))
 		}
 	}
 

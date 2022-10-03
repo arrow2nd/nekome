@@ -28,14 +28,40 @@ type Appearancene struct {
 	UserBIOMaxRow int `toml:"user_bio_max_row"`
 	// UserProfilePaddingX : ユーザプロフィールの左右パディング
 	UserProfilePaddingX int `toml:"user_profile_padding_x"`
+	// HideTweetSeparator : ツイート間のセパレータを非表示
+	HideTweetSeparator bool `toml:"hide_tweet_seperator"`
+	// HideQuoteTweetSeparator : 引用ツイートのセパレータを非表示
+	HideQuoteTweetSeparator bool `toml:"hide_quote_tweet_separator"`
+	// TweetSeparator : ツイートの区切り文字
+	TweetSeparator string `toml:"tweet_separator"`
+	// QuoteTweetSeparator : 引用ツイートの区切り文字
+	QuoteTweetSeparator string `toml:"quote_tweet_separator"`
 	// GraphChar : 投票グラフの表示に使用する文字
 	GraphChar string `toml:"graph_char"`
 	// GraphMaxWidth : 投票グラフの最大表示幅
 	GraphMaxWidth int `toml:"graph_max_width"`
-	// TabSeparate : タブの区切り文字
-	TabSeparate string `toml:"tab_separate"`
+	// TabSeparator : タブの区切り文字
+	TabSeparator string `toml:"tab_separator"`
 	// TabMaxWidth : タブの最大表示幅
 	TabMaxWidth int `toml:"tab_max_width"`
+}
+
+// Layout : 表示レイアウト
+type Layout struct {
+	// Tweet : ツイート
+	Tweet string `toml:"tweet"`
+	// TweetAnotation : ツイートアノテーション
+	TweetAnotation string `toml:"tweet_anotation"`
+	// TweetPoll : 投票
+	TweetPoll string `toml:"tweet_poll"`
+	// TweetDetail : ツイート詳細
+	TweetDetail string `toml:"tweet_detail"`
+	// User : ユーザプロフィール
+	User string `toml:"user"`
+	// UserInfo : ユーザ情報
+	UserInfo string `toml:"user_info"`
+	// UserDetail : ユーザ詳細
+	UserDetail string `toml:"user_detail"`
 }
 
 // Text : 表示テキスト
@@ -99,6 +125,7 @@ type Preferences struct {
 	Feature     Feature         `toml:"feature"`
 	Confirm     map[string]bool `toml:"comfirm"`
 	Appearance  Appearancene    `toml:"appearance"`
+	Layout      Layout          `toml:"layout"`
 	Text        Text            `toml:"text"`
 	Icon        Icon            `toml:"icon"`
 	Keybindings Keybindings     `toml:"keybinding"`
@@ -134,15 +161,28 @@ func defaultPreferences() *Preferences {
 			"quit":      true,
 		},
 		Appearance: Appearancene{
-			StyleFilePath:       "style_default.toml",
-			DateFormat:          "2006/01/02",
-			TimeFormat:          "15:04:05",
-			UserBIOMaxRow:       3,
-			UserProfilePaddingX: 4,
-			GraphChar:           "\u2588",
-			GraphMaxWidth:       30,
-			TabSeparate:         "|",
-			TabMaxWidth:         20,
+			StyleFilePath:           "style_default.toml",
+			DateFormat:              "2006/01/02",
+			TimeFormat:              "15:04:05",
+			UserBIOMaxRow:           3,
+			UserProfilePaddingX:     4,
+			HideTweetSeparator:      false,
+			HideQuoteTweetSeparator: false,
+			TweetSeparator:          "─",
+			QuoteTweetSeparator:     "-",
+			GraphChar:               "\u2588",
+			GraphMaxWidth:           30,
+			TabSeparator:            "|",
+			TabMaxWidth:             20,
+		},
+		Layout: Layout{
+			Tweet:          "",
+			TweetAnotation: "",
+			TweetPoll:      "",
+			TweetDetail:    "",
+			User:           "",
+			UserInfo:       "",
+			UserDetail:     "",
 		},
 		Text: Text{
 			Like:              "Like",
