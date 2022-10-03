@@ -72,7 +72,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]hoge[""] [style_user_name]@fuga[-:-:-]` + "\n"
+		want := `[style_name]["tweet_0"]hoge[""] [style_user_name]@fuga[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -86,7 +86,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]櫻木真乃[""] [style_user_name]@sakuragi_mano_official[-:-:-][style_verified] v[-:-:-]` + "\n"
+		want := `[style_name]["tweet_0"]櫻木真乃[""] [style_user_name]@sakuragi_mano_official[-:-:-][style_verified] v[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -100,7 +100,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]ルカ[""] [style_user_name]@ikrglc_0131[-:-:-][style_private] p[-:-:-]` + "\n"
+		want := `[style_name]["tweet_0"]ルカ[""] [style_user_name]@ikrglc_0131[-:-:-][style_private] p[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -114,7 +114,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]N.Y.[""] [style_user_name]@ykmnm[-:-:-][style_verified] v[-:-:-][style_private] p[-:-:-]` + "\n"
+		want := `[style_name]["tweet_0"]N.Y.[""] [style_user_name]@ykmnm[-:-:-][style_verified] v[-:-:-][style_private] p[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -138,7 +138,7 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		want := "test @ #\n"
+		want := "test @ #"
 
 		assert.Equal(t, want, s)
 	})
@@ -160,7 +160,7 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		want := "test [style_hashtag]#hashtag[-:-:-]\n"
+		want := "test [style_hashtag]#hashtag[-:-:-]"
 
 		assert.Equal(t, want, s)
 	})
@@ -181,7 +181,7 @@ func TestCreateTextLayout(t *testing.T) {
 		}
 
 		s := createTextLayout(o)
-		want := "test [style_mention]@mention[-:-:-]\n"
+		want := "test [style_mention]@mention[-:-:-]"
 
 		assert.Equal(t, want, s)
 	})
@@ -299,7 +299,6 @@ test_2
 test_3
 [style_poll_g]===[-:-:-] 30.0%% [style_poll_d](3)[-:-:-]
 [style_poll_d]closed | 10 votes | ends on %s[-:-:-]
-
 `, d)
 
 		assert.Equal(t, want, s)

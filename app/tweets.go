@@ -264,16 +264,16 @@ func (t *tweets) draw(cursorPos int) {
 
 	for i, content := range contents {
 		var quotedTweet *twitter.TweetDictionary = nil
+		annotation := ""
 
 		// 参照ツイートを確認
-		// TODO: 関数に切り出す。アノテーション文字列を返す
 		for _, rc := range content.ReferencedTweets {
 			switch rc.Reference.Type {
 			case "retweeted":
-				fmt.Fprintln(t.view, createAnnotation("RT by", content.Author))
+				annotation += createAnnotation("RT by", content.Author)
 				content = content.ReferencedTweets[0].TweetDictionary
 			case "replied_to":
-				fmt.Fprintln(t.view, createAnnotation("Reply to", rc.TweetDictionary.Author))
+				annotation += createAnnotation("Reply to", rc.TweetDictionary.Author)
 			case "quoted":
 				quotedTweet = rc.TweetDictionary
 			}
@@ -281,11 +281,10 @@ func (t *tweets) draw(cursorPos int) {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", pref.Icon.Pinned)
+			annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", pref.Icon.Pinned)
 		}
 
-		// TODO: アノテーション文字列を引数で受け取る
-		fmt.Fprintln(t.view, createTweetLayout(content, i, width))
+		fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
@@ -293,7 +292,7 @@ func (t *tweets) draw(cursorPos int) {
 				fmt.Fprintln(t.view, createSeparator(pref.Appearance.QuoteTweetSeparator, width))
 			}
 
-			fmt.Fprintln(t.view, createTweetLayout(quotedTweet, -1, width))
+			fmt.Fprintln(t.view, createTweetLayout("", quotedTweet, -1, width))
 		}
 
 		// セパレータを挿入しない

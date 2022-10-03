@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -70,9 +71,15 @@ func getMD5(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// getStringDisplayRow 文字列の表示行数を取得
+// getStringDisplayRow : 文字列の表示行数を取得
 func getStringDisplayRow(s string, w int) int {
-	return int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
+	row := 0
+
+	for _, s := range strings.Split(s, "\n") {
+		row += int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
+	}
+
+	return row
 }
 
 // getHighlightId : ハイライト一覧からIDを取得（見つからない場合 -1 が返る）
@@ -126,6 +133,23 @@ func split(s string) ([]string, error) {
 	r := csv.NewReader(strings.NewReader(s))
 	r.Comma = ' '
 	return r.Read()
+}
+
+// replaceAll : 正規表現にマッチした文字列を一斉置換
+func replaceAll(str, reg, rep string) string {
+	replace := regexp.MustCompile(reg)
+	return replace.ReplaceAllString(str, rep)
+}
+
+// replaceLayoutTag : レイアウトタグを置換
+func replaceLayoutTag(l, tag, newStr string) string {
+	// newStrが空なら、タグと後ろにある空白文字を削除
+	// NOTE: 後ろに改行がある場合に無駄な空白行ができるのを防止
+	if newStr == "" {
+		return replaceAll(l, tag+"\\s?", "")
+	}
+
+	return strings.ReplaceAll(l, tag, newStr)
 }
 
 // isSameDate : 同じ日付かどうか

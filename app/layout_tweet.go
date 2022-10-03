@@ -28,11 +28,16 @@ func createAnnotation(s string, author *twitter.UserObj) string {
 }
 
 // createTweetLayout : ツイートのレイアウトを作成
-func createTweetLayout(d *twitter.TweetDictionary, i, w int) string {
-	return createUserInfoLayout(d.Author, i, w) +
-		createTextLayout(&d.Tweet) +
-		createPollLayout(d.AttachmentPolls, w) +
-		createTweetDetailLayout(&d.Tweet)
+func createTweetLayout(a string, d *twitter.TweetDictionary, i, w int) string {
+	layout := shared.conf.Pref.Layout.Tweet
+
+	layout = replaceLayoutTag(layout, "{annotation}", a)
+	layout = replaceLayoutTag(layout, "{poll}", createPollLayout(d.AttachmentPolls, w))
+	layout = replaceLayoutTag(layout, "{user_info}", createUserInfoLayout(d.Author, i, w))
+	layout = replaceLayoutTag(layout, "{text}", createTextLayout(&d.Tweet))
+	layout = replaceLayoutTag(layout, "{detail}", createTweetDetailLayout(&d.Tweet))
+
+	return layout
 }
 
 // createUserInfoLayout : ユーザ情報のレイアウトを作成
@@ -67,12 +72,12 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 		header += fmt.Sprintf("[%s] %s[-:-:-]", style.User.Private, icon.Private)
 	}
 
-	return header + "\n"
+	return header
 }
 
 // createTextLayout : ツイート文のレイアウトを作成
 func createTextLayout(t *twitter.TweetObj) string {
-	text := html.UnescapeString(t.Text) + "\n"
+	text := html.UnescapeString(t.Text)
 
 	// 全角記号を置換
 	text = strings.ReplaceAll(text, "＃", "#")
@@ -190,7 +195,7 @@ func createPollLayout(p []*twitter.PollObj, w int) string {
 	// 投票の詳細情報
 	endDate := convertDateString(p[0].EndDateTime)
 	text += fmt.Sprintf(
-		"[%s]%s | %d votes | ends on %s[-:-:-]\n\n",
+		"[%s]%s | %d votes | ends on %s[-:-:-]\n",
 		style.PollDetail,
 		p[0].VotingStatus,
 		allVotes,
@@ -225,7 +230,13 @@ func createTweetDetailLayout(t *twitter.TweetObj) string {
 
 	// 投稿日時・投稿元クライアント
 	date := convertDateString(t.CreatedAt)
-	detail := fmt.Sprintf("[%s]%s | via %s[-:-:-]%s", style.Detail, date, t.Source, metrics)
+	detail := fmt.Sprintf(
+		"[%s]%s | via %s[-:-:-]%s",
+		style.Detail,
+		date,
+		t.Source,
+		metrics,
+	)
 
 	return strings.TrimSpace(detail)
 }

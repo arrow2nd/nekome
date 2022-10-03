@@ -53,21 +53,27 @@ func TestGetStringDisplayRow(t *testing.T) {
 		want int
 	}{
 		{
-			name: "半角文字の表示行数が取得できるか",
+			name: "半角文字",
 			s:    "morino",
 			w:    1,
 			want: 6,
 		},
 		{
-			name: "全角文字の表示行数が取得できるか",
+			name: "全角文字",
 			s:    "杜野",
 			w:    10,
 			want: 1,
 		},
 		{
-			name: "複数行に渡る文字列の表示行数が取得できるか",
+			name: "複数行に渡る文字列",
 			s:    "serizawa_asahi,mayuzumi_fuyuko,izumi_mei",
 			w:    10,
+			want: 4,
+		},
+		{
+			name: "改行を含む文字列",
+			s:    "osaki_tenka\nosaki_amana\nkuwayama_chiyuki",
+			w:    11,
 			want: 4,
 		},
 	}
@@ -261,6 +267,45 @@ func TestSplit(t *testing.T) {
 			got, err := split(tt.s)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestReplaceLayoutTag(t *testing.T) {
+	tests := []struct {
+		name string
+		l    string
+		t    string
+		s    string
+		want string
+	}{
+		{
+			name: "置換できるか",
+			l:    "I am {test} man",
+			t:    "{test}",
+			s:    "iron",
+			want: "I am iron man",
+		},
+		{
+			name: "置換文字列がある場合タグ末尾の空白文字が残るか",
+			l:    "{test}\t",
+			t:    "{test}",
+			s:    "neko-chan",
+			want: "neko-chan\t",
+		},
+		{
+			name: "置換文字列が空の場合タグ末尾の空白文字が消去されるか",
+			l:    "{test}\n",
+			t:    "{test}",
+			s:    "",
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := replaceLayoutTag(tt.l, tt.t, tt.s); got != tt.want {
+				t.Errorf("replaceLayoutTag() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
