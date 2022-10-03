@@ -180,9 +180,9 @@ func defaultPreferences() *Preferences {
 			TabMaxWidth:             20,
 		},
 		Layout: Layout{
-			Tweet:           "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
+			Tweet:           "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}",
 			TweetAnotation:  "{text} {author_name} @{author_username}",
-			TweetDetail:     "",
+			TweetDetail:     "{created_at} | via {via}\n{metrics}\n",
 			TweetPoll:       "{graph}\n{detail}",
 			TweetPollGraph:  "{label}\n{graph} {per} {votes}",
 			TweetPollDetail: "{status} | {all_votes} votes | ends on {end_date}",

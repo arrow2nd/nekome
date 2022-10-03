@@ -34,10 +34,11 @@ func createTweetLayout(a string, d *twitter.TweetDictionary, i, w int) string {
 	layout := shared.conf.Pref.Layout.Tweet
 
 	layout = replaceLayoutTag(layout, "{annotation}", a)
-	layout = replaceLayoutTag(layout, "{poll}", createPollLayout(d.AttachmentPolls, w))
 	layout = replaceLayoutTag(layout, "{user_info}", createUserInfoLayout(d.Author, i, w))
 	layout = replaceLayoutTag(layout, "{text}", createTextLayout(&d.Tweet))
+	layout = replaceLayoutTag(layout, "{poll}", createPollLayout(d.AttachmentPolls, w))
 	layout = replaceLayoutTag(layout, "{detail}", createTweetDetailLayout(&d.Tweet))
+	layout = replaceLayoutTag(layout, "{metrics}", createTweetMetricsLayout(&d.Tweet))
 
 	return layout
 }
@@ -89,7 +90,7 @@ func createUserInfoLayout(u *twitter.UserObj, i, w int) string {
 
 	layout = replaceLayoutTag(layout, "{badge}", strings.Join(badges, " "))
 
-	return layout
+	return strings.TrimSpace(layout)
 }
 
 // createTextLayout : ツイート文のレイアウトを作成
@@ -168,32 +169,49 @@ func highlightHashtags(text string, entities *twitter.EntitiesObj) string {
 
 // createTweetDetailLayout : ツイート詳細のレイアウトを作成
 func createTweetDetailLayout(t *twitter.TweetObj) string {
+	layout := shared.conf.Pref.Layout.TweetDetail
+
+	// 投稿日時
+	date := convertDateString(t.CreatedAt)
+	layout = replaceLayoutTag(layout, "{created_at}", date)
+
+	// 投稿元クライアント
+	layout = replaceLayoutTag(layout, "{via}", t.Source)
+
+	layout = createStyledText(
+		shared.conf.Style.Tweet.Detail,
+		layout,
+	)
+
+	// メトリクス
+	metrics := createTweetMetricsLayout(t)
+	layout = replaceLayoutTag(layout, "{metrics}", metrics)
+
+	return layout
+}
+
+// createTweetMetricsLayout : ツイートメトリクスのレイアウトを作成
+func createTweetMetricsLayout(t *twitter.TweetObj) string {
 	pref := shared.conf.Pref.Text
 	style := shared.conf.Style.Tweet
 
-	metrics := ""
+	metrics := []string{}
 
 	// いいね数
-	likes := t.PublicMetrics.Likes
-	if likes != 0 {
-		metrics += createMetricsString(pref.Like, style.Like, likes)
+	if likes := t.PublicMetrics.Likes; likes != 0 {
+		metrics = append(
+			metrics,
+			createMetricsString(pref.Like, style.Like, likes),
+		)
 	}
 
 	// リツイート数
-	rts := t.PublicMetrics.Retweets
-	if rts != 0 {
-		metrics += createMetricsString(pref.Retweet, style.Retweet, rts)
+	if rts := t.PublicMetrics.Retweets; rts != 0 {
+		metrics = append(
+			metrics,
+			createMetricsString(pref.Retweet, style.Retweet, rts),
+		)
 	}
 
-	// 投稿日時・投稿元クライアント
-	date := convertDateString(t.CreatedAt)
-	detail := fmt.Sprintf(
-		"[%s]%s | via %s[-:-:-]%s",
-		style.Detail,
-		date,
-		t.Source,
-		metrics,
-	)
-
-	return strings.TrimSpace(detail)
+	return strings.Join(metrics, " ")
 }
