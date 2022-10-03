@@ -17,6 +17,9 @@ func TestCreateProfileLayout(t *testing.T) {
 					UserBIOMaxRow:       3,
 					UserProfilePaddingX: 4,
 				},
+				Layout: config.Layout{
+					User: "{user_info}\n{bio}\n{user_detail}",
+				},
 				Icon: config.Icon{
 					Geo:  "g",
 					Link: "l",
@@ -84,10 +87,8 @@ func TestCreateUserBioLayout(t *testing.T) {
 テスト`
 		want := "テスト テスト テスト"
 
-		s, r := createUserBioLayout(bio, 100)
-
+		s := createUserBioLayout(bio, 100)
 		assert.Equal(t, want, s)
-		assert.Equal(t, 1, r)
 	})
 
 	t.Run("最大表示幅を超えた場合に省略されるか", func(t *testing.T) {
@@ -95,10 +96,9 @@ func TestCreateUserBioLayout(t *testing.T) {
 		want := "12345678…"
 
 		runewidth.DefaultCondition.EastAsianWidth = false
-		s, r := createUserBioLayout(bio, 3)
 
+		s := createUserBioLayout(bio, 3)
 		assert.Equal(t, want, s)
-		assert.Equal(t, 3, r)
 	})
 }
 

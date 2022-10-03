@@ -12,27 +12,20 @@ func createProfileLayout(u *twitter.UserObj, w int) (string, int) {
 	padding := shared.conf.Pref.Appearance.UserProfilePaddingX
 	width := w - padding*2
 
-	desc, row := createUserBioLayout(u.Description, width)
-	desc = fmt.Sprintf("%s\n", desc)
+	layout := shared.conf.Pref.Layout.User
+	layout = replaceLayoutTag(layout, "{user_info}", createUserInfoLayout(u, -1, width))
+	layout = replaceLayoutTag(layout, "{bio}", createUserBioLayout(u.Description, width))
+	layout = replaceLayoutTag(layout, "{user_detail}", createUserDetailLayout(u))
 
-	profile := createUserInfoLayout(u, -1, width) + desc
-
-	// 詳細情報が無い
-	if u.Location == "" && u.URL == "" {
-		return profile, row + 1
-	}
-
-	return profile + createUserDetailLayout(u), row + 2
+	return layout, getStringDisplayRow(layout, width)
 }
 
-// createUserBioLayout : BIOのレイアウトを作成, 表示行数を返す
-func createUserBioLayout(d string, w int) (string, int) {
+// createUserBioLayout : BIOのレイアウトを作成
+func createUserBioLayout(d string, w int) string {
 	desc := strings.ReplaceAll(d, "\n", " ")
-
 	maxRow := shared.conf.Pref.Appearance.UserBIOMaxRow
-	desc = truncate(desc, w*maxRow)
 
-	return desc, getStringDisplayRow(desc, w)
+	return truncate(desc, w*maxRow)
 }
 
 // createUserDetailLayout : ユーザ詳細のレイアウトを作成
@@ -46,6 +39,10 @@ func createUserDetailLayout(u *twitter.UserObj) string {
 
 	if u.URL != "" {
 		texts = append(texts, icon.Link+" "+u.URL)
+	}
+
+	if len(texts) == 0 {
+		return ""
 	}
 
 	return fmt.Sprintf(
