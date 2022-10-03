@@ -176,11 +176,11 @@ func defaultPreferences() *Preferences {
 			TabMaxWidth:             20,
 		},
 		Layout: Layout{
-			Tweet:          "",
+			Tweet:          "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}",
 			TweetAnotation: "",
 			TweetPoll:      "",
 			TweetDetail:    "",
-			User:           "",
+			User:           "{user_info}\n{bio}\n{user_detail}",
 			UserInfo:       "",
 			UserDetail:     "",
 		},
