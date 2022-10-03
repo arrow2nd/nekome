@@ -43,6 +43,87 @@ func TestCreateAnotation(t *testing.T) {
 	})
 }
 
+func TestCreateTweetLayout(t *testing.T) {
+	shared = Shared{
+		conf: &config.Config{
+			Pref: &config.Preferences{
+				Appearance: config.Appearancene{
+					DateFormat: "2006/01/02",
+					TimeFormat: "15:04:05",
+				},
+				Layout: config.Layout{
+					Tweet:          "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
+					TweetAnotation: "",
+					TweetPoll:      "",
+					TweetDetail:    "",
+					User:           "{user_info}\n{bio}\n{user_detail}",
+					UserInfo:       "",
+					UserDetail:     "",
+				},
+				Icon: config.Icon{
+					Verified: "v",
+					Private:  "p",
+				},
+				Text: config.Text{
+					Like:    "like",
+					Retweet: "rt",
+				},
+			},
+			Style: &config.Style{
+				Tweet: config.TweetStyle{
+					Like:    "style_like",
+					Retweet: "style_rt",
+					Detail:  "style_detail",
+					HashTag: "style_hashtag",
+					Mention: "style_mention",
+				},
+				User: config.UserStyle{
+					Name:     "style_name",
+					UserName: "style_user_name",
+					Verified: "style_verified",
+					Private:  "style_private",
+				},
+			},
+		},
+	}
+
+	td := &twitter.TweetDictionary{
+		Tweet: twitter.TweetObj{
+			ID:        "1234",
+			Text:      "text",
+			CreatedAt: "2022-04-18T15:00:00.000Z",
+			PublicMetrics: &twitter.TweetMetricsObj{
+				Likes:    2,
+				Retweets: 2,
+				Quotes:   1,
+			},
+			Source: "nekome for term",
+		},
+		Author: &twitter.UserObj{
+			ID:       "5678",
+			Name:     "user",
+			UserName: "user_name",
+		},
+	}
+
+	t.Run("作成できるか", func(t *testing.T) {
+		p, _ := time.Parse(time.RFC3339, td.Tweet.CreatedAt)
+		d := p.Local().Format("2006/01/02 15:04:05")
+
+		s := createTweetLayout("annotation", td, 0, 250)
+		want := fmt.Sprintf(`annotation
+[style_name]["tweet_0"]user[""] [style_user_name]@user_name[-:-:-]
+text
+[style_detail]%s | via nekome for term[-:-:-]
+[style_like]2likes[-:-:-] [style_rt]2rts[-:-:-]
+`,
+			d,
+		)
+
+		assert.Equal(t, want, s)
+	})
+}
+
 func TestCreateUserInfoLayout(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
@@ -298,8 +379,7 @@ test_2
 [style_poll_g]=====[-:-:-] 50.0%% [style_poll_d](5)[-:-:-]
 test_3
 [style_poll_g]===[-:-:-] 30.0%% [style_poll_d](3)[-:-:-]
-[style_poll_d]closed | 10 votes | ends on %s[-:-:-]
-`, d)
+[style_poll_d]closed | 10 votes | ends on %s[-:-:-]`, d)
 
 		assert.Equal(t, want, s)
 	})

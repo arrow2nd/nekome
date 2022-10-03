@@ -284,7 +284,7 @@ func (t *tweets) draw(cursorPos int) {
 			annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", pref.Icon.Pinned)
 		}
 
-		fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
+		fmt.Fprint(t.view, createTweetLayout(annotation, content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
@@ -292,7 +292,7 @@ func (t *tweets) draw(cursorPos int) {
 				fmt.Fprintln(t.view, createSeparator(pref.Appearance.QuoteTweetSeparator, width))
 			}
 
-			fmt.Fprintln(t.view, createTweetLayout("", quotedTweet, -1, width))
+			fmt.Fprint(t.view, createTweetLayout("", quotedTweet, -1, width))
 		}
 
 		// セパレータを挿入しない

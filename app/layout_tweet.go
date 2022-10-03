@@ -195,7 +195,7 @@ func createPollLayout(p []*twitter.PollObj, w int) string {
 	// 投票の詳細情報
 	endDate := convertDateString(p[0].EndDateTime)
 	text += fmt.Sprintf(
-		"[%s]%s | %d votes | ends on %s[-:-:-]\n",
+		"[%s]%s | %d votes | ends on %s[-:-:-]",
 		style.PollDetail,
 		p[0].VotingStatus,
 		allVotes,
@@ -224,9 +224,9 @@ func createTweetDetailLayout(t *twitter.TweetObj) string {
 		metrics += createMetricsString(pref.Retweet, style.Retweet, rts, false)
 	}
 
-	if metrics != "" {
-		metrics = "\n" + metrics
-	}
+	// if metrics != "" {
+	// 	metrics = "\n" + metrics
+	// }
 
 	// 投稿日時・投稿元クライアント
 	date := convertDateString(t.CreatedAt)
