@@ -18,7 +18,8 @@ func TestCreateProfileLayout(t *testing.T) {
 					UserProfilePaddingX: 4,
 				},
 				Layout: config.Layout{
-					User: "{user_info}\n{bio}\n{user_detail}",
+					User:     "{user_info}\n{bio}\n{user_detail}",
+					UserInfo: "{name} {username} {badge}",
 				},
 				Icon: config.Icon{
 					Geo:  "g",
@@ -45,9 +46,9 @@ func TestCreateProfileLayout(t *testing.T) {
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name [style_user_name]@user_name[-:-:-]
+		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
 bio
-[style_detail]g location | l url[-:-:-]`
+[style_detail]g locationl url[-:-:-]`
 
 		assert.Equal(t, want, s)
 		assert.Equal(t, 3, r)
@@ -61,9 +62,8 @@ bio
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name [style_user_name]@user_name[-:-:-]
-bio
-`
+		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
+bio`
 
 		assert.Equal(t, want, s)
 		assert.Equal(t, 2, r)
@@ -106,6 +106,9 @@ func TestCreateUserDetailLayout(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
 			Pref: &config.Preferences{
+				Appearance: config.Appearancene{
+					UserDetailSeparator: " | ",
+				},
 				Icon: config.Icon{
 					Geo:  "g",
 					Link: "l",

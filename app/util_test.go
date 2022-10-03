@@ -38,9 +38,8 @@ func TestMD5(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getMD5(tt.arg); got != tt.want {
-				t.Errorf("getMD5() = %v, want %v", got, tt.want)
-			}
+			got := getMD5(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -79,9 +78,8 @@ func TestGetStringDisplayRow(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getStringDisplayRow(tt.s, tt.w); got != tt.want {
-				t.Errorf("getStringDisplayRow() = %v, want %v", got, tt.want)
-			}
+			got := getStringDisplayRow(tt.s, tt.w)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -130,9 +128,8 @@ func TestGetHighlightId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getHighlightId(tt.arg); got != tt.want {
-				t.Errorf("getHighlightId() = %v, want %v", got, tt.want)
-			}
+			got := getHighlightId(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -166,9 +163,9 @@ func TestFind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if index, got := find(tt.s, tt.f); index != tt.want || got != tt.found {
-				t.Errorf("find() = %v, %v, want &v, %v", got, tt.want, tt.found)
-			}
+			index, got := find(tt.s, tt.f)
+			assert.Equal(t, tt.want, index)
+			assert.Equal(t, tt.found, got)
 		})
 	}
 }
@@ -197,9 +194,8 @@ func TestTruncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := truncate(tt.s, tt.w); got != tt.want {
-				t.Errorf("truncate() = %v, want %v", got, tt.want)
-			}
+			got := truncate(tt.s, tt.w)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -233,9 +229,8 @@ func TestTrimEndNewline(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := trimEndNewline(tt.s); got != tt.want {
-				t.Errorf("trimEndNewline() = %v, want %v", got, tt.want)
-			}
+			got := trimEndNewline(tt.s)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -303,9 +298,8 @@ func TestReplaceLayoutTag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := replaceLayoutTag(tt.l, tt.t, tt.s); got != tt.want {
-				t.Errorf("replaceLayoutTag() = %v, want %v", got, tt.want)
-			}
+			got := replaceLayoutTag(tt.l, tt.t, tt.s)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -339,9 +333,8 @@ func TestIsSameDate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isSameDate(tt.arg); got != tt.want {
-				t.Errorf("isSameDate() = %v, want %v", got, tt.want)
-			}
+			got := isSameDate(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -388,7 +381,7 @@ func TestCreateMetricsString(t *testing.T) {
 			style:   "pink",
 			count:   1,
 			reverse: false,
-			want:    "[pink]1Fav[-:-:-] ",
+			want:    "[pink]1Fav[-:-:-]",
 		},
 		{
 			name:    "2いいね",
@@ -396,14 +389,13 @@ func TestCreateMetricsString(t *testing.T) {
 			style:   "pink",
 			count:   2,
 			reverse: false,
-			want:    "[pink]2Favs[-:-:-] ",
+			want:    "[pink]2Favs[-:-:-]",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createMetricsString(tt.unit, tt.style, tt.count, tt.reverse); got != tt.want {
-				t.Errorf("createMetricsString() = %v, want %v", got, tt.want)
-			}
+			s := createMetricsString(tt.unit, tt.style, tt.count)
+			assert.Equal(t, tt.want, s)
 		})
 	}
 }
@@ -454,9 +446,8 @@ func TestCreateTweetSummary(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createTweetSummary(tt.t); got != tt.want {
-				t.Errorf("createTweetSummary() = %v, want %v", got, tt.want)
-			}
+			s := createTweetSummary(tt.t)
+			assert.Equal(t, tt.want, s)
 		})
 	}
 }

@@ -24,7 +24,7 @@ func TestCreateAnotation(t *testing.T) {
 		conf: &config.Config{
 			Pref: &config.Preferences{
 				Layout: config.Layout{
-					TweetAnotation: "{text} {author_name} @{author_username}",
+					TweetAnotation: "{text} {author_name} {author_username}",
 				},
 			},
 			Style: &config.Style{
@@ -57,12 +57,10 @@ func TestCreateTweetLayout(t *testing.T) {
 					TimeFormat: "15:04:05",
 				},
 				Layout: config.Layout{
-					Tweet:          "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}\n",
-					TweetDetail:    "",
-					TweetPollGraph: "",
-					User:           "{user_info}\n{bio}\n{user_detail}",
-					UserInfo:       "{name} {username} {badge}",
-					UserDetail:     "",
+					Tweet:       "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}",
+					TweetDetail: "{created_at} | via {via}\n{metrics}",
+					User:        "{user_info}\n{bio}\n{user_detail}",
+					UserInfo:    "{name} {username} {badge}",
 				},
 				Icon: config.Icon{
 					Verified: "v",
@@ -116,11 +114,10 @@ func TestCreateTweetLayout(t *testing.T) {
 
 		s := createTweetLayout("annotation", td, 0, 250)
 		want := fmt.Sprintf(`annotation
-[style_name]["tweet_0"]user[""] [style_user_name]@user_name[-:-:-]
+[style_name]["tweet_0"]user[""][-:-:-] [style_user_name]@user_name[-:-:-]
 text
-[style_detail]%s | via nekome for term[-:-:-]
-[style_like]2likes[-:-:-] [style_rt]2rts[-:-:-]
-`,
+[style_detail]%s | via nekome for term
+[style_like]2likes[-:-:-] [style_rt]2rts[-:-:-][-:-:-]`,
 			d,
 		)
 
@@ -132,6 +129,9 @@ func TestCreateUserInfoLayout(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
 			Pref: &config.Preferences{
+				Layout: config.Layout{
+					UserInfo: "{name} {username} {badge}",
+				},
 				Icon: config.Icon{
 					Verified: "v",
 					Private:  "p",
@@ -157,7 +157,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]hoge[""] [style_user_name]@fuga[-:-:-]`
+		want := `[style_name]["tweet_0"]hoge[""][-:-:-] [style_user_name]@fuga[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -171,7 +171,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]櫻木真乃[""] [style_user_name]@sakuragi_mano_official[-:-:-][style_verified] v[-:-:-]`
+		want := `[style_name]["tweet_0"]櫻木真乃[""][-:-:-] [style_user_name]@sakuragi_mano_official[-:-:-] [style_verified]v[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -185,7 +185,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]ルカ[""] [style_user_name]@ikrglc_0131[-:-:-][style_private] p[-:-:-]`
+		want := `[style_name]["tweet_0"]ルカ[""][-:-:-] [style_user_name]@ikrglc_0131[-:-:-] [style_private]p[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -199,7 +199,7 @@ func TestCreateUserInfoLayout(t *testing.T) {
 		}
 
 		s := createUserInfoLayout(u, 0, 50)
-		want := `[style_name]["tweet_0"]N.Y.[""] [style_user_name]@ykmnm[-:-:-][style_verified] v[-:-:-][style_private] p[-:-:-]`
+		want := `[style_name]["tweet_0"]N.Y.[""][-:-:-] [style_user_name]@ykmnm[-:-:-] [style_verified]v[-:-:-] [style_private]p[-:-:-]`
 
 		assert.Equal(t, want, s)
 	})
@@ -325,77 +325,16 @@ func TestHighlightHashtags(t *testing.T) {
 	})
 }
 
-func TestCreatePollLayout(t *testing.T) {
-	shared = Shared{
-		conf: &config.Config{
-			Pref: &config.Preferences{
-				Appearance: config.Appearancene{
-					DateFormat:    "2006/01/02",
-					TimeFormat:    "15:04:05",
-					GraphMaxWidth: 10,
-					GraphChar:     "=",
-				},
-			},
-			Style: &config.Style{
-				Tweet: config.TweetStyle{
-					PollGraph:  "style_poll_g",
-					PollDetail: "style_poll_d",
-				},
-			},
-		},
-	}
-
-	p := []*twitter.PollObj{
-		{
-			ID: "1234567890",
-			Options: []*twitter.PollOptionObj{
-				{
-					Position: 1,
-					Label:    "test_1",
-					Votes:    2,
-				},
-				{
-					Position: 2,
-					Label:    "test_2",
-					Votes:    5,
-				},
-				{
-					Position: 3,
-					Label:    "test_3",
-					Votes:    3,
-				},
-			},
-			DurationMinutes: 60,
-			EndDateTime:     "2022-04-18T15:00:00.000Z",
-			VotingStatus:    "closed",
-		},
-	}
-
-	t.Run("生成できるか", func(t *testing.T) {
-		s := createPollLayout(p, 120)
-
-		p, _ := time.Parse(time.RFC3339, p[0].EndDateTime)
-		d := p.Local().Format("2006/01/02 15:04:05")
-		want := fmt.Sprintf(`
-test_1
-[style_poll_g]==[-:-:-] 20.0%% [style_poll_d](2)[-:-:-]
-test_2
-[style_poll_g]=====[-:-:-] 50.0%% [style_poll_d](5)[-:-:-]
-test_3
-[style_poll_g]===[-:-:-] 30.0%% [style_poll_d](3)[-:-:-]
-[style_poll_d]closed | 10 votes | ends on %s[-:-:-]`, d)
-
-		assert.Equal(t, want, s)
-	})
-}
-
-func TestCreateDetailLayout(t *testing.T) {
+func TestCreateTweetDetailLayout(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
 			Pref: &config.Preferences{
 				Appearance: config.Appearancene{
 					DateFormat: "2006/01/02",
 					TimeFormat: "15:04:05",
+				},
+				Layout: config.Layout{
+					TweetDetail: "{created_at} | via {via}\n{metrics}",
 				},
 				Text: config.Text{
 					Like:    "like",
@@ -426,8 +365,45 @@ func TestCreateDetailLayout(t *testing.T) {
 
 		p, _ := time.Parse(time.RFC3339, o.CreatedAt)
 		d := p.Local().Format("2006/01/02 15:04:05")
-		want := fmt.Sprintf(`[style_detail]%s | via nekome for term[-:-:-]
-[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-]`, d)
+		want := fmt.Sprintf(
+			`[style_detail]%s | via nekome for term
+[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-][-:-:-]`,
+			d,
+		)
+
+		assert.Equal(t, want, s)
+	})
+}
+
+func TestCreateTweetMetricsLayout(t *testing.T) {
+	shared = Shared{
+		conf: &config.Config{
+			Pref: &config.Preferences{
+				Text: config.Text{
+					Like:    "like",
+					Retweet: "rt",
+				},
+			},
+			Style: &config.Style{
+				Tweet: config.TweetStyle{
+					Like:    "style_like",
+					Retweet: "style_rt",
+					Detail:  "style_detail",
+				},
+			},
+		},
+	}
+
+	o := &twitter.TweetObj{
+		PublicMetrics: &twitter.TweetMetricsObj{
+			Likes:    10,
+			Retweets: 5,
+		},
+	}
+
+	t.Run("作成できるか", func(t *testing.T) {
+		s := createTweetMetricsLayout(o)
+		want := "[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-]"
 
 		assert.Equal(t, want, s)
 	})
