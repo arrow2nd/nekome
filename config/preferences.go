@@ -28,19 +28,21 @@ type Appearancene struct {
 	UserBIOMaxRow int `toml:"user_bio_max_row"`
 	// UserProfilePaddingX : ユーザプロフィールの左右パディング
 	UserProfilePaddingX int `toml:"user_profile_padding_x"`
+	// UserDetailSeparator : ユーザ詳細のセパレータ
+	UserDetailSeparator string `toml:"user_detail_separator"`
 	// HideTweetSeparator : ツイート間のセパレータを非表示
 	HideTweetSeparator bool `toml:"hide_tweet_seperator"`
 	// HideQuoteTweetSeparator : 引用ツイートのセパレータを非表示
 	HideQuoteTweetSeparator bool `toml:"hide_quote_tweet_separator"`
-	// TweetSeparator : ツイートの区切り文字
+	// TweetSeparator : ツイートのセパレータ
 	TweetSeparator string `toml:"tweet_separator"`
-	// QuoteTweetSeparator : 引用ツイートの区切り文字
+	// QuoteTweetSeparator : 引用ツイートのセパレータ
 	QuoteTweetSeparator string `toml:"quote_tweet_separator"`
 	// GraphChar : 投票グラフの表示に使用する文字
 	GraphChar string `toml:"graph_char"`
 	// GraphMaxWidth : 投票グラフの最大表示幅
 	GraphMaxWidth int `toml:"graph_max_width"`
-	// TabSeparator : タブの区切り文字
+	// TabSeparator : タブのセパレータ
 	TabSeparator string `toml:"tab_separator"`
 	// TabMaxWidth : タブの最大表示幅
 	TabMaxWidth int `toml:"tab_max_width"`
@@ -64,8 +66,6 @@ type Layout struct {
 	User string `toml:"user"`
 	// UserInfo : ユーザ情報
 	UserInfo string `toml:"user_info"`
-	// UserDetail : ユーザ詳細
-	UserDetail string `toml:"user_detail"`
 }
 
 // Text : 表示テキスト
@@ -170,6 +170,7 @@ func defaultPreferences() *Preferences {
 			TimeFormat:              "15:04:05",
 			UserBIOMaxRow:           3,
 			UserProfilePaddingX:     4,
+			UserDetailSeparator:     " | ",
 			HideTweetSeparator:      false,
 			HideQuoteTweetSeparator: false,
 			TweetSeparator:          "─",
@@ -181,14 +182,13 @@ func defaultPreferences() *Preferences {
 		},
 		Layout: Layout{
 			Tweet:           "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}",
-			TweetAnotation:  "{text} {author_name} @{author_username}",
+			TweetAnotation:  "{text} {author_name} {author_username}",
 			TweetDetail:     "{created_at} | via {via}\n{metrics}\n",
 			TweetPoll:       "{graph}\n{detail}",
 			TweetPollGraph:  "{label}\n{graph} {per} {votes}",
 			TweetPollDetail: "{status} | {all_votes} votes | ends on {end_date}",
 			User:            "{user_info}\n{bio}\n{user_detail}",
 			UserInfo:        "{name} {username} {badge}",
-			UserDetail:      "",
 		},
 		Text: Text{
 			Like:              "Like",

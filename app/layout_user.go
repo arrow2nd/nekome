@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/g8rswimmer/go-twitter/v2"
@@ -31,23 +30,22 @@ func createUserBioLayout(d string, w int) string {
 // createUserDetailLayout : ユーザ詳細のレイアウトを作成
 func createUserDetailLayout(u *twitter.UserObj) string {
 	icon := shared.conf.Pref.Icon
-	texts := []string{}
+	details := []string{}
 
 	if u.Location != "" {
-		texts = append(texts, icon.Geo+" "+u.Location)
+		details = append(details, icon.Geo+" "+u.Location)
 	}
 
 	if u.URL != "" {
-		texts = append(texts, icon.Link+" "+u.URL)
+		details = append(details, icon.Link+" "+u.URL)
 	}
 
-	if len(texts) == 0 {
+	if len(details) == 0 {
 		return ""
 	}
 
-	return fmt.Sprintf(
-		"[%s]%s[-:-:-]",
-		shared.conf.Style.User.Detail,
-		strings.Join(texts, " | "),
-	)
+	style := shared.conf.Style.User.Detail
+	separator := shared.conf.Pref.Appearance.UserDetailSeparator
+
+	return createStyledText(style, strings.Join(details, separator))
 }

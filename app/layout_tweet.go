@@ -21,7 +21,7 @@ func createAnnotation(text string, author *twitter.UserObj) string {
 
 	layout = replaceLayoutTag(layout, "{text}", text)
 	layout = replaceLayoutTag(layout, "{author_name}", author.Name)
-	layout = replaceLayoutTag(layout, "{author_username}", author.UserName)
+	layout = replaceLayoutTag(layout, "{author_username}", "@"+author.UserName)
 
 	return createStyledText(
 		shared.conf.Style.Tweet.Annotation,
