@@ -2,23 +2,23 @@
 
 > [日本語](../ja/commands.md)
 
-### nekome
+## nekome
 
 ```
-nekome [flags] [command]
+nekome [flags] [command] [global flags / command flags]
 ```
 
-#### Flags
+### Global Flags
+
+- `-h` `--help`
+  - Show help
+
+### Flags
 
 - `-u <userName>` `--user <userName>`
   - Specify user to use
 - `-v` `--version`
   - Show version
-
-#### Global Flags
-
-- `-h` `--help`
-  - Show help
 
 ## Commands available in common
 
@@ -46,7 +46,7 @@ nekome tweet [flags] [text]
 - `-r <tweet ID>` `--reply <tweet ID>`
   - Specify the ID of the tweet to which you are replying
 
-## Commands available from command line
+## Commands available from CLI
 
 ### account
 
@@ -94,7 +94,7 @@ nekome edit [flags]
   - Specify which editor to use
   - If omitted, the value of `$EDITOR` will be specified
 
-## Commands available from within the app
+## Commands available from TUI
 
 ### home
 
@@ -104,11 +104,6 @@ Add home timeline page
 :home [flags]
 ```
 
-#### flags
-
-- `-u` `--unfocus`
-  - Do not focus when adding page
-
 ### mention
 
 Add mention timeline page
@@ -116,11 +111,6 @@ Add mention timeline page
 ```
 :mention [flags]
 ```
-
-#### flags
-
-- `-u` `--unfocus`
-  - Do not focus when adding page
 
 ### list
 
@@ -130,11 +120,6 @@ Add list timeline page
 :list [flags] <list name> <list id>
 ```
 
-#### flags
-
-- `-u` `--unfocus`
-  - Do not focus when adding page
-
 ### user
 
 Add user timeline page
@@ -143,10 +128,13 @@ Add user timeline page
 :user [flags] [user name]
 ```
 
-#### flags
+### likes
 
-- `-u` `--unfocus`
-  - Do not focus when adding page
+Add a user's Likes page
+
+```
+:likes [flags] [user name]
+```
 
 ### search
 
@@ -155,11 +143,6 @@ Add seaech result page
 ```
 :search [flags] <query>
 ```
-
-#### flags
-
-- `-u` `--unfocus`
-  - Do not focus when adding page
 
 ### docs
 
@@ -176,11 +159,6 @@ Documentation for keybindings
 ```
 :docs keybindings [flags]
 ```
-
-#### flags
-
-- `-u` `--unfocus`
-  - Do not focus when adding page
 
 ### quit
 
