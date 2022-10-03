@@ -46,6 +46,13 @@ Preferences file
 
 Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
 
+### About layout customization
+
+- You can customize the layout by combining valid tags `{tag}` within an item
+- If there is no content to replace for a given tag, **that tag + one trailing space/line break** will be removed
+  - Example: If a tweet has no annotation `{annotation} {name}`, `{annotation} ` will be removed and only `name` will be displayed
+- Only for `tweet` `user`, if all tags are replaced and end with a newline, the newline will be removed
+
 ### Example
 
 ```toml
@@ -91,14 +98,38 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
   user_bio_max_row = 3
   # Padding on left and right side of user page profile display area
   user_profile_padding_x = 4
+  # Separator for user details
+  user_detail_separator = " | "
+  # Hide separator between tweets
+  hide_tweet_seperator = false
+  # Hide separator for quoted tweets
+  hide_quote_tweet_separator = false
   # Characters used to display the graph
   graph_char = "█"
   # Maximum width of graph
   graph_max_width = 30
   # Tab separator
-  tab_separate = "|"
+  tab_separator = "|"
   # Tab maximum width
   tab_max_width = 20
+
+[layout]
+  # Tweet
+  tweet = "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}"
+  # Annotate about tweet
+  tweet_anotation = "{text} {author_name} {author_username}"
+  # Tweet Details
+  tweet_detail = "{created_at} | via {via}\n{metrics}"
+  # Polls
+  tweet_poll = "{graph}\n{detail}"
+  # Polling Graphs
+  tweet_poll_graph = "{label}\n{graph} {per} {votes}"
+  # Polling Details
+  tweet_poll_detail = "{status} | {all_votes} votes | ends on {end_date}"
+  # User profile
+  user = "{user_info}\n{bio}\n{user_detail}"
+  # User information
+  user_info = "{name} {username} {badge}"
 
 [text]
   # Unit of likes

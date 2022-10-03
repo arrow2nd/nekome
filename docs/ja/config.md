@@ -46,6 +46,13 @@ $HOME/.config/nekome
 
 [time パッケージ](https://pkg.go.dev/time#pkg-constants) と同じフォーマット構文が使用できます
 
+### レイアウトのカスタマイズについて
+
+- 項目内で有効なタグ `{tag}` を組み合わせてレイアウトをカスタマイズできます
+- 指定したタグに置換する内容が無かった場合、**そのタグ + 後ろにある 1 文字分の空白・改行** が削除されます
+  - 例: アノテーションが無い場合 `{annotation} {name}` は `{annotation} ` が削除され `name` のみが表示される
+- `tweet` `user` のみ、全てのタグを置換後に末尾が改行で終わる場合、その改行は削除されます
+
 ### 例
 
 ```toml
@@ -86,18 +93,42 @@ $HOME/.config/nekome
   date_fmt = "2006/01/02"
   # 時刻のフォーマット
   time_fmt = "15:04:05"
-  # ユーザページ / BIO の最大行数
+  # ユーザ / BIO の最大行数
   user_bio_max_row = 3
-  # ユーザページ / プロフィール表示域の左右パディング
+  # ユーザ / プロフィール表示域の左右パディング
   user_profile_padding_x = 4
+  # ユーザ / 詳細情報のセパレータ
+  user_detail_separator = " | "
+  # ツイート / ツイート間のセパレータを非表示
+  hide_tweet_seperator = false
+  # ツイート / 引用ツイートのセパレータを非表示
+  hide_quote_tweet_separator = false
   # グラフ / 表示に使用する文字
   graph_char = "█"
   # グラフ / 最大表示幅
   graph_max_width = 30
-  # タブ / セパレータ文字
-  tab_separate = "|"
+  # タブ / セパレータ
+  tab_separator = "|"
   # タブ / 最大表示幅
   tab_max_width = 20
+
+[layout]
+  # ツイート表示
+  tweet = "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}"
+  # アノテーション
+  tweet_anotation = "{text} {author_name} {author_username}"
+  # ツイート詳細
+  tweet_detail = "{created_at} | via {via}\n{metrics}"
+  # 投票表示
+  tweet_poll = "{graph}\n{detail}"
+  # 投票グラフ
+  tweet_poll_graph = "{label}\n{graph} {per} {votes}"
+  # 投票詳細
+  tweet_poll_detail = "{status} | {all_votes} votes | ends on {end_date}"
+  # ユーザプロフィール表示
+  user = "{user_info}\n{bio}\n{user_detail}"
+  # ユーザ詳細
+  user_info = "{name} {username} {badge}"
 
 [text]
   # いいねの単位

@@ -40,7 +40,7 @@ File name changed from `settings.yml` to `preferences.toml`.
 | appearance.userprofilepaddingx  | appearance.user_profile_padding_x |
 | appearance.graphchar            | appearance.graph_char             |
 | appearance.graphmaxwidth        | appearance.graph_max_width        |
-| appearance.tabseparate          | appearance.tab_separate           |
+| appearance.tabseparate          | appearance.tab_separator          |
 | appearance.tabmaxwidth          | appearance.tab_max_width          |
 | texts.like                      | text.like                         |
 | texts.retweet                   | text.retweet                      |
