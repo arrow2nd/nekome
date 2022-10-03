@@ -113,6 +113,7 @@ func (c *commandLine) Blur(closeAutocompleteList bool) {
 	}
 
 	shared.RequestFocusView()
+	shared.SetDisableViewKeyEvent(false)
 }
 
 // handleAutocomplete : コマンドの入力補完ハンドラ
@@ -157,6 +158,8 @@ func (c *commandLine) handleFocus() {
 	c.inputField.
 		SetLabel(":").
 		SetPlaceholder("")
+
+	shared.SetDisableViewKeyEvent(true)
 }
 
 // handleKeyEvent : キーイベントハンドラ
