@@ -88,7 +88,7 @@ nekome v2 では主に、設定ファイル周りに破壊的な変更がなさ�
 | user.username             | user.user_name                         |
 | user.verified             | user.verified                          |
 | user.private              | user.private                           |
-| user.detail               | user.detail                           |
+| user.detail               | user.detail                            |
 | user.tweetsmetricstext    | metrics.tweets_text                    |
 | user.tweetsmetricsbg      | metrics.tweets_background_color        |
 | user.followingmetricstext | metrics.following_text                 |
