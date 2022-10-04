@@ -86,7 +86,7 @@ Preferences file
   # Separator for user details
   user_detail_separator = " | "
   # Hide separator between tweets
-  hide_tweet_seperator = false
+  hide_tweet_separator = false
   # Hide separator for quoted tweets
   hide_quote_tweet_separator = false
   # Characters used to display the graph
@@ -442,7 +442,7 @@ The default style definition file.
   # Username (starting with @)
   user_name = "gray:-:i"
   # User detail (Geo, URL)
-  detaill = "gray:-:-"
+  detail = "gray:-:-"
   # Verified badge
   verified = "blue:-:-"
   # Private badge

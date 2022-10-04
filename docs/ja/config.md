@@ -85,7 +85,7 @@ $HOME/.config/nekome
   # ユーザ / 詳細情報のセパレータ
   user_detail_separator = " | "
   # ツイート / ツイート間のセパレータを非表示
-  hide_tweet_seperator = false
+  hide_tweet_separator = false
   # ツイート / 引用ツイートのセパレータを非表示
   hide_quote_tweet_separator = false
   # グラフ / 表示に使用する文字
@@ -449,7 +449,7 @@ arrow2nd @arrow_2nd ✅ 🔒
   # ユーザ名（@arrow_2nd みたいなの）
   user_name = "gray:-:i"
   # ユーザ詳細（位置情報, URL）
-  detaill = "gray:-:-"
+  detail = "gray:-:-"
   # 認証済みバッジ
   verified = "blue:-:-"
   # 非公開バッジ
