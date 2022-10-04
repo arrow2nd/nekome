@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"code.rocketnine.space/tslocum/cbind"
-	"github.com/arrow2nd/nekome/cli"
-	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/v2/cli"
+	"github.com/arrow2nd/nekome/v2/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"

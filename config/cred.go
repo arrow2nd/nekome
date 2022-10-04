@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/arrow2nd/nekome/api"
+	"github.com/arrow2nd/nekome/v2/api"
 	"github.com/dghubble/oauth1"
 )
 

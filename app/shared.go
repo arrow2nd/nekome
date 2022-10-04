@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/arrow2nd/nekome/api"
-	"github.com/arrow2nd/nekome/config"
-	"github.com/arrow2nd/nekome/log"
+	"github.com/arrow2nd/nekome/v2/api"
+	"github.com/arrow2nd/nekome/v2/config"
+	"github.com/arrow2nd/nekome/v2/log"
 	"github.com/rivo/tview"
 )
 

@@ -2,16 +2,18 @@
 
 ## [Unreleased]
 
+## [v2.0.0] - 2022-10-04
+
 ### Added
 
 - nekome 内での複数行のツイート編集機能を追加
-- カスタムできる配色・スタイルの項目を追加
 - キーバインドのカスタマイズを追加
 - レイアウトのカスタマイズを追加
+- カスタマイズできる配色・スタイル設定の項目を追加
+- カスタマイズできる外観設定の項目を追加
 - キーバインドを追加
   - 新規ツイート作成
   - ユーザのいいねリストを開く
-- `:<TAB>` でのコマンド補完を追加
 
 ### Fixed
 
@@ -27,6 +29,7 @@
 - ショートカットの呼称をキーバインドに変更
 - モーダルのボーダースタイルを変更
 - カーソル移動の上下ループを廃止
+- `:<TAB>` でコマンド補完を開始するよう変更
 
 ## [v1.2.0] - 2022-08-18
 
@@ -76,7 +79,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/arrow2nd/nekome/compare/v1.1.0...v2.0.0
 [v1.2.0]: https://github.com/arrow2nd/nekome/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/arrow2nd/nekome/compare/v1.0.3...v1.1.0
 [v1.0.3]: https://github.com/arrow2nd/nekome/compare/v1.0.2...v1.0.3

@@ -3,8 +3,8 @@ package config_test
 import (
 	"testing"
 
-	"github.com/arrow2nd/nekome/api"
-	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/v2/api"
+	"github.com/arrow2nd/nekome/v2/config"
 	"github.com/dghubble/oauth1"
 	"github.com/stretchr/testify/assert"
 )

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/arrow2nd/nekome/log"
+	"github.com/arrow2nd/nekome/v2/log"
 )
 
 // Config : 設定

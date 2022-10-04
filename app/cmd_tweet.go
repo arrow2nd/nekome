@@ -11,7 +11,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/arrow2nd/nekome/cli"
+	"github.com/arrow2nd/nekome/v2/cli"
 	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"

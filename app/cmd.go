@@ -3,8 +3,8 @@ package app
 import (
 	"fmt"
 
-	"github.com/arrow2nd/nekome/cli"
-	"github.com/arrow2nd/nekome/log"
+	"github.com/arrow2nd/nekome/v2/cli"
+	"github.com/arrow2nd/nekome/v2/log"
 	"github.com/spf13/pflag"
 )
 
