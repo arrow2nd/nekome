@@ -1,8 +1,9 @@
-module github.com/arrow2nd/nekome
+module github.com/arrow2nd/nekome/v2
 
 go 1.18
 
 require (
+	code.rocketnine.space/tslocum/cbind v0.1.5
 	github.com/BurntSushi/toml v1.2.0
 	github.com/atotto/clipboard v0.1.4
 	github.com/dghubble/oauth1 v0.7.1
@@ -14,7 +15,6 @@ require (
 )
 
 require (
-	code.rocketnine.space/tslocum/cbind v0.1.5 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect

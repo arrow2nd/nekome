@@ -7,7 +7,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/v2/config"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/gdamore/tcell/v2"
 )

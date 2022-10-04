@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/arrow2nd/nekome/app"
-	"github.com/arrow2nd/nekome/log"
+	"github.com/arrow2nd/nekome/v2/app"
+	"github.com/arrow2nd/nekome/v2/log"
 )
 
 func main() {

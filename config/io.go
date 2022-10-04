@@ -63,7 +63,7 @@ Starting with nekome v2.0.0, the configuration file format has been changed from
 Please run 'nekome edit' and reconfigure the file.
 
 For more information, please refer to the following pages.
-https://github.com/arrow2nd/nekome/blob/v2/docs/en/migrate-v1-v2.md
+https://github.com/arrow2nd/nekome/v2/blob/v2/docs/en/migrate-v1-v2.md
 
 (This notice will not appear if you delete the old configuration file)
 `

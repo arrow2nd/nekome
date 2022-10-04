@@ -3,7 +3,7 @@ package cli_test
 import (
 	"testing"
 
-	"github.com/arrow2nd/nekome/cli"
+	"github.com/arrow2nd/nekome/v2/cli"
 	"github.com/stretchr/testify/assert"
 )
 

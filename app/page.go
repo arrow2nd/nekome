@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/v2/config"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )

@@ -4,8 +4,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/arrow2nd/nekome/cli"
-	"github.com/arrow2nd/nekome/config"
+	"github.com/arrow2nd/nekome/v2/cli"
+	"github.com/arrow2nd/nekome/v2/config"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/pflag"
 )

@@ -1,6 +1,6 @@
 package app
 
-import "github.com/arrow2nd/nekome/api"
+import "github.com/arrow2nd/nekome/v2/api"
 
 // addAccount : アカウントを追加
 func addAccount(setMain bool) error {

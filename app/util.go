@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/arrow2nd/nekome/log"
+	"github.com/arrow2nd/nekome/v2/log"
 	"github.com/g8rswimmer/go-twitter/v2"
 	"github.com/mattn/go-runewidth"
 	"golang.org/x/crypto/ssh/terminal"
