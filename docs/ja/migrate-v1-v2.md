@@ -40,7 +40,7 @@ nekome v2 では主に、設定ファイル周りに破壊的な変更がなさ�
 | appearance.userprofilepaddingx  | appearance.user_profile_padding_x |
 | appearance.graphchar            | appearance.graph_char             |
 | appearance.graphmaxwidth        | appearance.graph_max_width        |
-| appearance.tabseparate          | appearance.tab_separate           |
+| appearance.tabseparate          | appearance.tab_separator          |
 | appearance.tabmaxwidth          | appearance.tab_max_width          |
 | texts.like                      | text.like                         |
 | texts.retweet                   | text.retweet                      |

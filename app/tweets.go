@@ -242,6 +242,7 @@ func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
 func (t *tweets) draw(cursorPos int) {
+	pref := shared.conf.Pref
 	width := getWindowWidth()
 
 	t.view.
@@ -263,15 +264,16 @@ func (t *tweets) draw(cursorPos int) {
 
 	for i, content := range contents {
 		var quotedTweet *twitter.TweetDictionary = nil
+		annotation := ""
 
 		// 参照ツイートを確認
 		for _, rc := range content.ReferencedTweets {
 			switch rc.Reference.Type {
 			case "retweeted":
-				fmt.Fprintln(t.view, createAnnotation("RT by", content.Author))
+				annotation += createAnnotation("RT by", content.Author)
 				content = content.ReferencedTweets[0].TweetDictionary
 			case "replied_to":
-				fmt.Fprintln(t.view, createAnnotation("Reply to", rc.TweetDictionary.Author))
+				annotation += createAnnotation("Reply to", rc.TweetDictionary.Author)
 			case "quoted":
 				quotedTweet = rc.TweetDictionary
 			}
@@ -279,22 +281,28 @@ func (t *tweets) draw(cursorPos int) {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			icon := shared.conf.Pref.Icon.Pinned
-			fmt.Fprintf(t.view, "[gray:-:-]%s Pinned Tweet[-:-:-]\n", icon)
+			annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", pref.Icon.Pinned)
 		}
 
-		fmt.Fprintln(t.view, createTweetLayout(content, i, width))
+		fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
-			fmt.Fprintln(t.view, createSeparator("-", width))
-			fmt.Fprintln(t.view, createTweetLayout(quotedTweet, -1, width))
+			if !pref.Appearance.HideQuoteTweetSeparator {
+				fmt.Fprintln(t.view, createSeparator(pref.Appearance.QuoteTweetSeparator, width))
+			}
+
+			fmt.Fprintln(t.view, createTweetLayout("", quotedTweet, -1, width))
 		}
 
-		// 末尾のツイートでないならセパレータを挿入
-		lastIndex := t.GetTweetsCount() - 1
-		if i < lastIndex {
-			fmt.Fprintln(t.view, createSeparator("─", width))
+		// セパレータを挿入しない
+		if pref.Appearance.HideTweetSeparator {
+			continue
+		}
+
+		// 末尾のツイート以外ならセパレータを挿入
+		if i < t.GetTweetsCount()-1 {
+			fmt.Fprintln(t.view, createSeparator(pref.Appearance.TweetSeparator, width))
 		}
 	}
 

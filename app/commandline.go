@@ -29,19 +29,21 @@ func newCommandLine() *commandLine {
 
 // Init : 初期化
 func (c *commandLine) Init() {
-	style := shared.conf.Style.Autocomplate
-	textColor := style.TextColor.ToColor()
+	style := shared.conf.Style
+	acTextColor := style.Autocomplate.TextColor.ToColor()
 
 	c.inputField.
 		SetAutocompleteStyles(
-			style.BackgroundColor.ToColor(),
+			style.Autocomplate.BackgroundColor.ToColor(),
 			tcell.StyleDefault.
-				Foreground(textColor),
+				Foreground(acTextColor),
 			tcell.StyleDefault.
-				Foreground(textColor).
-				Background(style.SelectedBackgroundColor.ToColor()),
+				Foreground(acTextColor).
+				Background(style.Autocomplate.SelectedBackgroundColor.ToColor()),
 		).
-		SetLabelColor(textColor).
+		SetLabelColor(style.App.TextColor.ToColor())
+
+	c.inputField.
 		SetAutocompleteFunc(c.handleAutocomplete).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).

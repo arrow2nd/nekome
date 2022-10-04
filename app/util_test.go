@@ -38,9 +38,8 @@ func TestMD5(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getMD5(tt.arg); got != tt.want {
-				t.Errorf("getMD5() = %v, want %v", got, tt.want)
-			}
+			got := getMD5(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -53,29 +52,34 @@ func TestGetStringDisplayRow(t *testing.T) {
 		want int
 	}{
 		{
-			name: "半角文字の表示行数が取得できるか",
+			name: "半角文字",
 			s:    "morino",
 			w:    1,
 			want: 6,
 		},
 		{
-			name: "全角文字の表示行数が取得できるか",
+			name: "全角文字",
 			s:    "杜野",
 			w:    10,
 			want: 1,
 		},
 		{
-			name: "複数行に渡る文字列の表示行数が取得できるか",
+			name: "複数行に渡る文字列",
 			s:    "serizawa_asahi,mayuzumi_fuyuko,izumi_mei",
 			w:    10,
+			want: 4,
+		},
+		{
+			name: "改行を含む文字列",
+			s:    "osaki_tenka\nosaki_amana\nkuwayama_chiyuki",
+			w:    11,
 			want: 4,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getStringDisplayRow(tt.s, tt.w); got != tt.want {
-				t.Errorf("getStringDisplayRow() = %v, want %v", got, tt.want)
-			}
+			got := getStringDisplayRow(tt.s, tt.w)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -124,9 +128,8 @@ func TestGetHighlightId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getHighlightId(tt.arg); got != tt.want {
-				t.Errorf("getHighlightId() = %v, want %v", got, tt.want)
-			}
+			got := getHighlightId(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -160,9 +163,9 @@ func TestFind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if index, got := find(tt.s, tt.f); index != tt.want || got != tt.found {
-				t.Errorf("find() = %v, %v, want &v, %v", got, tt.want, tt.found)
-			}
+			index, got := find(tt.s, tt.f)
+			assert.Equal(t, tt.want, index)
+			assert.Equal(t, tt.found, got)
 		})
 	}
 }
@@ -191,9 +194,8 @@ func TestTruncate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := truncate(tt.s, tt.w); got != tt.want {
-				t.Errorf("truncate() = %v, want %v", got, tt.want)
-			}
+			got := truncate(tt.s, tt.w)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -227,9 +229,8 @@ func TestTrimEndNewline(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := trimEndNewline(tt.s); got != tt.want {
-				t.Errorf("trimEndNewline() = %v, want %v", got, tt.want)
-			}
+			got := trimEndNewline(tt.s)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -265,6 +266,44 @@ func TestSplit(t *testing.T) {
 	}
 }
 
+func TestReplaceLayoutTag(t *testing.T) {
+	tests := []struct {
+		name string
+		l    string
+		t    string
+		s    string
+		want string
+	}{
+		{
+			name: "置換できるか",
+			l:    "I am {test} man",
+			t:    "{test}",
+			s:    "iron",
+			want: "I am iron man",
+		},
+		{
+			name: "置換文字列がある場合タグ末尾の空白文字が残るか",
+			l:    "{test}\t",
+			t:    "{test}",
+			s:    "neko-chan",
+			want: "neko-chan\t",
+		},
+		{
+			name: "置換文字列が空の場合タグ末尾の空白文字が消去されるか",
+			l:    "{test}\n",
+			t:    "{test}",
+			s:    "",
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := replaceLayoutTag(tt.l, tt.t, tt.s)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestIsSameDate(t *testing.T) {
 	tests := []struct {
 		name string
@@ -294,9 +333,8 @@ func TestIsSameDate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isSameDate(tt.arg); got != tt.want {
-				t.Errorf("isSameDate() = %v, want %v", got, tt.want)
-			}
+			got := isSameDate(tt.arg)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -343,7 +381,7 @@ func TestCreateMetricsString(t *testing.T) {
 			style:   "pink",
 			count:   1,
 			reverse: false,
-			want:    "[pink]1Fav[-:-:-] ",
+			want:    "[pink]1Fav[-:-:-]",
 		},
 		{
 			name:    "2いいね",
@@ -351,14 +389,13 @@ func TestCreateMetricsString(t *testing.T) {
 			style:   "pink",
 			count:   2,
 			reverse: false,
-			want:    "[pink]2Favs[-:-:-] ",
+			want:    "[pink]2Favs[-:-:-]",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createMetricsString(tt.unit, tt.style, tt.count, tt.reverse); got != tt.want {
-				t.Errorf("createMetricsString() = %v, want %v", got, tt.want)
-			}
+			s := createMetricsString(tt.unit, tt.style, tt.count)
+			assert.Equal(t, tt.want, s)
 		})
 	}
 }
@@ -409,9 +446,8 @@ func TestCreateTweetSummary(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createTweetSummary(tt.t); got != tt.want {
-				t.Errorf("createTweetSummary() = %v, want %v", got, tt.want)
-			}
+			s := createTweetSummary(tt.t)
+			assert.Equal(t, tt.want, s)
 		})
 	}
 }

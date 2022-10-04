@@ -15,8 +15,6 @@ $HOME/.config/nekome
 
 Credential data file
 
-### Example
-
 ```toml
 # Twitter API consumer key
 [consumer]
@@ -41,12 +39,6 @@ Credential data file
 ## preferences.toml
 
 Preferences file
-
-### About date and time formats
-
-Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
-
-### Example
 
 ```toml
 [feature]
@@ -91,14 +83,38 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
   user_bio_max_row = 3
   # Padding on left and right side of user page profile display area
   user_profile_padding_x = 4
+  # Separator for user details
+  user_detail_separator = " | "
+  # Hide separator between tweets
+  hide_tweet_seperator = false
+  # Hide separator for quoted tweets
+  hide_quote_tweet_separator = false
   # Characters used to display the graph
   graph_char = "█"
   # Maximum width of graph
   graph_max_width = 30
-  # Tab separator
-  tab_separate = "|"
+  # Separator of Tab
+  tab_separator = "|"
   # Tab maximum width
   tab_max_width = 20
+
+[layout]
+  # Tweet
+  tweet = "{annotation}\n{user_info}\n{text}\n{poll}\n{detail}"
+  # Annotate about tweet
+  tweet_anotation = "{text} {author_name} {author_username}"
+  # Tweet Details
+  tweet_detail = "{created_at} | via {via}\n{metrics}"
+  # Polls
+  tweet_poll = "{graph}\n{detail}"
+  # Polling Graphs
+  tweet_poll_graph = "{label}\n{graph} {per} {votes}"
+  # Polling Details
+  tweet_poll_detail = "{status} | {all_votes} votes | ends on {end_date}"
+  # User profile
+  user = "{user_info}\n{bio}\n{user_detail}"
+  # User information
+  user_info = "{name} {username} {badge}"
 
 [text]
   # Unit of likes
@@ -177,25 +193,195 @@ Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
     user_unmute = ["U"]
 ```
 
+### About date and time formats
+
+Uses the same format as [time package](https://pkg.go.dev/time#pkg-constants)
+
+### About layout customization
+
+- You can customize the layout by combining valid tags `{tag}` within an item
+- If there is no content to replace for a given tag, **that tag + one trailing space/line break** will be removed
+  - Example: If a tweet has no annotation `{annotation} {name}`, `{annotation} ` will be removed and only `name` will be displayed
+- Only for `tweet` `user`, if all tags are replaced and end with a newline, the newline will be removed
+
+#### tweet
+
+Layout of overall tweet
+
+##### Default
+
+```
+{annotation}\n{user_info}\n{text}\n{poll}\n{detail}
+```
+
+##### Correspondence between display and settings
+
+```
+RT by arrow2nd @arrow_2nd                        ── {annotation}
+arrow2nd @arrow_2nd                              ── {user_info}
+This is test tweet                               ── {text}
+test1                                            ┐
+███ 0.1% (2)                                     │
+test2                                            │
+███████ 0.2% (4)                                 │
+test3                                            ├─ {poll}
+████████████ 0.4% (7)                            │
+test4                                            │
+███████ 0.2% (4)                                 │
+closed | 17 votes | ends on 2022/06/28 10:07:56  ┘
+2022/06/21 10:07:56 | via Twitter for Android    ┬─ {detail}
+1Like 2RTs                                       ┘
+```
+
+#### tweet_anotation
+
+Layout of annotations in tweets
+
+##### Default
+
+```
+{text} {author_name} {author_username}
+```
+
+##### Correspondence between display and settings
+
+```
+RT by arrow2nd @arrow_2nd
+~~~~~ ~~~~~~~~ ~~~~~~~~~~
+  │      │         └── {author_username}
+  │      └──────────── {author_name}
+  └─────────────────── {text}
+```
+
+#### tweet_detail
+
+Layout of tweet detail
+
+##### Default
+
+```
+{created_at} | via {via}\n{metrics}
+```
+
+##### Correspondence between display and settings
+
+```
+
+2022/06/21 10:07:56 | via Twitter for Android
+~~~~~~~~~~~~~~~~~~~       ~~~~~~~~~~~~~~~~~~~
+1Like 2RTs    │                    └───────── {via}
+~~~~~~~~~~    └────────────────────────────── {created_at}
+    └──────────────────────────────────────── {metrics}
+```
+
+#### tweet_poll
+
+Layout of overall poll
+
+##### Default
+
+```
+{graph}\n{detail}
+```
+
+##### Correspondence between display and settings
+
+```
+test1                                            ┐
+███ 0.1% (2)                                     │
+test2                                            │
+███████ 0.2% (4)                                 │
+test3                                            ├─ {graph}
+████████████ 0.4% (7)                            │
+test4                                            │
+███████ 0.2% (4)                                 ┘
+closed | 17 votes | ends on 2022/06/28 10:07:56  ── {detail}
+```
+
+#### tweet_poll_graph
+
+Layout of poll graph
+
+##### Default
+
+```
+{label}\n{graph} {per} {votes}
+```
+
+##### Correspondence between display and settings
+
+```
+test1 ─────── {label}
+███ 0.1% (2)
+~~~ ~~~~ ~~~
+ │    │   └── {votes}
+ │    └────── {per}
+ └─────────── {graph}
+```
+
+#### tweet_poll_detail
+
+Layout of poll detail
+
+##### Default
+
+```
+{status} | {all_votes} votes | ends on {end_date}
+```
+
+##### Correspondence between display and settings
+
+```
+closed | 17 votes | ends on 2022/06/28 10:07:56
+~~~~~~   ~~                 ~~~~~~~~~~~~~~~~~~~
+  │       │                         └────────── {end_date}
+  │       └──────────────────────────────────── {all_votes}
+  └──────────────────────────────────────────── {status}
+```
+
+#### user
+
+Layout of user profile
+
+##### Default
+
+```
+{user_info}\n{bio}\n{user_detail}
+```
+
+##### Correspondence between display and settings
+
+```
+         arrow2nd @arrow_2nd           ── {user_info}
+            I am super cat             ── {bio}
+📍 Japan | 🔗 https://t.co/PTi91DHh5Q  ── {user_detail}
+```
+
+#### user_info
+
+Layout of user info
+
+- Common layout in `tweet` and `user`
+
+##### Default
+
+```
+{name} {username} {badge}
+```
+
+##### Correspondence between display and settings
+
+```
+arrow2nd @arrow_2nd ✅ 🔒
+~~~~~~~~ ~~~~~~~~~~ ~~~~~
+   │         │        └──── {badge}
+   │         └───────────── {username}
+   └─────────────────────── {name}
+```
+
 ## style_default.toml
 
 The default style definition file.
-
-The file specified in `appearance.style_file` in `preferences.toml` is loaded.
-
-### Syntax of configuration items
-
-#### Items ending with `_color`
-
-Hexadecimal color codes beginning with `#` can be used
-
-#### Other items
-
-[Color tag for tview](https://pkg.go.dev/github.com/rivo/tview#hdr-Colors) can be used
-
-> Syntax: `<foreground>:<background>:<flags>`
-
-### Example
 
 ```toml
 [app]
@@ -276,3 +462,15 @@ Hexadecimal color codes beginning with `#` can be used
   # Followers / Background
   followers_background_color = "#89b8c2"
 ```
+
+### Syntax of configuration items
+
+#### Items ending with `_color`
+
+Hexadecimal color codes beginning with `#` can be used
+
+#### Other items
+
+[Color tag for tview](https://pkg.go.dev/github.com/rivo/tview#hdr-Colors) can be used
+
+> Syntax: `<foreground>:<background>:<flags>`

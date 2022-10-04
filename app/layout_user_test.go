@@ -17,6 +17,10 @@ func TestCreateProfileLayout(t *testing.T) {
 					UserBIOMaxRow:       3,
 					UserProfilePaddingX: 4,
 				},
+				Layout: config.Layout{
+					User:     "{user_info}\n{bio}\n{user_detail}",
+					UserInfo: "{name} {username} {badge}",
+				},
 				Icon: config.Icon{
 					Geo:  "g",
 					Link: "l",
@@ -42,9 +46,9 @@ func TestCreateProfileLayout(t *testing.T) {
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name [style_user_name]@user_name[-:-:-]
+		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
 bio
-[style_detail]g location | l url[-:-:-]`
+[style_detail]g locationl url[-:-:-]`
 
 		assert.Equal(t, want, s)
 		assert.Equal(t, 3, r)
@@ -58,9 +62,8 @@ bio
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name [style_user_name]@user_name[-:-:-]
-bio
-`
+		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
+bio`
 
 		assert.Equal(t, want, s)
 		assert.Equal(t, 2, r)
@@ -84,10 +87,8 @@ func TestCreateUserBioLayout(t *testing.T) {
 テスト`
 		want := "テスト テスト テスト"
 
-		s, r := createUserBioLayout(bio, 100)
-
+		s := createUserBioLayout(bio, 100)
 		assert.Equal(t, want, s)
-		assert.Equal(t, 1, r)
 	})
 
 	t.Run("最大表示幅を超えた場合に省略されるか", func(t *testing.T) {
@@ -95,10 +96,9 @@ func TestCreateUserBioLayout(t *testing.T) {
 		want := "12345678…"
 
 		runewidth.DefaultCondition.EastAsianWidth = false
-		s, r := createUserBioLayout(bio, 3)
 
+		s := createUserBioLayout(bio, 3)
 		assert.Equal(t, want, s)
-		assert.Equal(t, 3, r)
 	})
 }
 
@@ -106,6 +106,9 @@ func TestCreateUserDetailLayout(t *testing.T) {
 	shared = Shared{
 		conf: &config.Config{
 			Pref: &config.Preferences{
+				Appearance: config.Appearancene{
+					UserDetailSeparator: " | ",
+				},
 				Icon: config.Icon{
 					Geo:  "g",
 					Link: "l",
