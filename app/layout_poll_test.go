@@ -68,11 +68,11 @@ func TestCreatePollLayout(t *testing.T) {
 		d := p.Local().Format("2006/01/02 15:04:05")
 		want := fmt.Sprintf(
 			`test_1
-[style_poll_g]==[-:-:-] 0.2%% [style_poll_d](2)[-:-:-]
+[style_poll_g]==[-:-:-] 20.0%% [style_poll_d](2)[-:-:-]
 test_2
-[style_poll_g]=====[-:-:-] 0.5%% [style_poll_d](5)[-:-:-]
+[style_poll_g]=====[-:-:-] 50.0%% [style_poll_d](5)[-:-:-]
 test_3
-[style_poll_g]===[-:-:-] 0.3%% [style_poll_d](3)[-:-:-]
+[style_poll_g]===[-:-:-] 30.0%% [style_poll_d](3)[-:-:-]
 [style_poll_d]closed | 10 | %s[-:-:-]`,
 			d,
 		)
