@@ -69,7 +69,7 @@ func createPollGraphLayout(p []*twitter.PollOptionObj, allVotes, w int) string {
 		pl = replaceLayoutTag(pl, "{graph}", graph)
 
 		// 得票率
-		pl = replaceLayoutTag(pl, "{per}", fmt.Sprintf("%.1f%%", per))
+		pl = replaceLayoutTag(pl, "{per}", fmt.Sprintf("%.1f%%", per*100))
 
 		// 投票数
 		votes := createStyledText(style.PollDetail, fmt.Sprintf("(%d)", o.Votes))
