@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.0.1] - 2022-10-04
+
+### Fixed
+
+- 自動リリースに使用しているモジュールのパスを修正
+
 ## [v2.0.0] - 2022-10-04
 
 ### Added
@@ -79,7 +85,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.1...HEAD
+[v2.0.1]: https://github.com/arrow2nd/nekome/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/arrow2nd/nekome/compare/v1.1.0...v2.0.0
 [v1.2.0]: https://github.com/arrow2nd/nekome/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/arrow2nd/nekome/compare/v1.0.3...v1.1.0
