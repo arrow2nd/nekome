@@ -67,7 +67,7 @@ type TweetStyle struct {
 type UserStyle struct {
 	Name     string `toml:"name"`
 	UserName string `toml:"user_name"`
-	Detail   string `toml:"detaill"`
+	Detail   string `toml:"detail"`
 	Verified string `toml:"verified"`
 	Private  string `toml:"private"`
 }

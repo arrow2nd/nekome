@@ -31,7 +31,7 @@ type Appearancene struct {
 	// UserDetailSeparator : ユーザ詳細のセパレータ
 	UserDetailSeparator string `toml:"user_detail_separator"`
 	// HideTweetSeparator : ツイート間のセパレータを非表示
-	HideTweetSeparator bool `toml:"hide_tweet_seperator"`
+	HideTweetSeparator bool `toml:"hide_tweet_separator"`
 	// HideQuoteTweetSeparator : 引用ツイートのセパレータを非表示
 	HideQuoteTweetSeparator bool `toml:"hide_quote_tweet_separator"`
 	// TweetSeparator : ツイートのセパレータ

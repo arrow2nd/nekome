@@ -88,7 +88,7 @@ See [Sample Styles](../sample_styles.md) for a sample.
 | user.username             | user.user_name                         |
 | user.verified             | user.verified                          |
 | user.private              | user.private                           |
-| user.detail               | user.detaill                           |
+| user.detail               | user.detail                            |
 | user.tweetsmetricstext    | metrics.tweets_text                    |
 | user.tweetsmetricsbg      | metrics.tweets_background_color        |
 | user.followingmetricstext | metrics.following_text                 |

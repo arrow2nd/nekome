@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.0.3] - 2022-10-04
+
+### Fixed
+
+- 設定項目の typo
+
 ## [v2.0.2] - 2022-10-04
 
 ### Fixed
@@ -13,7 +19,7 @@
 ### Fixed
 
 - 自動リリースに使用しているモジュールのパスを修正
-- Notice メッセージの URL の Typo を修正
+- Notice メッセージの URL の typo を修正
 
 ## [v2.0.0] - 2022-10-04
 
@@ -92,7 +98,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.2...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.3...HEAD
+[v2.0.3]: https://github.com/arrow2nd/nekome/compare/v2.0.2...v2.0.3
 [v2.0.2]: https://github.com/arrow2nd/nekome/compare/v2.0.1...v2.0.2
 [v2.0.1]: https://github.com/arrow2nd/nekome/compare/v2.0.0...v2.0.1
 [v2.0.0]: https://github.com/arrow2nd/nekome/compare/v1.1.0...v2.0.0
