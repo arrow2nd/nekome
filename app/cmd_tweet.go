@@ -48,12 +48,14 @@ echo "にゃーん" | nekome tweet`
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	isTerm := term.IsTerminal(int(syscall.Stdin))
-	text := f.Arg(0)
 
+	text := ""
 	// 標準入力を受け取る
 	if f.NArg() == 0 && !isTerm {
 		stdin, _ := ioutil.ReadAll(os.Stdin)
 		text = string(stdin)
+	} else {
+		text = strings.Join(f.Args(), " ")
 	}
 
 	pref := shared.conf.Pref
