@@ -125,16 +125,12 @@ func (a *App) newSearchCmd() *cli.Command {
 		Name:      "search",
 		Shorthand: "s",
 		Short:     "Add seaech result page",
-		Long: `Add seaech result page.
-
-If the query contains spaces, enclose it in double quotes.`,
 		UsageArgs: "<query>",
 		Example:   "search golang",
-		Validate:  cli.RequireArgs(1),
 		Hidden:    shared.isCommandLineMode,
 		SetFlag:   setUnfocusFlag,
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			query := f.Arg(0)
+			query := strings.Join(f.Args(), " ")
 			if query == "" {
 				return errors.New("please specify search query")
 			}
