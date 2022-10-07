@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `tweet`, `search` でスペースを含む文字列をそのまま受け取れるよう変更
+
 ## [v2.0.3] - 2022-10-04
 
 ### Fixed
