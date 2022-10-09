@@ -34,6 +34,6 @@ func Exit(s string) {
 
 // ErrorExit : エラーを出力して終了
 func ErrorExit(e string, c ExitCode) {
-	fmt.Fprintln(os.Stderr, e)
+	fmt.Fprintf(os.Stderr, "[Error] %s\n", e)
 	os.Exit(c.GetInt())
 }
