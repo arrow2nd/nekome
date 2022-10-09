@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [v2.0.5] - 2022-10-09
+
+### Fixed
+
+- 内部エディタが起動しない
+- 外部エディタ起動後に画面が再描画されない
+
 ## [v2.0.4] - 2022-10-09
 
 ### Fixed
@@ -109,7 +116,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.4...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.5...HEAD
+[v2.0.5]: https://github.com/arrow2nd/nekome/compare/v2.0.4...v2.0.5
 [v2.0.4]: https://github.com/arrow2nd/nekome/compare/v2.0.3...v2.0.4
 [v2.0.3]: https://github.com/arrow2nd/nekome/compare/v2.0.2...v2.0.3
 [v2.0.2]: https://github.com/arrow2nd/nekome/compare/v2.0.1...v2.0.2
