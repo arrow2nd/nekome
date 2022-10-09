@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [v2.0.4] - 2022-10-09
+
+### Fixed
+
+- サブコマンドのフラグがパースできない
+- `nekome tweet` で外部エディタが起動できない
+
 ### Changed
 
 - `tweet`, `search` でスペースを含む文字列をそのまま受け取れるよう変更
@@ -102,7 +109,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.3...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.4...HEAD
+[v2.0.4]: https://github.com/arrow2nd/nekome/compare/v2.0.3...v2.0.4
 [v2.0.3]: https://github.com/arrow2nd/nekome/compare/v2.0.2...v2.0.3
 [v2.0.2]: https://github.com/arrow2nd/nekome/compare/v2.0.1...v2.0.2
 [v2.0.1]: https://github.com/arrow2nd/nekome/compare/v2.0.0...v2.0.1
