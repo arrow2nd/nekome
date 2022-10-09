@@ -140,12 +140,15 @@ func (a *App) loadConfig() error {
 func (a *App) parseRuntimeArgs() (string, error) {
 	f := a.cmd.NewFlagSet()
 
+	f.ParseErrorsWhitelist.UnknownFlags = true
+
 	if err := f.Parse(os.Args[1:]); err != nil {
 		return "", err
 	}
 
-	// ログイン処理をスキップするか
-	skipLogin := f.Changed("help") || f.Changed("version") || f.Arg(0) == "e" || f.Arg(0) == "edit"
+	// ログインをスキップするか
+	arg := f.Arg(0)
+	skipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
 
 	// コマンドラインモードか
 	shared.isCommandLineMode = f.NArg() > 0 || skipLogin
