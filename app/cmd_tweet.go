@@ -27,7 +27,7 @@ When specifying multiple images, please separate them with commas.
 You may attach up to four images at a time.`
 
 	example := `tweet にゃーん --image cute_cat.png,very_cute_cat.png
-echo "にゃーん" | nekome tweet`
+  echo "にゃーん" | nekome tweet`
 
 	return &cli.Command{
 		Name:      "tweet",
@@ -47,18 +47,16 @@ echo "にゃーん" | nekome tweet`
 }
 
 func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
-	isTerm := term.IsTerminal(int(syscall.Stdin))
-
+	pref := shared.conf.Pref
 	text := ""
+
 	// 標準入力を受け取る
-	if f.NArg() == 0 && !isTerm {
+	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
 		stdin, _ := ioutil.ReadAll(os.Stdin)
 		text = string(stdin)
 	} else {
 		text = strings.Join(f.Args(), " ")
 	}
-
-	pref := shared.conf.Pref
 
 	editor, _ := f.GetString("editor")
 	quoteId, _ := f.GetString("quote")
@@ -67,7 +65,7 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if text == "" {
 		// エディタを開く
-		if isTerm || pref.Feature.UseExternalEditor {
+		if shared.isCommandLineMode || pref.Feature.UseExternalEditor {
 			var err error
 			text, err = a.editTweetExternalEditor(editor)
 			return err
