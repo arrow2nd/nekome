@@ -49,6 +49,10 @@ func (a *App) Init() error {
 
 	// ユーザが空でなければログイン
 	if user != "" {
+		if err := a.loadCred(); err != nil {
+			return err
+		}
+
 		if err := loginAccount(user); err != nil {
 			return err
 		}
@@ -122,7 +126,11 @@ func (a *App) loadConfig() error {
 		return err
 	}
 
-	// 認証情報
+	return nil
+}
+
+// loadCred : 認証情報を読み込む
+func (a *App) loadCred() error {
 	existUser, err := shared.conf.LoadCred()
 	if err != nil {
 		return err
