@@ -28,9 +28,9 @@ func TestCreateProfileLayout(t *testing.T) {
 			},
 			Style: &config.Style{
 				User: config.UserStyle{
-					Name:     "style_name",
-					UserName: "style_user_name",
-					Detail:   "style_detail",
+					Name:     "name:-:-",
+					UserName: "username:-:-",
+					Detail:   "detail:-:-",
 				},
 			},
 		},
@@ -46,9 +46,9 @@ func TestCreateProfileLayout(t *testing.T) {
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
+		want := `[name:-:-]name[-:-:-] [username:-:-]@user_name[-:-:-]
 bio
-[style_detail]g locationl url[-:-:-]`
+[detail:-:-]g locationl url[-:-:-]`
 
 		assert.Equal(t, want, s)
 		assert.Equal(t, 3, r)
@@ -62,7 +62,7 @@ bio
 		}
 
 		s, r := createProfileLayout(u, 100)
-		want := `[style_name]name[-:-:-] [style_user_name]@user_name[-:-:-]
+		want := `[name:-:-]name[-:-:-] [username:-:-]@user_name[-:-:-]
 bio`
 
 		assert.Equal(t, want, s)
