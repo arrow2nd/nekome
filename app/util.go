@@ -76,8 +76,12 @@ func getMD5(s string) string {
 func getStringDisplayRow(s string, w int) int {
 	row := 0
 
-	for _, s := range strings.Split(s, "\n") {
-		row += int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
+	// Color Tag・ハイライトタグを削除
+	tagDeleted := replaceAll(s, `\[(.+?:.+?:.+?|".*?")\]`, "")
+
+	for _, s := range strings.Split(tagDeleted, "\n") {
+		r := int(math.Ceil(float64(runewidth.StringWidth(s)) / float64(w)))
+		row += r
 	}
 
 	return row
