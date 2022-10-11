@@ -125,7 +125,7 @@ func (u *userPage) Load() {
 
 	// ピン留めツイートがあれば登録
 	if u.data.PinnedTweet != nil {
-		u.tweets.RegisterPinned(u.data.PinnedTweet)
+		u.tweets.RegisterPinnedTweet(u.data.PinnedTweet)
 	}
 
 	u.tweets.Update(tweets)

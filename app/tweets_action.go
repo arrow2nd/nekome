@@ -62,6 +62,14 @@ func (t *tweets) actionForTweet(a string) {
 			return
 		}
 
+		// TODO: RTの解除でもリストからツイートを削除するようにしたいが、
+		//       RTしていなくてもAPIのリクエストが通ってしまうので未実装。
+
+		// ツイート削除ならリストからツイートを削除
+		if a == tweetActionDelete {
+			t.DeleteTweet(id)
+		}
+
 		if !strings.HasSuffix(label, "e") {
 			label += "e"
 		}
