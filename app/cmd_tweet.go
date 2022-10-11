@@ -64,17 +64,21 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	images, _ := f.GetStringSlice("image")
 
 	if text == "" {
+		// テキストエリアを開く
+		if !shared.isCommandLineMode && !pref.Feature.UseExternalEditor {
+			a.view.ShowTextArea(pref.Text.TweetTextAreaHint, func(s string) {
+				execPostTweet(s, quoteId, replyId, images)
+			})
+			return nil
+		}
+
 		// エディタを開く
-		if shared.isCommandLineMode || pref.Feature.UseExternalEditor {
-			var err error
-			text, err = a.editTweetExternalEditor(editor)
+		t, err := a.editTweetExternalEditor(editor)
+		if err != nil {
 			return err
 		}
 
-		// テキストエリアを開く
-		a.view.ShowTextArea(pref.Text.TweetTextAreaHint, func(s string) {
-			execPostTweet(s, quoteId, replyId, images)
-		})
+		text = t
 	}
 
 	execPostTweet(text, quoteId, replyId, images)
