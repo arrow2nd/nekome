@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v2.0.6] - 2022-10-11
+
 ### Fixed
 
 - 初回起動時に認証 URL が表示されない
@@ -127,7 +129,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.5...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.6...HEAD
+[v2.0.6]: https://github.com/arrow2nd/nekome/compare/v2.0.5...v2.0.6
 [v2.0.5]: https://github.com/arrow2nd/nekome/compare/v2.0.4...v2.0.5
 [v2.0.4]: https://github.com/arrow2nd/nekome/compare/v2.0.3...v2.0.4
 [v2.0.3]: https://github.com/arrow2nd/nekome/compare/v2.0.2...v2.0.3
