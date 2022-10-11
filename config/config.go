@@ -12,14 +12,13 @@ type Config struct {
 	Pref *Preferences
 	// Style : スタイル定義
 	Style *Style
-
-	// dirPath : 設定ディレクトリのパス
-	dirPath string
+	// DirPath : 設定ディレクトリのパス
+	DirPath string
 }
 
 // New : 新規作成
 func New() *Config {
-	path, err := GetConfigDir()
+	path, err := getConfigDir()
 	if err != nil {
 		log.ErrorExit(err.Error(), log.ExitCodeErrFileIO)
 	}
@@ -28,6 +27,6 @@ func New() *Config {
 		Cred:    &Cred{},
 		Pref:    defaultPreferences(),
 		Style:   defaultStyle(),
-		dirPath: path,
+		DirPath: path,
 	}
 }

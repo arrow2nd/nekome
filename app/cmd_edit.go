@@ -37,11 +37,7 @@ func (a *App) newEditCmd() *cli.Command {
 				return err
 			}
 
-			dir, err := config.GetConfigDir()
-			if err != nil {
-				return err
-			}
-
+			dir := shared.conf.DirPath
 			editor, _ := f.GetString("editor")
 			return a.openExternalEditor(editor, path.Join(dir, file))
 		},
