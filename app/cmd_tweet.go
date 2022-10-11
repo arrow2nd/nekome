@@ -170,15 +170,6 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 func uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
-	_, containsGif := find(images, func(v string) bool {
-		return strings.HasSuffix(strings.ToLower(v), ".gif")
-	})
-
-	// GIFと複数画像の同時アップロードを防止（GIFは動画扱い）
-	if containsGif && imagesCount > 1 {
-		return nil, errors.New("gif images cannot be attached with other images")
-	}
-
 	// 画像の枚数チェック
 	if imagesCount > 4 {
 		return nil, errors.New("you can attach up to 4 images")
