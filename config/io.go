@@ -12,12 +12,14 @@ import (
 )
 
 const (
-	credFileName = ".cred.toml"
-	prefFileName = "preferences.toml"
+	// FileNameCred : 認証情報のファイル名
+	FileNameCred = ".cred.toml"
+	// FileNamePref: 環境設定のファイル名
+	FileNamePref = "preferences.toml"
 )
 
-// GetConfigDir : 設定ディレクトリを取得
-func GetConfigDir() (string, error) {
+// getConfigDir : 設定ディレクトリを取得
+func getConfigDir() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("failed to get home directory")
@@ -37,7 +39,7 @@ func GetConfigDir() (string, error) {
 
 // GetConfigFileNames : 設定ディレクトリ以下のファイル名を取得
 func GetConfigFileNames() ([]string, error) {
-	path, err := GetConfigDir()
+	path, err := getConfigDir()
 	if err != nil {
 		return nil, err
 	}
@@ -74,27 +76,23 @@ https://github.com/arrow2nd/nekome/blob/v2/docs/en/migrate-v1-v2.md
 }
 
 // LoadCred : 認証情報を読込む
-func (c *Config) LoadCred() (bool, error) {
-	if !c.hasFileExists(credFileName) {
-		return false, c.SaveCred()
+func (c *Config) LoadCred() error {
+	if !c.hasFileExists(FileNameCred) {
+		return c.SaveCred()
 	}
 
-	if err := c.load(credFileName, &c.Cred); err != nil {
-		return false, err
-	}
-
-	return len(c.Cred.User.Accounts) > 0, nil
+	return c.load(FileNameCred, &c.Cred)
 }
 
 // LoadPreferences : 環境設定を読込む
 func (c *Config) LoadPreferences() error {
-	if !c.hasFileExists(prefFileName) {
+	if !c.hasFileExists(FileNamePref) {
 		if err := c.SavePreferences(); err != nil {
 			return err
 		}
 	}
 
-	return c.load(prefFileName, c.Pref)
+	return c.load(FileNamePref, c.Pref)
 }
 
 // LoadStyle : スタイル定義を読込む
@@ -112,12 +110,12 @@ func (c *Config) LoadStyle() error {
 
 // SaveCred : 認証情報を保存
 func (c *Config) SaveCred() error {
-	return c.save(credFileName, c.Cred)
+	return c.save(FileNameCred, c.Cred)
 }
 
 // SavePreferences : 環境設定を保存
 func (c *Config) SavePreferences() error {
-	return c.save(prefFileName, c.Pref)
+	return c.save(FileNamePref, c.Pref)
 }
 
 // saveDefaultStyle : デフォルトのスタイル定義を保存
@@ -140,7 +138,7 @@ func (c *Config) SaveAll() error {
 
 // hasFileExists : ファイルが存在するか
 func (c *Config) hasFileExists(file string) bool {
-	if _, err := os.Stat(filepath.Join(c.dirPath, file)); err != nil {
+	if _, err := os.Stat(filepath.Join(c.DirPath, file)); err != nil {
 		return false
 	}
 
@@ -155,7 +153,7 @@ func (c *Config) save(fileName string, in interface{}) error {
 		return fmt.Errorf("failed to marshal (%s): %w", fileName, err)
 	}
 
-	path := filepath.Join(c.dirPath, fileName)
+	path := filepath.Join(c.DirPath, fileName)
 
 	if err := ioutil.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
 		return fmt.Errorf("failed to save (%s): %w", path, err)
@@ -166,7 +164,7 @@ func (c *Config) save(fileName string, in interface{}) error {
 
 // load : 読み込み
 func (c *Config) load(fileName string, out interface{}) error {
-	path := filepath.Join(c.dirPath, fileName)
+	path := filepath.Join(c.DirPath, fileName)
 
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {

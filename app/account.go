@@ -21,6 +21,15 @@ func addAccount(setMain bool) error {
 
 // loginAccount : ログイン
 func loginAccount(u string) error {
+	// ユーザ名が空なら新規追加
+	if u == "" {
+		if err := addAccount(true); err != nil {
+			return err
+		}
+
+		u = shared.conf.Pref.Feature.MainUser
+	}
+
 	// ログインするユーザを取得
 	user, err := shared.conf.Cred.Get(u)
 	if err != nil {

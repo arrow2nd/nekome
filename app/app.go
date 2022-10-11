@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"os"
 
 	"code.rocketnine.space/tslocum/cbind"
@@ -42,17 +41,12 @@ func (a *App) Init() error {
 		return err
 	}
 
-	user, err := a.parseRuntimeArgs()
+	isLoginSkip, user, err := a.parseRuntimeArgs()
 	if err != nil {
 		return err
 	}
 
-	// ユーザが空でなければログイン
-	if user != "" {
-		if err := a.loadCred(); err != nil {
-			return err
-		}
-
+	if !isLoginSkip {
 		if err := loginAccount(user); err != nil {
 			return err
 		}
@@ -126,53 +120,33 @@ func (a *App) loadConfig() error {
 		return err
 	}
 
-	return nil
-}
-
-// loadCred : 認証情報を読み込む
-func (a *App) loadCred() error {
-	existUser, err := shared.conf.LoadCred()
-	if err != nil {
-		return err
-	}
-
-	if existUser {
-		return nil
-	}
-
-	// ユーザ情報が無い場合、新規追加
-	return addAccount(true)
+	// 認証情報
+	return shared.conf.LoadCred()
 }
 
 // parseRuntimeArgs : 実行時の引数をパースして、ログインユーザを返す
-func (a *App) parseRuntimeArgs() (string, error) {
+func (a *App) parseRuntimeArgs() (bool, string, error) {
 	f := a.cmd.NewFlagSet()
 
 	f.ParseErrorsWhitelist.UnknownFlags = true
 
 	if err := f.Parse(os.Args[1:]); err != nil {
-		return "", err
+		return false, "", err
 	}
 
 	// ログインをスキップするか
 	arg := f.Arg(0)
-	skipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
+	isSkipLogin := f.Changed("help") || f.Changed("version") || arg == "e" || arg == "edit"
 
 	// コマンドラインモードか
-	shared.isCommandLineMode = f.NArg() > 0 || skipLogin
+	shared.isCommandLineMode = f.NArg() > 0 || isSkipLogin
 
-	if skipLogin {
-		return "", nil
+	if isSkipLogin {
+		return true, "", nil
 	}
 
 	user, _ := f.GetString("user")
-	if user == "" {
-		return "", errors.New(
-			"feature.main_user is not set, please run 'nekome edit' and set in preferences.toml",
-		)
-	}
-
-	return user, nil
+	return false, user, nil
 }
 
 // setAppStyles : アプリ全体のスタイルを設定
