@@ -179,18 +179,29 @@ func (t *tweets) getSelectTweet() *twitter.TweetDictionary {
 		c = t.contents[id-1]
 	}
 
-	// リツイートなら参照先に置き換え
+	// RTなら参照先に置き換え
 	for _, rc := range c.ReferencedTweets {
 		if rc.Reference.Type == "retweeted" {
-			c = c.ReferencedTweets[0].TweetDictionary
+			c = rc.TweetDictionary
 		}
 	}
 
 	return c
 }
 
-// register : ツイートを登録
-func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
+// getCurrentCursorPos : 現在のカーソル位置を取得
+func (t *tweets) getCurrentCursorPos() int {
+	pos := getHighlightId(t.view.GetHighlights())
+
+	if pos == -1 {
+		pos = 0
+	}
+
+	return pos
+}
+
+// registerTweets : ツイートを登録
+func (t *tweets) registerTweets(tweets []*twitter.TweetDictionary) int {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -209,9 +220,36 @@ func (t *tweets) register(tweets []*twitter.TweetDictionary) int {
 	return addSize
 }
 
-// RegisterPinned : ピン留めツイートを登録
-func (t *tweets) RegisterPinned(tweet *twitter.TweetDictionary) {
+// RegisterPinnedTweet : ピン留めツイートを登録
+func (t *tweets) RegisterPinnedTweet(tweet *twitter.TweetDictionary) {
 	t.pinned = tweet
+}
+
+// DeleteTweet : 該当ツイートをリストから削除
+func (t *tweets) DeleteTweet(tweetId string) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	i, ok := find(t.contents, func(c *twitter.TweetDictionary) bool {
+		// リツイート先のIDを参照
+		for _, rc := range c.ReferencedTweets {
+			if rc.Reference.Type == "retweeted" {
+				return rc.TweetDictionary.Tweet.ID == tweetId
+			}
+		}
+
+		return c.Tweet.ID == tweetId
+	})
+
+	if !ok {
+		return
+	}
+
+	// i番目の要素を削除
+	t.contents = t.contents[:i+copy(t.contents[i:], t.contents[i+1:])]
+
+	// 再描画して反映
+	t.draw(t.getCurrentCursorPos())
 }
 
 // UpdateRateLimit : レート制限を更新
@@ -223,13 +261,8 @@ func (t *tweets) UpdateRateLimit(r *twitter.RateLimit) {
 
 // Update : ツイートを更新
 func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
-	addedTweetsCount := t.register(tweets)
-
-	// カーソル位置を決定
-	cursorPos := getHighlightId(t.view.GetHighlights())
-	if cursorPos == -1 {
-		cursorPos = 0
-	}
+	addedTweetsCount := t.registerTweets(tweets)
+	cursorPos := t.getCurrentCursorPos()
 
 	// 先頭以外のツイートを選択中の場合、更新後もそのツイートを選択したままにする
 	// NOTE: "先頭以外" なのは、ストリームモードで放置した時にカーソルが段々下に下がってしまうのを防ぐため
@@ -242,7 +275,8 @@ func (t *tweets) Update(tweets []*twitter.TweetDictionary) {
 
 // draw : 描画（表示幅はターミナルのウィンドウ幅に依存）
 func (t *tweets) draw(cursorPos int) {
-	pref := shared.conf.Pref
+	icon := shared.conf.Pref.Icon
+	appearance := shared.conf.Pref.Appearance
 	width := getWindowWidth()
 
 	t.view.
@@ -271,7 +305,7 @@ func (t *tweets) draw(cursorPos int) {
 			switch rc.Reference.Type {
 			case "retweeted":
 				annotation += createAnnotation("RT by", content.Author)
-				content = content.ReferencedTweets[0].TweetDictionary
+				content = rc.TweetDictionary
 			case "replied_to":
 				annotation += createAnnotation("Reply to", rc.TweetDictionary.Author)
 			case "quoted":
@@ -281,28 +315,28 @@ func (t *tweets) draw(cursorPos int) {
 
 		// ピン留めツイート
 		if i == 0 && t.pinned != nil {
-			annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", pref.Icon.Pinned)
+			annotation += fmt.Sprintf("[gray:-:-]%s Pinned Tweet[-:-:-]", icon.Pinned)
 		}
 
 		fmt.Fprintln(t.view, createTweetLayout(annotation, content, i, width))
 
 		// 引用元ツイートを表示
 		if quotedTweet != nil {
-			if !pref.Appearance.HideQuoteTweetSeparator {
-				fmt.Fprintln(t.view, createSeparator(pref.Appearance.QuoteTweetSeparator, width))
+			if !appearance.HideQuoteTweetSeparator {
+				fmt.Fprintln(t.view, createSeparator(appearance.QuoteTweetSeparator, width))
 			}
 
 			fmt.Fprintln(t.view, createTweetLayout("", quotedTweet, -1, width))
 		}
 
 		// セパレータを挿入しない
-		if pref.Appearance.HideTweetSeparator {
+		if appearance.HideTweetSeparator {
 			continue
 		}
 
 		// 末尾のツイート以外ならセパレータを挿入
 		if i < t.GetTweetsCount()-1 {
-			fmt.Fprintln(t.view, createSeparator(pref.Appearance.TweetSeparator, width))
+			fmt.Fprintln(t.view, createSeparator(appearance.TweetSeparator, width))
 		}
 	}
 
