@@ -146,12 +146,14 @@ func (c *commandLine) handleAutocomplete(currentText string) []string {
 // handleDone : 入力確定時のイベントハンドラ
 func (c *commandLine) handleDone(key tcell.Key) {
 	if key == tcell.KeyEnter {
-		// コマンドを実行
-		if text := c.inputField.GetText(); text != "" {
-			shared.RequestExecCommand(text)
-		}
+		text := c.inputField.GetText()
 
 		c.Blur(false)
+
+		// コマンドを実行
+		if text != "" {
+			shared.RequestExecCommand(text)
+		}
 	}
 }
 
