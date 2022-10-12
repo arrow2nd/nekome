@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+## [v2.0.7] - 2022-10-12
+
 ### Added
 
-- ツイート削除時に表示にも反映させる
+- ツイート削除時に表示上からも削除する
 - 複数の GIF・画像の混在ツイートに対応
 
 ### Fixed
@@ -139,7 +141,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.6...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.7...HEAD
+[v2.0.7]: https://github.com/arrow2nd/nekome/compare/v2.0.6...v2.0.7
 [v2.0.6]: https://github.com/arrow2nd/nekome/compare/v2.0.5...v2.0.6
 [v2.0.5]: https://github.com/arrow2nd/nekome/compare/v2.0.4...v2.0.5
 [v2.0.4]: https://github.com/arrow2nd/nekome/compare/v2.0.3...v2.0.4
