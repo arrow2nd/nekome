@@ -25,7 +25,12 @@ func newCmd() *cli.Command {
 				log.Exit(fmt.Sprintf("🐈 nekome for v.%s", version))
 			}
 
-			return nil
+			arg := f.Arg(0)
+			if arg != "" {
+				arg = ": " + arg
+			}
+
+			return fmt.Errorf("unavailable or not found command%s", arg)
 		},
 	}
 }
