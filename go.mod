@@ -29,7 +29,7 @@ require (
 	github.com/gdamore/tcell/v2 v2.5.3
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 	github.com/rivo/tview v0.0.0-20220916081518-2e69b7385a37
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
 	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7
 	golang.org/x/sys v0.0.0-20220927170352-d9d178bc13c6 // indirect
