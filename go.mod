@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	code.rocketnine.space/tslocum/cbind v0.1.5
-	github.com/BurntSushi/toml v1.2.0
+	github.com/BurntSushi/toml v1.2.1
 	github.com/atotto/clipboard v0.1.4
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/g8rswimmer/go-twitter/v2 v2.1.2
