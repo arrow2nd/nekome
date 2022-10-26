@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/atotto/clipboard"
@@ -207,6 +208,9 @@ func (t *tweets) openBrower() {
 		shared.SetErrorStatus("Open", err.Error())
 		return
 	}
+
+	browser.Stdout = io.Discard
+	browser.Stderr = io.Discard
 
 	if err := browser.OpenURL(url); err != nil {
 		shared.SetErrorStatus("Open", err.Error())
