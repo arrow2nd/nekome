@@ -7,11 +7,10 @@ import (
 )
 
 // FetchOwnedLists : ユーザが所有するリストの情報を取得
-func (a *API) FetchOwnedLists(userId string) ([]*twitter.ListObj, error) {
+func (a *API) FetchOwnedLists(userID string) ([]*twitter.ListObj, error) {
 	opts := twitter.UserListLookupOpts{}
 
-	res, err := a.client.UserListLookup(context.Background(), userId, opts)
-
+	res, err := a.client.UserListLookup(context.Background(), userID, opts)
 	if e := checkError(err); e != nil {
 		return nil, e
 	}
@@ -28,7 +27,7 @@ func (a *API) FetchOwnedLists(userId string) ([]*twitter.ListObj, error) {
 }
 
 // FetchListTweets : リスト内のツイートを取得
-func (a *API) FetchListTweets(listId string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
+func (a *API) FetchListTweets(listID string, results int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.ListTweetLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForTL,
@@ -36,7 +35,7 @@ func (a *API) FetchListTweets(listId string, results int) ([]*twitter.TweetDicti
 		MaxResults:  results,
 	}
 
-	res, err := a.client.ListTweetLookup(context.Background(), listId, opts)
+	res, err := a.client.ListTweetLookup(context.Background(), listID, opts)
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
@@ -45,7 +44,7 @@ func (a *API) FetchListTweets(listId string, results int) ([]*twitter.TweetDicti
 		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
-	ok, tweets := createTweetSlice(res.Raw)
+	tweets, ok := createTweetSlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}

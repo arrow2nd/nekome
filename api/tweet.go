@@ -7,24 +7,24 @@ import (
 )
 
 // PostTweet : ツイートを投稿
-func (a *API) PostTweet(text, quoteId, replyId string, mediaIds []string) error {
+func (a *API) PostTweet(text, quoteID, replyID string, mediaIDs []string) error {
 	req := twitter.CreateTweetRequest{
 		Text: text,
 	}
 
-	if quoteId != "" {
-		req.QuoteTweetID = quoteId
+	if quoteID != "" {
+		req.QuoteTweetID = quoteID
 	}
 
-	if replyId != "" {
+	if replyID != "" {
 		req.Reply = &twitter.CreateTweetReply{
-			InReplyToTweetID: replyId,
+			InReplyToTweetID: replyID,
 		}
 	}
 
-	if len(mediaIds) > 0 {
+	if len(mediaIDs) > 0 {
 		req.Media = &twitter.CreateTweetMedia{
-			IDs: mediaIds,
+			IDs: mediaIDs,
 		}
 	}
 
@@ -34,8 +34,8 @@ func (a *API) PostTweet(text, quoteId, replyId string, mediaIds []string) error 
 }
 
 // DeleteTweet : ツイートを削除
-func (a *API) DeleteTweet(tweetId string) error {
-	_, err := a.client.DeleteTweet(context.Background(), tweetId)
+func (a *API) DeleteTweet(tweetID string) error {
+	_, err := a.client.DeleteTweet(context.Background(), tweetID)
 
 	return checkError(err)
 }

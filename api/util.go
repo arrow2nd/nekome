@@ -52,10 +52,10 @@ func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 }
 
 // createTweetSlice : TweetDictionary のスライスを作成
-func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
+func createTweetSlice(raw *twitter.TweetRaw) ([]*twitter.TweetDictionary, bool) {
 	// データがあるか
 	if len(raw.Tweets) == 0 || raw.Tweets[0] == nil {
-		return false, nil
+		return nil, false
 	}
 
 	contents := []*twitter.TweetDictionary{}
@@ -65,7 +65,7 @@ func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) 
 		contents = append(contents, dics[tweet.ID])
 	}
 
-	return true, contents
+	return contents, true
 }
 
 // UserDictionary : twitter.UserDictionary の独自実装
@@ -75,10 +75,10 @@ type UserDictionary struct {
 }
 
 // createUserSlice : UserDictionary のスライスを作成
-func createUserSlice(raw *twitter.UserRaw, pinnedTweetRaw *twitter.TweetRaw) (bool, []*UserDictionary) {
+func createUserSlice(raw *twitter.UserRaw, pinnedTweetRaw *twitter.TweetRaw) ([]*UserDictionary, bool) {
 	// データがあるか
 	if len(raw.Users) == 0 || raw.Users[0] == nil {
-		return false, nil
+		return nil, false
 	}
 
 	pinnedTweets := map[string]*twitter.TweetDictionary{}
@@ -103,5 +103,5 @@ func createUserSlice(raw *twitter.UserRaw, pinnedTweetRaw *twitter.TweetRaw) (bo
 		users = append(users, dictionary)
 	}
 
-	return true, users
+	return users, true
 }

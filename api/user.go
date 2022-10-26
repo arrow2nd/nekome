@@ -29,7 +29,7 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 		return nil, e
 	}
 
-	ok, users := createUserSlice(res.Raw, pinnedTweetRew)
+	users, ok := createUserSlice(res.Raw, pinnedTweetRew)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, e
 	}
