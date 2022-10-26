@@ -80,7 +80,7 @@ func TestCreateTweetSlice(t *testing.T) {
 			},
 		}
 
-		ok, d := createTweetSlice(r)
+		d, ok := createTweetSlice(r)
 
 		assert.True(t, ok)
 		assert.Len(t, d, 1)
@@ -94,7 +94,7 @@ func TestCreateTweetSlice(t *testing.T) {
 			Tweets: []*twitter.TweetObj{},
 		}
 
-		ok, d := createTweetSlice(r)
+		d, ok := createTweetSlice(r)
 
 		assert.False(t, ok)
 		assert.Nil(t, d)
@@ -119,7 +119,7 @@ func TestCreateUserSlice(t *testing.T) {
 			},
 		}
 
-		ok, d := createUserSlice(r)
+		d, ok := createUserSlice(r, nil)
 
 		assert.True(t, ok)
 		assert.Len(t, d, 1)
@@ -133,7 +133,7 @@ func TestCreateUserSlice(t *testing.T) {
 			Users: []*twitter.UserObj{},
 		}
 
-		ok, d := createUserSlice(r)
+		d, ok := createUserSlice(r, nil)
 
 		assert.False(t, ok)
 		assert.Nil(t, d)

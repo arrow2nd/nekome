@@ -9,8 +9,7 @@ import (
 // FetchUser : UserNameからユーザ情報を取得
 func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 	opts := twitter.UserLookupOpts{
-		TweetFields: tweetFields,
-		UserFields:  userFieldsForUser,
+		UserFields: userFieldsForUser,
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionPinnedTweetID,
 		},
@@ -25,10 +24,47 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 		return []*UserDictionary{}, nil
 	}
 
-	ok, users := createUserSlice(res.Raw)
+	pinnedTweetRew, err := a.fetchPinnedTweets(res.Raw)
+	if e := checkError(err); e != nil {
+		return nil, e
+	}
+
+	users, ok := createUserSlice(res.Raw, pinnedTweetRew)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, e
 	}
 
 	return users, nil
+}
+
+func (a *API) fetchPinnedTweets(raw *twitter.UserRaw) (*twitter.TweetRaw, error) {
+	tweetIDs := []string{}
+	for _, user := range raw.Users {
+		if user.PinnedTweetID != "" {
+			tweetIDs = append(tweetIDs, user.PinnedTweetID)
+		}
+	}
+
+	// ピン止めツイートが無い
+	if len(tweetIDs) == 0 {
+		return nil, nil
+	}
+
+	opts := twitter.TweetLookupOpts{
+		TweetFields: tweetFields,
+		PollFields:  pollFields,
+		UserFields:  userFieldsForTL,
+		Expansions:  tweetExpansions,
+	}
+
+	res, err := a.client.TweetLookup(context.Background(), tweetIDs, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if res == nil {
+		return nil, nil
+	}
+
+	return res.Raw, nil
 }

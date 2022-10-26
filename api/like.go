@@ -7,7 +7,7 @@ import (
 )
 
 // FetchLikedTweets : ユーザのいいねしたツイートを取得
-func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
+func (a *API) FetchLikedTweets(userID string, maxResults int) ([]*twitter.TweetDictionary, *twitter.RateLimit, error) {
 	opts := twitter.UserLikesLookupOpts{
 		TweetFields: tweetFields,
 		UserFields:  userFieldsForTL,
@@ -16,7 +16,7 @@ func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetD
 		},
 		MaxResults: maxResults,
 	}
-	res, err := a.client.UserLikesLookup(context.Background(), userId, opts)
+	res, err := a.client.UserLikesLookup(context.Background(), userID, opts)
 	if e := checkError(err); e != nil {
 		return nil, nil, e
 	}
@@ -25,7 +25,7 @@ func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetD
 		return []*twitter.TweetDictionary{}, res.RateLimit, nil
 	}
 
-	ok, tweets := createTweetSlice(res.Raw)
+	tweets, ok := createTweetSlice(res.Raw)
 	if e := checkPartialError(res.Raw.Errors); !ok && e != nil {
 		return nil, nil, e
 	}
@@ -34,15 +34,15 @@ func (a *API) FetchLikedTweets(userId string, maxResults int) ([]*twitter.TweetD
 }
 
 // Like : いいね
-func (a *API) Like(tweetId string) error {
-	_, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetId)
+func (a *API) Like(tweetID string) error {
+	_, err := a.client.UserLikes(context.Background(), a.CurrentUser.ID, tweetID)
 
 	return checkError(err)
 }
 
 // UnLike : いいねを解除
-func (a *API) UnLike(tweetId string) error {
-	_, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetId)
+func (a *API) UnLike(tweetID string) error {
+	_, err := a.client.DeleteUserLikes(context.Background(), a.CurrentUser.ID, tweetID)
 
 	return checkError(err)
 }

@@ -47,11 +47,11 @@ func newClient(ct, ut *oauth1.Token) (*twitter.Client, error) {
 	}
 
 	config := oauth1.NewConfig(ct.Token, ct.TokenSecret)
-	httpClient := config.Client(oauth1.NoContext, ut)
+	client := config.Client(oauth1.NoContext, ut)
 
 	return &twitter.Client{
 		Authorizer: &authorizer{},
-		Client:     httpClient,
+		Client:     client,
 		Host:       "https://api.twitter.com",
 	}, nil
 }

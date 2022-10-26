@@ -52,10 +52,10 @@ func getConsumerToken(ct *oauth1.Token) (*oauth1.Token, error) {
 }
 
 // createTweetSlice : TweetDictionary のスライスを作成
-func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) {
+func createTweetSlice(raw *twitter.TweetRaw) ([]*twitter.TweetDictionary, bool) {
 	// データがあるか
 	if len(raw.Tweets) == 0 || raw.Tweets[0] == nil {
-		return false, nil
+		return nil, false
 	}
 
 	contents := []*twitter.TweetDictionary{}
@@ -65,7 +65,7 @@ func createTweetSlice(raw *twitter.TweetRaw) (bool, []*twitter.TweetDictionary) 
 		contents = append(contents, dics[tweet.ID])
 	}
 
-	return true, contents
+	return contents, true
 }
 
 // UserDictionary : twitter.UserDictionary の独自実装
@@ -75,36 +75,33 @@ type UserDictionary struct {
 }
 
 // createUserSlice : UserDictionary のスライスを作成
-func createUserSlice(raw *twitter.UserRaw) (bool, []*UserDictionary) {
+func createUserSlice(raw *twitter.UserRaw, pinnedTweetRaw *twitter.TweetRaw) ([]*UserDictionary, bool) {
 	// データがあるか
 	if len(raw.Users) == 0 || raw.Users[0] == nil {
-		return false, nil
+		return nil, false
+	}
+
+	pinnedTweets := map[string]*twitter.TweetDictionary{}
+
+	// NOTE: nilでないかつ、部分エラーが発生していないならピン止めツイートがあるとみなす
+	existPinnedTweet := pinnedTweetRaw != nil && checkPartialError(pinnedTweetRaw.Errors) == nil
+	if existPinnedTweet {
+		pinnedTweets = pinnedTweetRaw.TweetDictionaries()
 	}
 
 	users := []*UserDictionary{}
-	dics := raw.UserDictionaries()
-
-	for _, user := range raw.Users {
-		var pinnedTweetDic *twitter.TweetDictionary = nil
-
-		pinnedTweet := dics[user.ID].PinnedTweet
-
-		// HACK: TweetObj を TweetDictionary に無理やり変換
-		if pinnedTweet != nil {
-			pinnedTweetDic = twitter.CreateTweetDictionary(*pinnedTweet, &twitter.TweetRawIncludes{
-				Tweets: []*twitter.TweetObj{},
-				Users:  []*twitter.UserObj{user},
-				Places: []*twitter.PlaceObj{},
-				Media:  []*twitter.MediaObj{},
-				Polls:  []*twitter.PollObj{},
-			})
+	for _, u := range raw.Users {
+		dictionary := &UserDictionary{
+			User:        u,
+			PinnedTweet: nil,
 		}
 
-		users = append(users, &UserDictionary{
-			User:        user,
-			PinnedTweet: pinnedTweetDic,
-		})
+		if u.PinnedTweetID != "" {
+			dictionary.PinnedTweet = pinnedTweets[u.PinnedTweetID]
+		}
+
+		users = append(users, dictionary)
 	}
 
-	return true, users
+	return users, true
 }
