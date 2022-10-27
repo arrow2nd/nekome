@@ -467,7 +467,7 @@ The default style definition file.
 
 #### Items ending with `_color`
 
-Hexadecimal color codes beginning with `#` can be used
+Hexadecimal color codes starting with `#` or W3C color names can be used
 
 #### Other items
 
