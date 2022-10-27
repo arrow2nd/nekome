@@ -18,6 +18,11 @@ func TestColor(t *testing.T) {
 			want:  tcell.NewHexColor(0xD162CB),
 		},
 		{
+			name:  "W3Cの色名を解釈できるか",
+			color: "red",
+			want:  tcell.ColorRed,
+		},
+		{
 			name:  "空文字ならデフォルト色が返るか",
 			color: "",
 			want:  tcell.ColorDefault,
