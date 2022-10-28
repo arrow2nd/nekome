@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -29,8 +30,10 @@ type UploadImageResponse struct {
 }
 
 // UploadImage : 画像をアップロード
-func (a *API) UploadImage(base64Image string) (*UploadImageResponse, error) {
+func (a *API) UploadImage(rawImage []byte) (*UploadImageResponse, error) {
 	v := url.Values{}
+
+	base64Image := base64.StdEncoding.EncodeToString(rawImage)
 	v.Add("media_data", base64Image)
 
 	res, err := a.client.Client.PostForm(mediaUploadEndpoint, v)
@@ -45,10 +48,10 @@ func (a *API) UploadImage(base64Image string) (*UploadImageResponse, error) {
 	}
 
 	decoder := json.NewDecoder(res.Body)
-	raw := &UploadImageResponse{}
-	if err := decoder.Decode(raw); err != nil {
+	rawRes := &UploadImageResponse{}
+	if err := decoder.Decode(rawRes); err != nil {
 		return nil, fmt.Errorf("upload image decode error: %w", err)
 	}
 
-	return raw, nil
+	return rawRes, nil
 }
