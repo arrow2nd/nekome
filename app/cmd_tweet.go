@@ -1,10 +1,11 @@
 package app
 
 import (
+	"bytes"
 	"context"
-	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -12,6 +13,7 @@ import (
 	"syscall"
 
 	"github.com/arrow2nd/nekome/v2/cli"
+	"github.com/skanehira/clipboard-image/v2"
 	"github.com/spf13/pflag"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
@@ -21,12 +23,9 @@ func (a *App) newTweetCmd() *cli.Command {
 	longHelp := `Post a tweet.
 
 If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
-Tips: If 'feature.use_external_editor' in preferences.toml is true, an external editor will be launched even from the TUI.
+Also, setting 'feature.use_external_editor' to true in preferences.toml will launch the external editor even from the TUI.`
 
-When specifying multiple images, please separate them with commas.
-You may attach up to four images at a time.`
-
-	example := `tweet にゃーん --image cute_cat.png,very_cute_cat.png
+	example := `tweet にゃーん --image cat.png,dog.png
   echo "にゃーん" | nekome tweet`
 
 	return &cli.Command{
@@ -37,10 +36,11 @@ You may attach up to four images at a time.`
 		UsageArgs: "[text]",
 		Example:   example,
 		SetFlag: func(f *pflag.FlagSet) {
-			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
-			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
-			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
-			f.StringSliceP("image", "i", nil, "specify the image to attach (if there is more than one comma separated)")
+			f.StringP("quote", "q", "", "quotes the tweet with the specified ID")
+			f.StringP("reply", "r", "", "send a reply to the tweet with the specified ID")
+			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to use for editing")
+			f.StringSliceP("image", "i", nil, "attach the image (if there is more than one comma separated)")
+			f.BoolP("clipboard", "c", false, "attach the image in the clipboard (if the --image is specified, it takes precedence)")
 		},
 		Run: a.execTweetCmd,
 	}
@@ -50,27 +50,25 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 	pref := shared.conf.Pref
 	text := ""
 
-	// 標準入力を受け取る
 	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
+		// 標準入力を受け取る
 		stdin, _ := ioutil.ReadAll(os.Stdin)
 		text = string(stdin)
 	} else {
+		// 引数を全てスペースで連結
 		text = strings.Join(f.Args(), " ")
 	}
-
-	editor, _ := f.GetString("editor")
-	quoteId, _ := f.GetString("quote")
-	replyId, _ := f.GetString("reply")
-	images, _ := f.GetStringSlice("image")
 
 	if text == "" {
 		// テキストエリアを開く
 		if !shared.isCommandLineMode && !pref.Feature.UseExternalEditor {
 			a.view.ShowTextArea(pref.Text.TweetTextAreaHint, func(s string) {
-				execPostTweet(s, quoteId, replyId, images)
+				execPostTweet(f, s)
 			})
 			return nil
 		}
+
+		editor, _ := f.GetString("editor")
 
 		// エディタを開く
 		t, err := a.editTweetExternalEditor(editor)
@@ -81,14 +79,13 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 		text = t
 	}
 
-	execPostTweet(text, quoteId, replyId, images)
+	execPostTweet(f, text)
 
 	return nil
 }
 
 // editTweetExternalEditor : 外部エディタでツイートを編集する
 func (a *App) editTweetExternalEditor(editor string) (string, error) {
-	// 一時ファイル作成
 	tmpFilePath := path.Join(os.TempDir(), ".nekome_tweet_tmp")
 	if _, err := os.Create(tmpFilePath); err != nil {
 		return "", err
@@ -111,34 +108,48 @@ func (a *App) editTweetExternalEditor(editor string) (string, error) {
 }
 
 // execPostTweet : ツイートを投稿
-func execPostTweet(text, quoteId, replyId string, images []string) {
-	text = trimEndNewline(text)
+func execPostTweet(f *pflag.FlagSet, t string) {
+	images, _ := f.GetStringSlice("image")
+	text := trimEndNewline(t)
 
 	// 文章も画像もない場合キャンセル
 	if text == "" && len(images) == 0 {
 		return
 	}
 
-	post := func() {
-		var mediaIids []string
+	quoteID, _ := f.GetString("quote")
+	replyID, _ := f.GetString("reply")
+	existClipboardImage, _ := f.GetBool("clipboard")
 
-		// 画像をアップロード
-		if images != nil {
-			ids, err := uploadImages(images)
-			if err != nil {
-				shared.SetErrorStatus("Upload Image", err.Error())
-				return
+	post := func() {
+		mediaIDs := []string{}
+
+		if existImages := len(images) > 0; existImages || existClipboardImage {
+			var err error
+
+			if existImages {
+				mediaIDs, err = uploadImages(images)
+			} else {
+				mediaIDs, err = uploadImageFromClipboard()
 			}
 
-			mediaIids = ids
+			if err != nil {
+				shared.SetErrorStatus("Media", err.Error())
+				return
+			}
 		}
 
-		if err := shared.api.PostTweet(text, quoteId, replyId, mediaIids); err != nil {
+		if err := shared.api.PostTweet(text, quoteID, replyID, mediaIDs); err != nil {
 			shared.SetErrorStatus("Tweet", err.Error())
 			return
 		}
 
-		shared.SetStatus("Tweeted", text)
+		statusLabel := "Tweeted"
+		if len(mediaIDs) > 0 {
+			statusLabel += fmt.Sprintf(" / %d attached images", len(mediaIDs))
+		}
+
+		shared.SetStatus(statusLabel, text)
 	}
 
 	// 確認画面不要 or コマンドラインモードならそのまま実行
@@ -147,11 +158,11 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 		return
 	}
 
+	// 実行しようとしている操作名
 	operationType := "tweet"
-
-	if replyId != "" {
+	if replyID != "" {
 		operationType = "reply"
-	} else if quoteId != "" {
+	} else if quoteID != "" {
 		operationType = "quote tweet"
 	}
 
@@ -166,7 +177,27 @@ func execPostTweet(text, quoteId, replyId string, images []string) {
 	})
 }
 
-// uploadImages : 画像をアップロード
+// uploadImageFromClipboard : クリップボードの画像をアップロード
+func uploadImageFromClipboard() ([]string, error) {
+	r, err := clipboard.Read()
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	if _, err := io.Copy(buf, r); err != nil {
+		return nil, err
+	}
+
+	res, err := shared.api.UploadImage(buf.Bytes())
+	if err != nil {
+		return nil, fmt.Errorf("upload failed: %w", err)
+	}
+
+	return []string{res.MediaIDString}, nil
+}
+
+// uploadImages : 複数の画像をアップロード
 func uploadImages(images []string) ([]string, error) {
 	imagesCount := len(images)
 
@@ -197,8 +228,7 @@ func uploadImages(images []string) ([]string, error) {
 					return fmt.Errorf("failed to load file (%s)", image)
 				}
 
-				base64Image := base64.StdEncoding.EncodeToString(rawImage)
-				res, err := shared.api.UploadImage(base64Image)
+				res, err := shared.api.UploadImage(rawImage)
 				if err != nil {
 					return fmt.Errorf("upload failed (%s): %w", image, err)
 				}
@@ -216,10 +246,10 @@ func uploadImages(images []string) ([]string, error) {
 
 	close(ch)
 
-	mediaIds := []string{}
+	mediaIDs := []string{}
 	for id := range ch {
-		mediaIds = append(mediaIds, id)
+		mediaIDs = append(mediaIDs, id)
 	}
 
-	return mediaIds, nil
+	return mediaIDs, nil
 }
