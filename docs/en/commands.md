@@ -36,15 +36,18 @@ nekome tweet [flags] [text]
 #### Flags
 
 - `-e <editor command>` `--editor <editor command>`
-  - Specify which editor to use
+  - Specify the editor to use for editing
   - If omitted, the value of `$EDITOR` is specified
 - `-i <file path>` `--image <file path>`
-  - Image to be attached
+  - Attach the image
   - To specify multiple images, separate them with `,`
+- `-c` `--clipboard`
+  - Attach the image in the clipboard
+  - If the --image is specified, it takes precedence
 - `-q <tweet id>` `--quote <tweet id>`
-  - Specify the ID of the tweet to quote
+  - Quotes the tweet with the specified ID
 - `-r <tweet ID>` `--reply <tweet ID>`
-  - Specify the ID of the tweet to which you are replying
+  - Send a reply to the tweet with the specified ID
 
 ## Commands available from CLI
 
