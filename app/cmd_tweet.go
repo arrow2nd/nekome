@@ -21,12 +21,9 @@ func (a *App) newTweetCmd() *cli.Command {
 	longHelp := `Post a tweet.
 
 If the tweet statement is omitted, the internal editor is invoked if from the TUI, or the external editor if from the CLI.
-Tips: If 'feature.use_external_editor' in preferences.toml is true, an external editor will be launched even from the TUI.
+Also, setting 'feature.use_external_editor' to true in preferences.toml will launch the external editor even from the TUI.`
 
-When specifying multiple images, please separate them with commas.
-You may attach up to four images at a time.`
-
-	example := `tweet にゃーん --image cute_cat.png,very_cute_cat.png
+	example := `tweet にゃーん --image cat.png,dog.png
   echo "にゃーん" | nekome tweet`
 
 	return &cli.Command{
@@ -37,10 +34,11 @@ You may attach up to four images at a time.`
 		UsageArgs: "[text]",
 		Example:   example,
 		SetFlag: func(f *pflag.FlagSet) {
-			f.StringP("quote", "q", "", "specify the ID of the tweet to quote")
-			f.StringP("reply", "r", "", "specify the ID of the tweet to which you are replying")
-			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify which editor to use (default is $EDITOR)")
-			f.StringSliceP("image", "i", nil, "specify the image to attach (if there is more than one comma separated)")
+			f.StringP("quote", "q", "", "quotes the tweet with the specified ID")
+			f.StringP("reply", "r", "", "send a reply to the tweet with the specified ID")
+			f.StringP("editor", "e", os.Getenv("EDITOR"), "specify the editor to use for editing")
+			f.StringSliceP("image", "i", nil, "attach the image (if there is more than one comma separated)")
+			f.BoolP("clipboard", "c", false, "attach the image in the clipboard")
 		},
 		Run: a.execTweetCmd,
 	}
