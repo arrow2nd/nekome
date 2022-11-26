@@ -1,6 +1,6 @@
-# nekome v2
+![nekome-readme](https://user-images.githubusercontent.com/44780846/204079320-eb71727d-e7e8-4160-92f4-4bb6b9a0ea9e.png)
 
-🐈 TUI Twitter client for cats
+**nekome**: 🐈 TUI Twitter client for cats
 
 [![release](https://github.com/arrow2nd/nekome/actions/workflows/release.yml/badge.svg)](https://github.com/arrow2nd/nekome/actions/workflows/release.yml)
 [![test](https://github.com/arrow2nd/nekome/actions/workflows/test.yml/badge.svg)](https://github.com/arrow2nd/nekome/actions/workflows/test.yml)
@@ -23,9 +23,13 @@
 
 > **Warning**
 >
-> If you install the software in a manner other than the following, the consumer key is not built into the software
+> If you install the software in a manner other than the following, the consumer
+> key is not built into the software
 >
-> Get your Twitter API v2 API key from [ Twitter Developer Portal ](https://developer.twitter.com/en/portal/projects-and-apps) and add it to the [.cred.toml](./docs/en/config.md#credtoml) generated after startup
+> Get your Twitter API v2 API key from
+> [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps)
+> and add it to the [.cred.toml](./docs/en/config.md#credtoml) generated after
+> startup
 
 ### Homebrew
 
@@ -49,14 +53,17 @@ go install github.com/arrow2nd/nekome/v2@latest
 
 ### Binary
 
-Download the appropriate file for your environment from [Releases](https://github.com/arrow2nd/nekome/releases)
+Download the appropriate file for your environment from
+[Releases](https://github.com/arrow2nd/nekome/releases)
 
 ## Initialization
 
 ![image](https://user-images.githubusercontent.com/44780846/177674269-2efa3342-bb1a-4be3-8133-7fc8f6e8cec0.png)
 
-1. The URL of the authentication page is displayed at the first startup, so access it with a browser
-2. Follow the on-screen instructions for authentication and copy the PIN code displayed
+1. The URL of the authentication page is displayed at the first startup, so
+   access it with a browser
+2. Follow the on-screen instructions for authentication and copy the PIN code
+   displayed
 3. Enter PIN code into nekome
 4. Done! 🐱
 
@@ -70,6 +77,7 @@ Download the appropriate file for your environment from [Releases](https://githu
 
 ## Origin of name
 
-The name comes from the Japanese word "猫の目 (neko no me)" which means "the eye of a cat" and refers to things changing at a dizzying pace
+The name comes from the Japanese word "猫の目 (neko no me)" which means "the eye of
+a cat" and refers to things changing at a dizzying pace
 
 > https://nekojiten.com/wp/nekonome/
