@@ -176,7 +176,11 @@ func createTweetDetailLayout(t *twitter.TweetObj) string {
 	layout = replaceLayoutTag(layout, "{created_at}", date)
 
 	// 投稿元クライアント
-	layout = replaceLayoutTag(layout, "{via}", t.Source)
+	via := t.Source
+	if via == "" {
+		via = "unknown"
+	}
+	layout = replaceLayoutTag(layout, "{via}", via)
 
 	// メトリクス
 	metrics := createTweetMetricsLayout(t)

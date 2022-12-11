@@ -360,13 +360,28 @@ func TestCreateTweetDetailLayout(t *testing.T) {
 		},
 	}
 
+	p, _ := time.Parse(time.RFC3339, o.CreatedAt)
+	d := p.Local().Format("2006/01/02 15:04:05")
+
 	t.Run("作成できるか", func(t *testing.T) {
 		s := createTweetDetailLayout(o)
 
-		p, _ := time.Parse(time.RFC3339, o.CreatedAt)
-		d := p.Local().Format("2006/01/02 15:04:05")
 		want := fmt.Sprintf(
 			`[style_detail]%s | via nekome for term
+[style_like]10likes[-:-:-] [style_rt]5rts[-:-:-][-:-:-]`,
+			d,
+		)
+
+		assert.Equal(t, want, s)
+	})
+
+	t.Run("viaが空文字の場合にunknownが入るか", func(t *testing.T) {
+		o := *o
+		o.Source = ""
+		s := createTweetDetailLayout(&o)
+
+		want := fmt.Sprintf(
+			`[style_detail]%s | via unknown
 [style_like]10likes[-:-:-] [style_rt]5rts[-:-:-][-:-:-]`,
 			d,
 		)
