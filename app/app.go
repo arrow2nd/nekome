@@ -316,31 +316,38 @@ func (a *App) eventReciever() {
 	for {
 		select {
 		case status := <-shared.chStatus:
+			// ステータスメッセージを表示
 			a.commandLine.UpdateStatusMessage(status)
 			a.app.Draw()
 		case indicator := <-shared.chIndicator:
+			// インジケータを更新
 			a.statusBar.DrawPageIndicator(indicator)
 			a.app.Draw()
 		case b := <-shared.chDisableViewKeyEvent:
+			// ビューのキー操作ロック状態を更新
 			a.isDisablePageKeyEvent = b
 		case opt := <-shared.chPopupModal:
+			// モーダルを表示
 			a.view.PopupModal(opt)
 			a.app.Draw()
 		case cmd := <-shared.chExecCommand:
+			// コマンドを実行`
 			if err := a.ExecCommnad(cmd); err != nil {
 				shared.SetErrorStatus("Command", err.Error())
 			}
 		case cmd := <-shared.chInputCommand:
+			// コマンドを入力
 			a.app.SetFocus(a.commandLine.inputField)
 			a.commandLine.SetText(cmd)
 			a.app.Draw()
 		case <-shared.chFocusView:
-			focus := a.app.GetFocus()
-			if focus != a.view.textArea {
+			// ビューにフォーカス
+			if a.app.GetFocus() != a.view.textArea {
 				a.app.SetFocus(a.view.flex)
 			}
 			a.app.Draw()
 		case p := <-shared.chFocusPrimitive:
+			// 任意のプリミティブにフォーカス
 			a.app.SetFocus(*p)
 			a.app.Draw()
 		}
