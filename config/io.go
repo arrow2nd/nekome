@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -155,7 +154,7 @@ func (c *Config) save(fileName string, in interface{}) error {
 
 	path := filepath.Join(c.DirPath, fileName)
 
-	if err := ioutil.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
+	if err := os.WriteFile(path, buf.Bytes(), os.ModePerm); err != nil {
 		return fmt.Errorf("failed to save (%s): %w", path, err)
 	}
 
@@ -166,7 +165,7 @@ func (c *Config) save(fileName string, in interface{}) error {
 func (c *Config) load(fileName string, out interface{}) error {
 	path := filepath.Join(c.DirPath, fileName)
 
-	buf, err := ioutil.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("failed to load (%s): %w", path, err)
 	}

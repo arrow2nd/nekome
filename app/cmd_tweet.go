@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -52,8 +51,11 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
 		// 標準入力を受け取る
-		stdin, _ := ioutil.ReadAll(os.Stdin)
-		text = string(stdin)
+		buf := []byte{}
+		if _, err := os.Stdin.Read(buf); err != nil {
+			return err
+		}
+		text = string(buf)
 	} else {
 		// 引数を全てスペースで連結
 		text = strings.Join(f.Args(), " ")
@@ -95,7 +97,7 @@ func (a *App) editTweetExternalEditor(editor string) (string, error) {
 		return "", err
 	}
 
-	bytes, err := ioutil.ReadFile(tmpFilePath)
+	bytes, err := os.ReadFile(tmpFilePath)
 	if err != nil {
 		return "", err
 	}
@@ -223,7 +225,7 @@ func uploadImages(images []string) ([]string, error) {
 			case <-ctx.Done():
 				return nil
 			default:
-				rawImage, err := ioutil.ReadFile(image)
+				rawImage, err := os.ReadFile(image)
 				if err != nil {
 					return fmt.Errorf("failed to load file (%s)", image)
 				}
