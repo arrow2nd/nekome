@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.0.9] - 2022-12-11
+
+### Fixed
+
+- viaが空文字の場合に表示が壊れる
+
 ## [v2.0.8] - 2022-10-28
 
 ### Added
@@ -159,7 +165,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.8...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.9...HEAD
+[v2.0.9]: https://github.com/arrow2nd/nekome/compare/v2.0.8...v2.0.9
 [v2.0.8]: https://github.com/arrow2nd/nekome/compare/v2.0.7...v2.0.8
 [v2.0.7]: https://github.com/arrow2nd/nekome/compare/v2.0.6...v2.0.7
 [v2.0.6]: https://github.com/arrow2nd/nekome/compare/v2.0.5...v2.0.6
