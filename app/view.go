@@ -58,12 +58,13 @@ func newView() *view {
 		AddItem(v.pages, 0, 1, true).
 		AddItem(v.textArea, 0, 0, false)
 
+	tabBgColor := shared.conf.Style.Tab.BackgroundColor.ToColor()
 	v.tabBar.
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetTextAlign(tview.AlignLeft).
 		SetHighlightedFunc(v.handleTabHighlight).
-		SetBackgroundColor(shared.conf.Style.Tab.BackgroundColor.ToColor())
+		SetTextStyle(tcell.StyleDefault.Background(tabBgColor))
 
 	v.modal.
 		AddButtons([]string{"No", "Yes"}).

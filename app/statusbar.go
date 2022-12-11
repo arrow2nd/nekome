@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -27,12 +28,12 @@ func (s *statusBar) Init() {
 	s.leftView.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignLeft).
-		SetBackgroundColor(bgColor)
+		SetTextStyle(tcell.StyleDefault.Background(bgColor))
 
 	s.rightView.
 		SetDynamicColors(true).
 		SetTextAlign(tview.AlignRight).
-		SetBackgroundColor(bgColor)
+		SetTextStyle(tcell.StyleDefault.Background(bgColor))
 
 	s.flex.
 		SetDirection(tview.FlexColumn).

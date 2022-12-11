@@ -85,9 +85,8 @@ func newUserPage(userName string) (*userPage, error) {
 func createMetricsView(color tcell.Color) *tview.TextView {
 	t := tview.NewTextView().
 		SetDynamicColors(true).
-		SetTextAlign(tview.AlignCenter)
-
-	t.SetBackgroundColor(color)
+		SetTextAlign(tview.AlignCenter).
+		SetTextStyle(tcell.StyleDefault.Background(color))
 
 	return t
 }
