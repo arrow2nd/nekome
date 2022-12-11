@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.0.10] - 2022-12-11
+
+### Fixed
+
+- TextViewを使用している箇所の背景色が反映されない
+
 ## [v2.0.9] - 2022-12-11
 
 ### Fixed
@@ -165,7 +171,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.9...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.0.10...HEAD
+[v2.0.10]: https://github.com/arrow2nd/nekome/compare/v2.0.9...v2.0.10
 [v2.0.9]: https://github.com/arrow2nd/nekome/compare/v2.0.8...v2.0.9
 [v2.0.8]: https://github.com/arrow2nd/nekome/compare/v2.0.7...v2.0.8
 [v2.0.7]: https://github.com/arrow2nd/nekome/compare/v2.0.6...v2.0.7
