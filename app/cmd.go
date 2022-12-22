@@ -18,10 +18,8 @@ func newCmd() *cli.Command {
 			f.BoolP("version", "v", false, "show version")
 		},
 		Run: func(c *cli.Command, f *pflag.FlagSet) error {
-			ver, _ := f.GetBool("version")
-
 			// コマンドラインからの実行ならバージョンを表示
-			if shared.isCommandLineMode && ver {
+			if ver, _ := f.GetBool("version"); shared.isCommandLineMode && ver {
 				log.Exit(fmt.Sprintf("🐈 nekome for v.%s", version))
 			}
 
@@ -33,4 +31,13 @@ func newCmd() *cli.Command {
 			return fmt.Errorf("unavailable or not found command%s", arg)
 		},
 	}
+}
+
+func setUnfocusFlag(f *pflag.FlagSet) {
+	f.BoolP("unfocus", "u", false, "no focus on page")
+}
+
+func setTimelineFlags(f *pflag.FlagSet) {
+	f.BoolP("stream", "s", false, "start stream mode")
+	setUnfocusFlag(f)
 }
