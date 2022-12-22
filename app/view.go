@@ -122,7 +122,7 @@ func (v *view) AddPage(p page, focus bool) error {
 		v.tabBar.Highlight(newTab.id)
 		v.tabIndex = tabIndex
 
-		return nil
+		return fmt.Errorf("This page already exists (%s)", newTab.name)
 	}
 
 	// ページを追加
@@ -138,8 +138,6 @@ func (v *view) AddPage(p page, focus bool) error {
 	// タブを追加
 	v.tabItems = append(v.tabItems, newTab)
 	v.drawTab()
-
-	go p.Load()
 
 	return nil
 }

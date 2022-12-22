@@ -107,6 +107,11 @@ Add home timeline page
 :home [flags]
 ```
 
+#### flags
+
+- `-s` `--stream`
+  - Start stream mode
+
 ### mention
 
 Add mention timeline page
@@ -114,6 +119,11 @@ Add mention timeline page
 ```
 :mention [flags]
 ```
+
+#### flags
+
+- `-s` `--stream`
+  - Start stream mode
 
 ### list
 

@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- `home` `mention` コマンドに `--stream` フラグを追加
+
+### Changed
+
+- 重複するページがある場合にエラーを出力するよう変更
+
 ## [v2.0.10] - 2022-12-11
 
 ### Fixed
