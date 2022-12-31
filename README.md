@@ -10,7 +10,7 @@
 
 > [English](./README_EN.md)
 
-![nekome](https://user-images.githubusercontent.com/44780846/177174791-d5fb9db2-2a83-490a-8ed0-7d08fe16f89c.gif)
+![nekome](https://user-images.githubusercontent.com/44780846/210126086-2be3feab-3ad9-41f5-9510-d28b947256f4.gif)
 
 ## 特徴
 
