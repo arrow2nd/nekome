@@ -7,7 +7,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/atotto/clipboard v0.1.4
 	github.com/dghubble/oauth1 v0.7.2
-	github.com/g8rswimmer/go-twitter/v2 v2.1.4
+	github.com/g8rswimmer/go-twitter/v2 v2.1.5
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-runewidth v0.0.14
 	github.com/skanehira/clipboard-image/v2 v2.0.0
