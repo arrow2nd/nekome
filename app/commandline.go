@@ -105,14 +105,14 @@ func (c *commandLine) UpdateStatusMessage(s string) {
 }
 
 // Blur : コマンドラインからフォーカスを外す
-func (c *commandLine) Blur(closeAutocompleteList bool) {
+func (c *commandLine) Blur() {
 	c.inputField.SetLabel("").SetText("")
 
 	// 補完リストを閉じる
 	// NOTE: 補完リストが表示された状態でフォーカスを外すと、一部が表示されたままになる
-	if closeAutocompleteList {
-		c.inputField.Autocomplete()
-	}
+	// if closeAutocompleteList {
+	// 	c.inputField.Autocomplete()
+	// }
 
 	shared.RequestFocusView()
 	shared.SetDisableViewKeyEvent(false)
@@ -124,11 +124,8 @@ func (c *commandLine) handleAutocomplete(currentText string) []string {
 	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
-		// NOTE: 外部から補完リストを初期化できないので、空リストを返すことで補完リストを削除し表示をクリアする
-		// LINK: https://github.com/rivo/tview/blob/2e69b7385a37df55e0c2ef4d1c0054898bed05a1/inputfield.go#L286-L292
 		if c.inputField.GetLabel() == "" {
 			c.isAutocompleteDisplaying = false
-			return []string{}
 		}
 
 		return c.autocomplateItems
@@ -148,7 +145,7 @@ func (c *commandLine) handleDone(key tcell.Key) {
 	if key == tcell.KeyEnter {
 		text := c.inputField.GetText()
 
-		c.Blur(false)
+		c.Blur()
 
 		// コマンドを実行
 		if text != "" {
@@ -173,13 +170,13 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// フィールドが空かつ、BSが押されたらフォーカスを外す
 	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2 || key == tcell.KeyCtrlW) {
-		c.Blur(true)
+		c.Blur()
 		return nil
 	}
 
 	// フォーカスを外す
 	if key == tcell.KeyEsc {
-		c.Blur(true)
+		c.Blur()
 		return nil
 	}
 
