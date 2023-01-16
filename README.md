@@ -1,6 +1,6 @@
 ![nekome-readme](https://user-images.githubusercontent.com/44780846/204079320-eb71727d-e7e8-4160-92f4-4bb6b9a0ea9e.png)
 
-**nekome**: 🐈 ねこのためのTUIなTwitterクライアント
+**nekome**: 🐈 ねこのための TUI な Twitter クライアント
 
 [![release](https://github.com/arrow2nd/nekome/actions/workflows/release.yml/badge.svg)](https://github.com/arrow2nd/nekome/actions/workflows/release.yml)
 [![test](https://github.com/arrow2nd/nekome/actions/workflows/test.yml/badge.svg)](https://github.com/arrow2nd/nekome/actions/workflows/test.yml)
@@ -14,7 +14,7 @@
 
 ## 特徴
 
-- Twitter API v2対応
+- Twitter API v2 対応
 - マルチアカウント対応
 - コマンドラインからのツイートが可能
 - 柔軟な機能・外観設定
@@ -26,7 +26,7 @@
 > 以下の方法以外でインストールした場合、コンシューマキーが内蔵されていません
 >
 > [Twitter Developer Portal](https://developer.twitter.com/en/portal/projects-and-apps)
-> からTwitter API v2のAPIキーを取得して、起動後に生成される
+> から Twitter API v2 の API キーを取得して、起動後に生成される
 > [.cred.toml](./docs/ja/config.md#credtoml) に追加してください
 
 ### Homebrew
@@ -54,7 +54,7 @@ scoop install arrow2nd/nekome
 
 1. 初回起動時に認証ページの URL が表示されるので、ブラウザでアクセス
 2. 画面の指示に沿って認証を進め、表示される PIN コードをコピー
-3. PIN コードをnekomeに入力
+3. PIN コードを nekome に入力
 4. 完了！ 🐱
 
 ## ドキュメント
@@ -62,7 +62,7 @@ scoop install arrow2nd/nekome
 - [コマンド一覧](./docs/ja/commands.md) もしくは `nekome -h`
 - [デフォルトキーバインド](./docs/ja/keybindings.md) もしくは `docs keybindings`
 - [設定ファイル](./docs/ja/config.md)
-- [v1からv2へ移行](./docs/ja/migrate-v1-v2.md)
+- [v1 から v2 へ移行](./docs/ja/migrate-v1-v2.md)
 - [スタイル定義のサンプル](./docs/sample_styles.md)
 
 ## 由来

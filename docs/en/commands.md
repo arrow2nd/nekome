@@ -5,7 +5,7 @@
 ## nekome
 
 ```
-nekome [flags] [command] [global flags / command flags]
+nekome [flags] [command]
 ```
 
 ### Global Flags
@@ -20,7 +20,7 @@ nekome [flags] [command] [global flags / command flags]
 - `-v` `--version`
   - Show version
 
-## Commands available in common
+## Commands available in CLI / TUI common
 
 ### tweet
 
