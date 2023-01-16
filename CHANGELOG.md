@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-## [v2.1.1] - 2023-01-16
+## [v2.2.0] - 2023-01-16
+
+### Added
+
+- `<S-Tab>` での候補選択を実装
+
+### Changed
+
+- 候補選択中はコマンドラインに選択内容を入力しない
+- `<C-y>` での候補決定を候補リスト表示中のみに制限
 
 ### Fixed
 
@@ -187,8 +196,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.1.1...HEAD
-[v2.1.1]: https://github.com/arrow2nd/nekome/compare/v2.1.0...v2.1.1
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.2.0...HEAD
+[v2.2.0]: https://github.com/arrow2nd/nekome/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/arrow2nd/nekome/compare/v2.0.10...v2.1.0
 [v2.0.10]: https://github.com/arrow2nd/nekome/compare/v2.0.9...v2.0.10
 [v2.0.9]: https://github.com/arrow2nd/nekome/compare/v2.0.8...v2.0.9
