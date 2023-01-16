@@ -108,12 +108,6 @@ func (c *commandLine) UpdateStatusMessage(s string) {
 func (c *commandLine) Blur() {
 	c.inputField.SetLabel("").SetText("")
 
-	// 補完リストを閉じる
-	// NOTE: 補完リストが表示された状態でフォーカスを外すと、一部が表示されたままになる
-	// if closeAutocompleteList {
-	// 	c.inputField.Autocomplete()
-	// }
-
 	shared.RequestFocusView()
 	shared.SetDisableViewKeyEvent(false)
 }
@@ -179,6 +173,8 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		c.Blur()
 		return nil
 	}
+
+	// TODO: 最新のtviewで補完候補が1つだけの時に項目を選択できなくなってるのでどうにかする
 
 	if key == tcell.KeyTab {
 		if c.isAutocompleteDisplaying {
