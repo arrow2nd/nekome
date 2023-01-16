@@ -51,11 +51,8 @@ func (a *App) execTweetCmd(c *cli.Command, f *pflag.FlagSet) error {
 
 	if f.NArg() == 0 && !term.IsTerminal(int(syscall.Stdin)) {
 		// 標準入力を受け取る
-		buf := []byte{}
-		if _, err := os.Stdin.Read(buf); err != nil {
-			return err
-		}
-		text = string(buf)
+		stdin, _ := io.ReadAll(os.Stdin)
+		text = string(stdin)
 	} else {
 		// 引数を全てスペースで連結
 		text = strings.Join(f.Args(), " ")
