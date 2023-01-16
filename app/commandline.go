@@ -44,7 +44,8 @@ func (c *commandLine) Init() {
 		SetLabelColor(style.App.TextColor.ToColor())
 
 	c.inputField.
-		SetAutocompleteFunc(c.handleAutocomplete).
+		SetAutocompleteFunc(c.getAutocompleteItems).
+		SetAutocompletedFunc(c.handleAutocompleted).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).
 		SetInputCapture(c.handleKeyEvent)
@@ -105,32 +106,19 @@ func (c *commandLine) UpdateStatusMessage(s string) {
 }
 
 // Blur : コマンドラインからフォーカスを外す
-func (c *commandLine) Blur(closeAutocompleteList bool) {
+func (c *commandLine) Blur() {
 	c.inputField.SetLabel("").SetText("")
-
-	// 補完リストを閉じる
-	// NOTE: 補完リストが表示された状態でフォーカスを外すと、一部が表示されたままになる
-	if closeAutocompleteList {
-		c.inputField.Autocomplete()
-	}
 
 	shared.RequestFocusView()
 	shared.SetDisableViewKeyEvent(false)
 }
 
-// handleAutocomplete : コマンドの入力補完ハンドラ
-func (c *commandLine) handleAutocomplete(currentText string) []string {
+// getAutocompleteItems : 入力補完の候補を取得
+func (c *commandLine) getAutocompleteItems(currentText string) []string {
 	entries := []string{}
 	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
-		// NOTE: 外部から補完リストを初期化できないので、空リストを返すことで補完リストを削除し表示をクリアする
-		// LINK: https://github.com/rivo/tview/blob/2e69b7385a37df55e0c2ef4d1c0054898bed05a1/inputfield.go#L286-L292
-		if c.inputField.GetLabel() == "" {
-			c.isAutocompleteDisplaying = false
-			return []string{}
-		}
-
 		return c.autocomplateItems
 	}
 
@@ -143,17 +131,31 @@ func (c *commandLine) handleAutocomplete(currentText string) []string {
 	return entries
 }
 
+// handleAutocompleted : 補完候補選択時のイベントハンドラ
+func (c *commandLine) handleAutocompleted(text string, index, source int) bool {
+	// 選択中でないなら、コマンドラインの内容を変更する
+	if source != tview.AutocompletedNavigate {
+		c.inputField.SetText(text)
+	}
+
+	autocompleted := source == tview.AutocompletedEnter
+	c.isAutocompleteDisplaying = !autocompleted
+
+	return autocompleted
+}
+
 // handleDone : 入力確定時のイベントハンドラ
 func (c *commandLine) handleDone(key tcell.Key) {
-	if key == tcell.KeyEnter {
-		text := c.inputField.GetText()
+	if key != tcell.KeyEnter {
+		return
+	}
 
-		c.Blur(false)
+	text := c.inputField.GetText()
 
-		// コマンドを実行
-		if text != "" {
-			shared.RequestExecCommand(text)
-		}
+	c.Blur()
+
+	if text != "" {
+		shared.RequestExecCommand(text)
 	}
 }
 
@@ -173,29 +175,26 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 
 	// フィールドが空かつ、BSが押されたらフォーカスを外す
 	if text == "" && (key == tcell.KeyBackspace || key == tcell.KeyBackspace2 || key == tcell.KeyCtrlW) {
-		c.Blur(true)
+		c.Blur()
 		return nil
 	}
 
-	// フォーカスを外す
+	// ESCでフォーカスを外す
 	if key == tcell.KeyEsc {
-		c.Blur(true)
+		c.Blur()
 		return nil
 	}
 
 	if key == tcell.KeyTab {
-		if c.isAutocompleteDisplaying {
-			// 補完リスト表示中なら、上キーの入力に変換
-			return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
-		} else {
-			// 補完リストを表示
-			c.inputField.Autocomplete()
-			return nil
-		}
+		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
 	}
 
-	// 項目を決定
-	if key == tcell.KeyCtrlY {
+	if key == tcell.KeyBacktab {
+		return tcell.NewEventKey(tcell.KeyUp, 0, tcell.ModNone)
+	}
+
+	// 補完候補を決定
+	if c.isAutocompleteDisplaying && key == tcell.KeyCtrlY {
 		return tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone)
 	}
 
