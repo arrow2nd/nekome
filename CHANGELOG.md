@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.1.1] - 2023-01-16
+
+### Fixed
+
+- `tweet` コマンドに標準入力を渡すとエディタが開く
+
 ## [v2.1.0] - 2022-12-23
 
 ### Added
@@ -181,7 +187,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.1.1...HEAD
+[v2.1.1]: https://github.com/arrow2nd/nekome/compare/v2.1.0...v2.1.1
 [v2.1.0]: https://github.com/arrow2nd/nekome/compare/v2.0.10...v2.1.0
 [v2.0.10]: https://github.com/arrow2nd/nekome/compare/v2.0.9...v2.0.10
 [v2.0.9]: https://github.com/arrow2nd/nekome/compare/v2.0.8...v2.0.9
