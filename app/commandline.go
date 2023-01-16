@@ -44,7 +44,8 @@ func (c *commandLine) Init() {
 		SetLabelColor(style.App.TextColor.ToColor())
 
 	c.inputField.
-		SetAutocompleteFunc(c.handleAutocomplete).
+		SetAutocompleteFunc(c.getAutocompleteItems).
+		SetAutocompletedFunc(c.handleAutocompleted).
 		SetDoneFunc(c.handleDone).
 		SetFocusFunc(c.handleFocus).
 		SetInputCapture(c.handleKeyEvent)
@@ -112,16 +113,12 @@ func (c *commandLine) Blur() {
 	shared.SetDisableViewKeyEvent(false)
 }
 
-// handleAutocomplete : コマンドの入力補完ハンドラ
-func (c *commandLine) handleAutocomplete(currentText string) []string {
+// getAutocompleteItems : 入力補完の候補を取得
+func (c *commandLine) getAutocompleteItems(currentText string) []string {
 	entries := []string{}
 	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
-		if c.inputField.GetLabel() == "" {
-			c.isAutocompleteDisplaying = false
-		}
-
 		return c.autocomplateItems
 	}
 
@@ -134,17 +131,31 @@ func (c *commandLine) handleAutocomplete(currentText string) []string {
 	return entries
 }
 
+// handleAutocompleted : 補完候補選択時のイベントハンドラ
+func (c *commandLine) handleAutocompleted(text string, index, source int) bool {
+	// 選択中でないなら、コマンドラインの内容を変更する
+	if source != tview.AutocompletedNavigate {
+		c.inputField.SetText(text)
+	}
+
+	autocompleted := source == tview.AutocompletedEnter
+	c.isAutocompleteDisplaying = !autocompleted
+
+	return autocompleted
+}
+
 // handleDone : 入力確定時のイベントハンドラ
 func (c *commandLine) handleDone(key tcell.Key) {
-	if key == tcell.KeyEnter {
-		text := c.inputField.GetText()
+	if key != tcell.KeyEnter {
+		return
+	}
 
-		c.Blur()
+	text := c.inputField.GetText()
 
-		// コマンドを実行
-		if text != "" {
-			shared.RequestExecCommand(text)
-		}
+	c.Blur()
+
+	if text != "" {
+		shared.RequestExecCommand(text)
 	}
 }
 
@@ -168,27 +179,22 @@ func (c *commandLine) handleKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	// フォーカスを外す
+	// ESCでフォーカスを外す
 	if key == tcell.KeyEsc {
 		c.Blur()
 		return nil
 	}
 
-	// TODO: 最新のtviewで補完候補が1つだけの時に項目を選択できなくなってるのでどうにかする
-
 	if key == tcell.KeyTab {
-		if c.isAutocompleteDisplaying {
-			// 補完リスト表示中なら、上キーの入力に変換
-			return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
-		} else {
-			// 補完リストを表示
-			c.inputField.Autocomplete()
-			return nil
-		}
+		return tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone)
 	}
 
-	// 項目を決定
-	if key == tcell.KeyCtrlY {
+	if key == tcell.KeyBacktab {
+		return tcell.NewEventKey(tcell.KeyUp, 0, tcell.ModNone)
+	}
+
+	// 補完候補を決定
+	if c.isAutocompleteDisplaying && key == tcell.KeyCtrlY {
 		return tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone)
 	}
 
