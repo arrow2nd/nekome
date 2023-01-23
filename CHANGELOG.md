@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.2.1] - 2023-01-23
+
+### Fixed
+
+- 存在しないユーザのページを開くと落ちる
+
 ## [v2.2.0] - 2023-01-16
 
 ### Added
@@ -196,7 +202,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.2.0...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.2.1...HEAD
+[v2.2.1]: https://github.com/arrow2nd/nekome/compare/v2.2.0...v2.2.1
 [v2.2.0]: https://github.com/arrow2nd/nekome/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/arrow2nd/nekome/compare/v2.0.10...v2.1.0
 [v2.0.10]: https://github.com/arrow2nd/nekome/compare/v2.0.9...v2.0.10

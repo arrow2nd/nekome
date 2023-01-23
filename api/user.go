@@ -40,7 +40,7 @@ func (a *API) FetchUser(userNames []string) ([]*UserDictionary, error) {
 func (a *API) fetchPinnedTweets(raw *twitter.UserRaw) (*twitter.TweetRaw, error) {
 	tweetIDs := []string{}
 	for _, user := range raw.Users {
-		if user.PinnedTweetID != "" {
+		if user != nil && user.PinnedTweetID != "" {
 			tweetIDs = append(tweetIDs, user.PinnedTweetID)
 		}
 	}

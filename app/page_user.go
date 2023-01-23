@@ -141,7 +141,7 @@ func (u *userPage) fetchProfile() error {
 		return err
 	}
 
-	if len(users) == 0 || users[0] == nil {
+	if len(users) == 0 || users[0] == nil || users[0].User == nil {
 		return fmt.Errorf("failed to get user profile: %w", err)
 	}
 
