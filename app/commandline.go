@@ -21,7 +21,7 @@ type commandLine struct {
 func newCommandLine() *commandLine {
 	return &commandLine{
 		inputField:               tview.NewInputField(),
-		autocomplateItems:        []string{},
+		autocomplateItems:        nil,
 		isAutocompleteDisplaying: false,
 		backspaceCount:           0,
 	}
@@ -86,7 +86,9 @@ func (c *commandLine) SetAutocompleteItems(cmds []string) error {
 		c.autocomplateItems = append(c.autocomplateItems, cmd)
 	}
 
-	sort.Slice(c.autocomplateItems, func(i, j int) bool { return c.autocomplateItems[i] < c.autocomplateItems[j] })
+	sort.Slice(c.autocomplateItems, func(i, j int) bool {
+		return c.autocomplateItems[i] < c.autocomplateItems[j]
+	})
 
 	return nil
 }
@@ -119,7 +121,11 @@ func (c *commandLine) getAutocompleteItems(currentText string) []string {
 	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
-		return c.autocomplateItems
+		// 入力中の場合のみ全ての候補を返す
+		if c.inputField.GetLabel() == ":" {
+			return c.autocomplateItems
+		}
+		return nil
 	}
 
 	for _, cmd := range c.autocomplateItems {

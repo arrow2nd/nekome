@@ -277,7 +277,6 @@ func (a *App) initAutocomplate() {
 	if err := a.commandLine.SetAutocompleteItems(cmds); err != nil {
 		shared.SetErrorStatus("Init - CommandLine", err.Error())
 	}
-
 }
 
 // execStartupCommands : 起動時に実行するコマンドを一括で実行
