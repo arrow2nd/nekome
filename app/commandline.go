@@ -121,11 +121,11 @@ func (c *commandLine) getAutocompleteItems(currentText string) []string {
 	c.isAutocompleteDisplaying = true
 
 	if currentText == "" {
-		// 入力中でないなら何も返さない
-		if c.inputField.GetLabel() == "" {
-			return nil
+		// 入力中の場合のみ全ての候補を返す
+		if c.inputField.GetLabel() == ":" {
+			return c.autocomplateItems
 		}
-		return c.autocomplateItems
+		return nil
 	}
 
 	for _, cmd := range c.autocomplateItems {
