@@ -77,3 +77,8 @@ scoop install arrow2nd/nekome
 「物事がめまぐるしく変化すること」を指す _"猫の目"_ という言葉が由来です
 
 > https://nekojiten.com/wp/nekonome/
+
+## Sincere thanks ❤
+
+- [SobaCha / MateCha (@wakamesoba98)](https://www.wakamesoba98.net/sobacha/index.html)
+- [Twitter Developer Community](https://twittercommunity.com/)

@@ -88,3 +88,8 @@ The name comes from the Japanese word "猫の目 (neko no me)" which means "the 
 a cat" and refers to things changing at a dizzying pace
 
 > https://nekojiten.com/wp/nekonome/
+
+## Sincere thanks ❤
+
+- [SobaCha / MateCha (@wakamesoba98)](https://www.wakamesoba98.net/sobacha/index.html)
+- [Twitter Developer Community](https://twittercommunity.com/)
