@@ -10,6 +10,13 @@
 
 > [日本語](./README.md)
 
+> **Note**
+>
+> Due to the [Discontinuation of the free Twitter API plan](https://twitter.com/TwitterDev/status/1621026986784337922), the development of nekome will end on 2023/02/09.
+>
+> The built-in API token has already expired, but you can continue to use it by preparing and setting up your own API token.
+> Please refer to [this page](https://github.com/arrow2nd/nekome/blob/v2/docs/en/config.md#credtoml) for the setting locations.
+
 ![nekome](https://user-images.githubusercontent.com/44780846/210126086-2be3feab-3ad9-41f5-9510-d28b947256f4.gif)
 
 ## Features
@@ -81,3 +88,8 @@ The name comes from the Japanese word "猫の目 (neko no me)" which means "the 
 a cat" and refers to things changing at a dizzying pace
 
 > https://nekojiten.com/wp/nekonome/
+
+## Sincere thanks ❤
+
+- [SobaCha / MateCha (@wakamesoba98)](https://www.wakamesoba98.net/sobacha/index.html)
+- [Twitter Developer Community](https://twittercommunity.com/)
