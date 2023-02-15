@@ -29,7 +29,7 @@ require (
 require (
 	github.com/gdamore/tcell/v2 v2.5.4
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
-	github.com/rivo/tview v0.0.0-20230130130022-4a1b7a76c01c
+	github.com/rivo/tview v0.0.0-20230208211350-7dfff1ce7854
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/crypto v0.6.0
 	golang.org/x/sync v0.1.0
