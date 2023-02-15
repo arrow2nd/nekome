@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v2.2.3] - 2023-02-15
+
+### Added
+
+- API キーが使えなくなった場合のメッセージを追加
+
 ## [v2.2.2] - 2023-02-01
 
 ### Fixed
@@ -208,7 +214,8 @@
 
 - リリースしました！ 😸
 
-[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.2.2...HEAD
+[unreleased]: https://github.com/arrow2nd/nekome/compare/v2.2.3...HEAD
+[v2.2.3]: https://github.com/arrow2nd/nekome/compare/v2.2.2...v2.2.3
 [v2.2.2]: https://github.com/arrow2nd/nekome/compare/v2.2.1...v2.2.2
 [v2.2.1]: https://github.com/arrow2nd/nekome/compare/v2.2.0...v2.2.1
 [v2.2.0]: https://github.com/arrow2nd/nekome/compare/v2.1.0...v2.2.0
