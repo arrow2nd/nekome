@@ -21,13 +21,20 @@ func checkError(err error) error {
 		return err
 	}
 
+	errText := fmt.Sprintf("%d %s | %s", tErr.StatusCode, tErr.Title, tErr.Detail)
+
+	// 認証
+	if tErr.StatusCode == 401 || tErr.StatusCode == 402 || tErr.StatusCode == 403 {
+		return fmt.Errorf("client error: %s (API key may no longer be available)", errText)
+	}
+
 	// レート制限
 	if tErr.StatusCode == 429 {
 		t := tErr.RateLimit.Reset.Time().Local().Format("15:04:05")
 		return fmt.Errorf("Rate limit exceeded (Reset time: %s)", t)
 	}
 
-	return fmt.Errorf("server error: %d %s | %s", tErr.StatusCode, tErr.Title, tErr.Detail)
+	return fmt.Errorf("server error: %s", errText)
 }
 
 // checkPartialError : 部分エラーが無いかチェック

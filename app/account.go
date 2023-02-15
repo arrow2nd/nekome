@@ -1,11 +1,26 @@
 package app
 
-import "github.com/arrow2nd/nekome/v2/api"
+import (
+	"fmt"
+	"os"
+
+	"github.com/arrow2nd/nekome/v2/api"
+)
+
+// printConsumerKeyWarn : コンシューマーキーに関する警告
+func printConsumerKeyWarn() {
+	fmt.Fprintln(
+		os.Stderr,
+		`WARN: The built-in API key may have expired due to the Twitter API no longer being provided free of charge.
+      See https://github.com/arrow2nd/nekome for details.`,
+	)
+}
 
 // addAccount : アカウントを追加
 func addAccount(setMain bool) error {
 	authUser, err := shared.api.Auth(&shared.conf.Cred.Consumer)
 	if err != nil {
+		printConsumerKeyWarn()
 		return err
 	}
 
@@ -42,6 +57,5 @@ func loginAccount(u string) error {
 	}
 
 	shared.api = api
-
 	return nil
 }
