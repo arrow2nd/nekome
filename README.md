@@ -14,7 +14,7 @@
 >
 > [Twitter API の無料プラン廃止](https://twitter.com/TwitterDev/status/1621026986784337922)にともない、nekome の開発は 2023/02/09 をもって終了しました。
 >
-> 組込みの API トークンは既に失効していますが、ご自身で API トークンを用意し、設定していただくことで引き続きご利用いただくことが可能です。
+> 組込みの API トークンは既に失効している可能性があります。その場合はご自身で API トークンを用意し、設定していただくことで引き続きご利用いただくことが可能です。
 > 設定個所については、[こちら](https://github.com/arrow2nd/nekome/blob/v2/docs/ja/config.md#credtoml) をご参照ください。
 
 ![nekome](https://user-images.githubusercontent.com/44780846/210126086-2be3feab-3ad9-41f5-9510-d28b947256f4.gif)
