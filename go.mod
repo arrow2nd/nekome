@@ -27,7 +27,7 @@ require (
 )
 
 require (
-	github.com/gdamore/tcell/v2 v2.5.4
+	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 	github.com/rivo/tview v0.0.0-20230208211350-7dfff1ce7854
 	github.com/stretchr/testify v1.8.1
